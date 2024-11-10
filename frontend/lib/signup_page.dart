@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -14,10 +13,12 @@ class _SignupPageState extends State<SignupPage> {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _bloodTypeController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   Future<void> signup() async {
     if (_passwordController.text != _confirmPasswordController.text) {
@@ -34,6 +35,7 @@ class _SignupPageState extends State<SignupPage> {
         'firstName': _firstNameController.text,
         'lastName': _lastNameController.text,
         'location': _locationController.text,
+        'Number': _phoneNumberController.text,
         'bloodType': _bloodTypeController.text,
         'email': _emailController.text,
         'password': _passwordController.text,
@@ -59,7 +61,7 @@ class _SignupPageState extends State<SignupPage> {
     }
   }
 
-@override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Sign Up')),
@@ -79,6 +81,12 @@ class _SignupPageState extends State<SignupPage> {
               TextField(
                 controller: _locationController,
                 decoration: InputDecoration(labelText: 'Location'),
+              ),
+              TextField(
+                controller: _phoneNumberController,
+                decoration: InputDecoration(
+                  hintText: "phone number",
+                ),
               ),
               TextField(
                 controller: _bloodTypeController,
