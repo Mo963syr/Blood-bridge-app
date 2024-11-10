@@ -18,10 +18,12 @@ router.post('/signup', async (req, res) => {
         const user = new User({
             firstName: req.body.firstName,
             lastName: req.body.lastName,
+            Number:req.body.Number,
             location: req.body.location,
             bloodType: req.body.bloodType,
             email: req.body.email,
             password: hashedPassword,
+          
         });
 
         // حفظ المستخدم في قاعدة البيانات
@@ -31,11 +33,12 @@ router.post('/signup', async (req, res) => {
         res.json({
             message: 'User created successfully',
             user: {
-                firstName: user.firstName,
-                lastName: user.lastName,
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
+                Number:req.body.Number,
+                location: req.body.location,
                 bloodType: req.body.bloodType,
-                location: user.location,
-                email: user.email
+                email: req.body.email,
             },
         });
     } catch (err) {

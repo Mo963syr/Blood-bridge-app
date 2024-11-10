@@ -35,8 +35,12 @@ class _SigninPageState extends State<SigninPage> {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Failed to sign in')));
     }
+     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fill in all fields')));
+    return;
   }
-
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -133,4 +137,6 @@ class _SigninPageState extends State<SigninPage> {
       ),
     );
   }
+  
 }
+
