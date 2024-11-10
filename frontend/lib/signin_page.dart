@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'signup_page.dart'; // تأكد من أنك قد أضفت صفحة SignupPage
-
+import 'package:frontend/home_page.dart';
 class SigninPage extends StatefulWidget {
   @override
   _SigninPageState createState() => _SigninPageState();
@@ -12,9 +12,10 @@ class _SigninPageState extends State<SigninPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  Future<void> signin() async {
-    final response = await http.post(
-      Uri.parse('http://localhost:8080/signin'), // Adjust to your server URL
+Future<void> signin() async {
+  try {
+    var response = await http.post(
+      Uri.parse('http://localhost:8080/api/auth/signin'), // عنوان الخادم
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'email': _emailController.text,
@@ -22,20 +23,36 @@ class _SigninPageState extends State<SigninPage> {
       }),
     );
 
-    if (response.statusCode == 200) {
-      final user = jsonDecode(response.body);
-      if (user != null) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Sign in successful')));
-      } else {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Invalid credentials')));
-      }
+    final responseData = jsonDecode(response.body);
+    print(responseData);
+
+    if (response.statusCode == 200 && responseData['message'] == 'Sign in successful') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('تم تسجيل الدخول بنجاح')),
+      );
+
+      // الانتقال إلى الصفحة الرئيسية
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    } else if (response.statusCode == 400) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('بيانات الدخول غير صحيحة')),
+      );
     } else {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Failed to sign in')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('فشل في تسجيل الدخول')),
+      );
     }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('حدث خطأ. يرجى المحاولة مرة أخرى لاحقاً.')),
+    );
+    print('Error: $e');
   }
+}
+
 
   @override
   Widget build(BuildContext context) {

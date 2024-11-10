@@ -11,5 +11,8 @@ const userSchema = new Schema({
     password: String,
     resetpassword:String
 });
-
+// التحقق من كلمة المرور
+userSchema.methods.comparePassword = async function(password) {
+    return await bcrypt.compare(password, this.password);
+  };
 module.exports = mongoose.model('User', userSchema);

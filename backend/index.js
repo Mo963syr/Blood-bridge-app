@@ -1,10 +1,13 @@
 const express = require('express')
+const mongoose = require('mongoose');
+const authRoutes = require('./routes/auth');
 const app = express()
+app.use(express.json());
+
 const port = 8080 || process.env.PORT
 const cors = require('cors')
 const bodyParser = require('body-parser')
 
-const mongoose = require('mongoose')
 mongoose.connect("mongodb://localhost:27017/bloodBridge", {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -18,6 +21,7 @@ app.use(cors())
 app.use(bodyParser.urlencoded({extended:true}))
 app.use(bodyParser.json())
 app.use('/',require('./routes/user.route'))
+app.use('/api/auth', authRoutes);
 app.listen(port,()=>{
     console.log('port running on '+port)
 })
