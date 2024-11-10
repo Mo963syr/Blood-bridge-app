@@ -24,7 +24,7 @@ Future<void> signin() async {
     );
 
     final responseData = jsonDecode(response.body);
-    print(responseData);
+    print(responseData['message']);
 
     if (response.statusCode == 200 && responseData['message'] == 'Sign in successful') {
       ScaffoldMessenger.of(context).showSnackBar(
