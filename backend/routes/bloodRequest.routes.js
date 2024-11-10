@@ -34,8 +34,7 @@ router.post('/blood-request', async (req, res) => {
       },
     });
   } catch (err) {
-    console.error(err);
-    res
+ return   res
       .status(500)
       .json({ error: 'An error occurred while creating the blood request' });
   }

@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'home_page.dart'; // استيراد الصفحة الرئيسية
+import 'signin_page.dart';
 
 void main() {
   runApp(RequestPage());
@@ -6,10 +10,10 @@ void main() {
 
 class RequestPage extends StatelessWidget {
   final TextEditingController locationController = TextEditingController();
-  final TextEditingController bloodTypeController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   String? selectedBloodType;
   String? selecteddanger;
+
   final List<String> bloodTypes = [
     'A+',
     'A-',
@@ -20,11 +24,37 @@ class RequestPage extends StatelessWidget {
     'O+',
     'O-',
   ];
-  final List<String> danger = [
-    'حرجة',
-    'مستعجلة',
-    'قابلة للانتظار',
-  ];
+
+  final List<String> danger = ['low', 'medium', 'high'];
+
+  Future<void> bloodRequest(BuildContext context) async {
+    final response = await http.post(
+      Uri.parse(
+          'http://localhost:8080/api/blood-request'), // تأكد من ضبط عنوان الخادم
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'location': locationController.text,
+        'bloodType': selectedBloodType,
+        'phoneNumber': phoneController.text,
+        'urgencyLevel': selecteddanger,
+      }),
+    );
+
+    final responseData = jsonDecode(response.body);
+
+    if (response.statusCode == 201 ||
+        responseData['message'] == 'Blood request created') {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Request created successfully')));
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Failed to create request')));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,23 +72,24 @@ class RequestPage extends StatelessWidget {
             child: Column(
               children: [
                 TextField(
+                  controller: locationController,
                   decoration: InputDecoration(
                       hintText: "مكان التواجد الحالي",
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(18),
                           borderSide: BorderSide.none),
-                      fillColor: Color.fromARGB(255, 255, 255, 255),
+                      fillColor: Colors.white,
                       filled: true,
                       prefixIcon: const Icon(Icons.home)),
                 ),
                 SizedBox(height: 16.0),
                 DropdownButtonFormField<String>(
                   decoration: InputDecoration(
-                      hintText: "  فصيلة الدم المطلوبة",
+                      hintText: "فصيلة الدم المطلوبة",
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(18),
                           borderSide: BorderSide.none),
-                      fillColor: Color.fromARGB(255, 255, 255, 255),
+                      fillColor: Colors.white,
                       filled: true,
                       prefixIcon: const Icon(Icons.bloodtype)),
                   value: selectedBloodType,
@@ -74,12 +105,13 @@ class RequestPage extends StatelessWidget {
                 ),
                 SizedBox(height: 16.0),
                 TextField(
+                  controller: phoneController,
                   decoration: InputDecoration(
                       hintText: "رقم الهاتف",
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(18),
                           borderSide: BorderSide.none),
-                      fillColor: Color.fromARGB(255, 255, 255, 255),
+                      fillColor: Colors.white,
                       filled: true,
                       prefixIcon: const Icon(Icons.phone)),
                 ),
@@ -90,7 +122,7 @@ class RequestPage extends StatelessWidget {
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(18),
                           borderSide: BorderSide.none),
-                      fillColor: Color.fromARGB(255, 255, 255, 255),
+                      fillColor: Colors.white,
                       filled: true,
                       prefixIcon: const Icon(Icons.search)),
                   value: selecteddanger,
@@ -110,18 +142,18 @@ class RequestPage extends StatelessWidget {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        print("تم إرسال الطلب");
+                        bloodRequest(context); // استدعاء دالة الطلب
                       },
                       child: Text('إرسال الطلب'),
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        print("تم إلغاء الطلب");
+                        Navigator.pop(context);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
                       ),
-                      child: Text('الروجوع'),
+                      child: Text('الرجوع'),
                     ),
                   ],
                 ),
