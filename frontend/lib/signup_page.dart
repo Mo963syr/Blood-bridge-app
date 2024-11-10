@@ -13,11 +13,21 @@ class _SignupPageState extends State<SignupPage> {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _bloodTypeController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   Future<void> signup() async {
+    if (_passwordController.text != _confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Passwords do not match')),
+      );
+      return;
+    }
+
     final response = await http.post(
       Uri.parse('http://localhost:8080/signup'), // تأكد من ضبط عنوان الخادم
       headers: {'Content-Type': 'application/json'},
@@ -25,6 +35,7 @@ class _SignupPageState extends State<SignupPage> {
         'firstName': _firstNameController.text,
         'lastName': _lastNameController.text,
         'location': _locationController.text,
+        'Number': _phoneNumberController.text,
         'bloodType': _bloodTypeController.text,
         'email': _emailController.text,
         'password': _passwordController.text,
@@ -39,7 +50,6 @@ class _SignupPageState extends State<SignupPage> {
       } else {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Sign up successful')));
-        // الانتقال إلى الصفحة الرئيسية بعد التسجيل الناجح
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomePage()),
@@ -51,7 +61,6 @@ class _SignupPageState extends State<SignupPage> {
     }
   }
 
-//
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,6 +83,12 @@ class _SignupPageState extends State<SignupPage> {
                 decoration: InputDecoration(labelText: 'Location'),
               ),
               TextField(
+                controller: _phoneNumberController,
+                decoration: InputDecoration(
+                  hintText: "phone number",
+                ),
+              ),
+              TextField(
                 controller: _bloodTypeController,
                 decoration: InputDecoration(labelText: 'Blood Type'),
               ),
@@ -84,6 +99,11 @@ class _SignupPageState extends State<SignupPage> {
               TextField(
                 controller: _passwordController,
                 decoration: InputDecoration(labelText: 'Password'),
+                obscureText: true,
+              ),
+              TextField(
+                controller: _confirmPasswordController,
+                decoration: InputDecoration(labelText: 'Confirm Password'),
                 obscureText: true,
               ),
               SizedBox(height: 20),
