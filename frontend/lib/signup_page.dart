@@ -57,55 +57,57 @@ class _SignupPageState extends State<SignupPage> {
       appBar: AppBar(title: Text('Sign Up')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _firstNameController,
-              decoration: InputDecoration(labelText: 'First Name'),
-            ),
-            TextField(
-              controller: _lastNameController,
-              decoration: InputDecoration(labelText: 'Last Name'),
-            ),
-            TextField(
-              controller: _locationController,
-              decoration: InputDecoration(labelText: 'Location'),
-            ),
-            TextField(
-              controller: _bloodTypeController,
-              decoration: InputDecoration(labelText: 'Blood Type'),
-            ),
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
-            ),
-            TextField(
-              controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: signup,
-              child: Text('Sign Up'),
-            ),
-            SizedBox(height: 20),
-            TextButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => SigninPage()),
-                );
-              },
-              child: Text(
-                'Already have an account? Sign in',
-                style: TextStyle(
-                  color: Color(0xFF6200EA),
-                  fontSize: 16,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              TextField(
+                controller: _firstNameController,
+                decoration: InputDecoration(labelText: 'First Name'),
+              ),
+              TextField(
+                controller: _lastNameController,
+                decoration: InputDecoration(labelText: 'Last Name'),
+              ),
+              TextField(
+                controller: _locationController,
+                decoration: InputDecoration(labelText: 'Location'),
+              ),
+              TextField(
+                controller: _bloodTypeController,
+                decoration: InputDecoration(labelText: 'Blood Type'),
+              ),
+              TextField(
+                controller: _emailController,
+                decoration: InputDecoration(labelText: 'Email'),
+              ),
+              TextField(
+                controller: _passwordController,
+                decoration: InputDecoration(labelText: 'Password'),
+                obscureText: true,
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: signup,
+                child: Text('Sign Up'),
+              ),
+              SizedBox(height: 20),
+              TextButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => SigninPage()),
+                  );
+                },
+                child: Text(
+                  'Already have an account? Sign in',
+                  style: TextStyle(
+                    color: Color(0xFF6200EA),
+                    fontSize: 16,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
