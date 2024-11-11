@@ -101,13 +101,6 @@ class SearchPage extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                "تبرع ل${needy['name']}",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
               SizedBox(height: 20),
               Text(
                 "زمرة الدم: ${needy['bloodType']}",
