@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/donationrequestpage.dart';
 
 class SearchPage extends StatelessWidget {
   // قائمة عينة للمحتاجين (يمكنك استبدالها ببيانات حقيقية من قاعدة البيانات)
@@ -101,6 +102,13 @@ class SearchPage extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              Text(
+                "تبرع ل${needy['name']}",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               SizedBox(height: 20),
               Text(
                 "زمرة الدم: ${needy['bloodType']}",
@@ -115,10 +123,11 @@ class SearchPage extends StatelessWidget {
                 children: [
                   ElevatedButton.icon(
                     onPressed: () {
-                      // هنا يمكنك إضافة منطق التبرع
-                      Navigator.pop(ctx);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("تم التبرع بنجاح!")),
+                      Navigator.pop(ctx); // إغلاق نافذة الزرين
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => DonationRequestPage()),
                       );
                     },
                     icon: Icon(Icons.favorite, color: Colors.white),
