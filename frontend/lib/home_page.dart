@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'createrequest.dart';
+import 'searchneedy.dart';
 
 void main() {
   runApp(MyApp());
@@ -29,10 +30,14 @@ class _HomePageState extends State<HomePage> {
 
   void _onItemTapped(int index) {
     if (index == 1) {
-      // الانتقال عند الضغط على "طلب حاجة"
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => RequestPage()),
+      );
+    } else if (index == 3) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => SearchPage()),
       );
     } else {
       setState(() {
