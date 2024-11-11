@@ -4,17 +4,14 @@ class SearchPage extends StatelessWidget {
   // قائمة عينة للمحتاجين (يمكنك استبدالها ببيانات حقيقية من قاعدة البيانات)
   final List<Map<String, String>> needyList = [
     {
-      "name": "محمد علي",
       "postedAgo": "قبل 3 ساعات",
       "bloodType": "A+",
     },
     {
-      "name": "علي حسن",
       "postedAgo": "قبل يوم واحد",
       "bloodType": "O-",
     },
     {
-      "name": "أمينة خليل",
       "postedAgo": "قبل ساعتين",
       "bloodType": "B+",
     },
@@ -56,15 +53,6 @@ class SearchPage extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              needyList[index]['name'] ?? '',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: const Color.fromARGB(255, 0, 0, 0),
-                              ),
-                            ),
-                            SizedBox(height: 5),
                             Text(
                               "زمرة الدم: ${needyList[index]['bloodType'] ?? 'غير متوفرة'}",
                               style: TextStyle(
