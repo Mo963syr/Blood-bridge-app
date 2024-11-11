@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        color: const Color.fromARGB(255, 255, 0, 0),
+        color: Color(0xFFC62828),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 5.0),
           child: Row(

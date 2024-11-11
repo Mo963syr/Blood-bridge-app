@@ -144,7 +144,12 @@ class RequestPage extends StatelessWidget {
                       onPressed: () {
                         bloodRequest(context); // استدعاء دالة الطلب
                       },
-                      child: Text('إرسال الطلب'),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF66BB6A)),
+                      child: Text(
+                        'إرسال الطلب',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                     ElevatedButton(
                       onPressed: () {

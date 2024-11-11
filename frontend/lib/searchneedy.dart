@@ -32,7 +32,7 @@ class SearchPage extends StatelessWidget {
             return GestureDetector(
               onTap: () => _showDonationOptions(context, needyList[index]),
               child: Card(
-                color: const Color.fromARGB(255, 254, 192, 187),
+                color: const Color.fromARGB(255, 170, 171, 168),
                 elevation: 5,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
@@ -42,14 +42,13 @@ class SearchPage extends StatelessWidget {
                   padding: const EdgeInsets.all(15.0),
                   child: Row(
                     children: [
-                      // أيقونة الشخص
                       Icon(
                         Icons.person,
                         size: 40,
                         color: const Color.fromARGB(255, 98, 194, 1),
                       ),
                       SizedBox(width: 15),
-                      // معلومات المحتاج
+
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,13 +101,6 @@ class SearchPage extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                "تبرع ل${needy['name']}",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
               SizedBox(height: 20),
               Text(
                 "زمرة الدم: ${needy['bloodType']}",
@@ -131,7 +123,10 @@ class SearchPage extends StatelessWidget {
                       );
                     },
                     icon: Icon(Icons.favorite, color: Colors.white),
-                    label: Text("تبرع"),
+                    label: Text(
+                      "تبرع",
+                      style: TextStyle(color: Colors.white),
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                       padding:
@@ -147,7 +142,10 @@ class SearchPage extends StatelessWidget {
                       Navigator.pop(ctx);
                     },
                     icon: Icon(Icons.cancel, color: Colors.white),
-                    label: Text("إلغاء"),
+                    label: Text(
+                      "إلغاء",
+                      style: TextStyle(color: Colors.white),
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                       padding:
