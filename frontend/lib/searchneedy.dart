@@ -1,95 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/donationrequestpage.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'donationrequestpage.dart';
 
-class SearchPage extends StatelessWidget {
-  // قائمة عينة للمحتاجين (يمكنك استبدالها ببيانات حقيقية من قاعدة البيانات)
-  final List<Map<String, String>> needyList = [
-    {
-      "postedAgo": "قبل 3 ساعات",
-      "bloodType": "A+",
-    },
-    {
-      "postedAgo": "قبل يوم واحد",
-      "bloodType": "O-",
-    },
-    {
-      "postedAgo": "قبل ساعتين",
-      "bloodType": "B+",
-    },
-  ];
+Future<List<dynamic>> fetchData() async {
+  final response = await http.get(Uri.parse('http://localhost:8080/api/blood-requests'));
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("بحث عن محتاجين"),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: ListView.builder(
-          itemCount: needyList.length,
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () => _showDonationOptions(context, needyList[index]),
-              child: Card(
-                color: const Color.fromARGB(255, 170, 171, 168),
-                elevation: 5,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                margin: EdgeInsets.symmetric(vertical: 8),
-                child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.person,
-                        size: 40,
-                        color: const Color.fromARGB(255, 98, 194, 1),
-                      ),
-                      SizedBox(width: 15),
-
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "زمرة الدم: ${needyList[index]['bloodType'] ?? 'غير متوفرة'}",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.redAccent,
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                            Text(
-                              needyList[index]['postedAgo'] ?? '',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      // أيقونة السهم للإشارة إلى إمكانية الضغط
-                      Icon(
-                        Icons.arrow_forward_ios,
-                        size: 16,
-                        color: Colors.grey,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
+  if (response.statusCode == 200) {
+    // إذا كان الطلب ناجحًا
+    return json.decode(response.body);
+  } else {
+    // إذا فشل الطلب
+    throw Exception('فشل تحميل البيانات');
   }
+}
 
-  /// دالة لعرض خيارات التبرع عند الضغط على البطاقة
-  void _showDonationOptions(BuildContext context, Map<String, String> needy) {
+class DataPage extends StatelessWidget {
+  const DataPage({super.key});
+
+  void _showDonationOptions(BuildContext context, Map<String, dynamic> needy) {
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
@@ -162,6 +91,61 @@ class SearchPage extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('عرض البيانات'),
+      ),
+      body: FutureBuilder<List<dynamic>>(
+        future: fetchData(), // دالة جلب البيانات
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator()); // تحميل
+          } else if (snapshot.hasError) {
+            return Center(child: Text('حدث خطأ: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('لا توجد بيانات'));
+          } else {
+            // عرض البيانات
+            List<dynamic> data = snapshot.data!;
+            return ListView.builder(
+              itemCount: data.length,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () {
+                    _showDonationOptions(context, data[index] as Map<String, dynamic>);
+                  },
+                  child: Card(
+                    margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                    elevation: 5, // التحكم في الظل
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: ListTile(
+                      title: Text(
+                        'Blood Type: ${data[index]['bloodType'] ?? 'نوع الدم غير متاح'}',
+                        style: TextStyle(fontWeight: FontWeight.bold), // لون النص
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Urgency Level: ${data[index]['urgencyLevel'] ?? 'خطورة الحالة غير متاحة'}'),
+                          Text('Location: ${data[index]['location'] ?? 'مكان التواجد غير متاح'}'),
+                          Text('Requested In: ${data[index]['createdAt'] ?? 'تاريخ الانشاء غير متاح'}'),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            );
+          }
+        },
+      ),
     );
   }
 }

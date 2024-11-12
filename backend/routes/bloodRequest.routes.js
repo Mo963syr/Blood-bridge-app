@@ -44,6 +44,7 @@ router.post('/blood-request', async (req, res) => {
 router.get('/blood-requests', async (req, res) => {
   try {
     const bloodRequests = await BloodRequest.find();
+    console.log(bloodRequests) 
     res.json(bloodRequests);
   } catch (err) {
     console.error(err);

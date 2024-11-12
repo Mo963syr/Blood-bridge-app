@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> {
     } else if (index == 3) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => SearchPage()),
+        MaterialPageRoute(builder: (context) => DataPage()),
       );
     } else {
       setState(() {
