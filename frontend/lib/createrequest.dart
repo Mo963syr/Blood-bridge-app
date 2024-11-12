@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'home_page.dart'; // استيراد الصفحة الرئيسية
+import 'home_page.dart';  
 
 void main() {
   runApp(RequestPage());
@@ -29,7 +29,7 @@ class RequestPage extends StatelessWidget {
   Future<void> bloodRequest(BuildContext context) async {
     final response = await http.post(
       Uri.parse(
-          'http://localhost:8080/api/blood-request'), // تأكد من ضبط عنوان الخادم
+          'http://localhost:8080/api/blood-request'), 
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'location': locationController.text,
@@ -141,7 +141,7 @@ class RequestPage extends StatelessWidget {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        bloodRequest(context); // استدعاء دالة الطلب
+                        bloodRequest(context);
                       },
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Color(0xFF66BB6A)),

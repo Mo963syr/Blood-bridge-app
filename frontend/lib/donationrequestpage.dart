@@ -84,7 +84,7 @@ class _DonationRequestPageState extends State<DonationRequestPage> {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    // منطق إرسال الطلب
+                 
                     if (_medicalReportImage == null ||
                         _selectedWeight == null) {
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -92,14 +92,14 @@ class _DonationRequestPageState extends State<DonationRequestPage> {
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text("تم إرسال الطلب بنجاح!")));
-                      Navigator.pop(context); // العودة إلى الصفحة السابقة
+                      Navigator.pop(context); 
                     }
                   },
                   child: Text("إرسال الطلب"),
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pop(context); // العودة وإلغاء الطلب
+                    Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,

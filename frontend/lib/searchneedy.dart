@@ -4,7 +4,8 @@ import 'dart:convert';
 import 'donationrequestpage.dart';
 
 Future<List<dynamic>> fetchData() async {
-  final response = await http.get(Uri.parse('http://localhost:8080/api/blood-requests'));
+  final response =
+      await http.get(Uri.parse('http://localhost:8080/api/blood-requests'));
 
   if (response.statusCode == 200) {
     // إذا كان الطلب ناجحًا
@@ -117,7 +118,8 @@ class DataPage extends StatelessWidget {
               itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: () {
-                    _showDonationOptions(context, data[index] as Map<String, dynamic>);
+                    _showDonationOptions(
+                        context, data[index] as Map<String, dynamic>);
                   },
                   child: Card(
                     margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
@@ -128,14 +130,18 @@ class DataPage extends StatelessWidget {
                     child: ListTile(
                       title: Text(
                         'Blood Type: ${data[index]['bloodType'] ?? 'نوع الدم غير متاح'}',
-                        style: TextStyle(fontWeight: FontWeight.bold), // لون النص
+                        style:
+                            TextStyle(fontWeight: FontWeight.bold), // لون النص
                       ),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Urgency Level: ${data[index]['urgencyLevel'] ?? 'خطورة الحالة غير متاحة'}'),
-                          Text('Location: ${data[index]['location'] ?? 'مكان التواجد غير متاح'}'),
-                          Text('Requested In: ${data[index]['createdAt'] ?? 'تاريخ الانشاء غير متاح'}'),
+                          Text(
+                              'Urgency Level: ${data[index]['urgencyLevel'] ?? 'خطورة الحالة غير متاحة'}'),
+                          Text(
+                              'Location: ${data[index]['location'] ?? 'مكان التواجد غير متاح'}'),
+                          Text(
+                              'Requested In: ${data[index]['createdAt'] ?? 'تاريخ الانشاء غير متاح'}'),
                         ],
                       ),
                     ),
