@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'home_page.dart';  
+import 'home_page.dart';
 
 void main() {
   runApp(RequestPage());
@@ -28,8 +28,7 @@ class RequestPage extends StatelessWidget {
 
   Future<void> bloodRequest(BuildContext context) async {
     final response = await http.post(
-      Uri.parse(
-          'http://localhost:8080/api/blood-request'), 
+      Uri.parse('http://localhost:8080/api/blood-request'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'location': locationController.text,
