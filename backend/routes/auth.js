@@ -22,9 +22,18 @@ router.post('/signin', async (req, res) => {
       console.log('Invalid credentials');
       return res.status(400).json({ message: 'Invalid credentials' });
     } else if (isMatch && password.trim() !== null) {
-      res.status(200).json({ message: 'Sign in successful' });
-      console.log('Sign in successful');
+      // if(user)
+if(user.role=='doctor'){
+
+   return   res.status(200).json({ message: 'Sign in successful' ,status:'doctor dashboard'});
+      // console.log('Sign in successful');
+    }else if(user.role=='user'){
+
+     return res.status(200).json({ message: 'Sign in successful' ,status:'user dashboard'});
+      // console.log('Sign in successful');
     }
+  
+  }
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
