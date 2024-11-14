@@ -60,7 +60,7 @@ class _SigninPageState extends State<SigninPage> {
     return Scaffold(
       backgroundColor: Color(0xFFF7F3F3), // لون خلفية هادئ
       appBar: AppBar(
-        title: Text('Blood Donation Login'),
+        title: Text('صفحة تسجيل الدخول'),
         backgroundColor: Colors.red[700], // لون AppBar يعبر عن التبرع بالدم
       ),
       body: SingleChildScrollView(

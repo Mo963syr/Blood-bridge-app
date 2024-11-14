@@ -64,71 +64,207 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Sign Up')),
-      body: Padding(
+      appBar: AppBar(
+        title: Text('صفحة انشاء حساب'),
+        backgroundColor: Colors.red[700],
+      ),
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              TextField(
-                controller: _firstNameController,
-                decoration: InputDecoration(labelText: 'First Name'),
+        child: Column(
+          children: [
+            Icon(Icons.favorite,
+                size: 80, color: Colors.red[600]), // أيقونة قلب
+            SizedBox(height: 20),
+            Text(
+              'انضم الينا',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.red[800],
               ),
-              TextField(
-                controller: _lastNameController,
-                decoration: InputDecoration(labelText: 'Last Name'),
+            ),
+            SizedBox(height: 20),
+            TextField(
+              controller: _firstNameController,
+              decoration: InputDecoration(
+                labelText: 'الاسم',
+                labelStyle: TextStyle(color: Colors.red[700]),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.red[700]!),
+                ),
+                fillColor: Colors.white,
+                filled: true,
+                prefixIcon: Icon(Icons.person, color: Colors.red[700]),
               ),
-              TextField(
-                controller: _locationController,
-                decoration: InputDecoration(labelText: 'Location'),
+            ),
+            SizedBox(height: 15),
+            TextField(
+              controller: _lastNameController,
+              decoration: InputDecoration(
+                labelText: 'الكنية',
+                labelStyle: TextStyle(color: Colors.red[700]),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.red[700]!),
+                ),
+                fillColor: Colors.white,
+                filled: true,
+                prefixIcon: Icon(Icons.person_outline, color: Colors.red[700]),
               ),
-              TextField(
-                controller: _phoneNumberController,
-                decoration: InputDecoration(
-                  hintText: "phone number",
+            ),
+            SizedBox(height: 15),
+            TextField(
+              controller: _locationController,
+              decoration: InputDecoration(
+                labelText: 'الموقع',
+                labelStyle: TextStyle(color: Colors.red[700]),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.red[700]!),
+                ),
+                fillColor: Colors.white,
+                filled: true,
+                prefixIcon: Icon(Icons.location_on, color: Colors.red[700]),
+              ),
+            ),
+            SizedBox(height: 15),
+            TextField(
+              controller: _phoneNumberController,
+              decoration: InputDecoration(
+                labelText: 'رقم الهاتف',
+                labelStyle: TextStyle(color: Colors.red[700]),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.red[700]!),
+                ),
+                fillColor: Colors.white,
+                filled: true,
+                prefixIcon: Icon(Icons.phone, color: Colors.red[700]),
+              ),
+            ),
+            SizedBox(height: 15),
+            TextField(
+              controller: _bloodTypeController,
+              decoration: InputDecoration(
+                labelText: 'زمرة الدم',
+                labelStyle: TextStyle(color: Colors.red[700]),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.red[700]!),
+                ),
+                fillColor: Colors.white,
+                filled: true,
+                prefixIcon: Icon(Icons.bloodtype, color: Colors.red[700]),
+              ),
+            ),
+            SizedBox(height: 15),
+            TextField(
+              controller: _emailController,
+              decoration: InputDecoration(
+                labelText: 'البريد الالكتروني',
+                labelStyle: TextStyle(color: Colors.red[700]),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.red[700]!),
+                ),
+                fillColor: Colors.white,
+                filled: true,
+                prefixIcon: Icon(Icons.email, color: Colors.red[700]),
+              ),
+            ),
+            SizedBox(height: 15),
+            TextField(
+              controller: _passwordController,
+              decoration: InputDecoration(
+                labelText: 'كلمة المرور',
+                labelStyle: TextStyle(color: Colors.red[700]),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.red[700]!),
+                ),
+                fillColor: Colors.white,
+                filled: true,
+                prefixIcon: Icon(Icons.lock, color: Colors.red[700]),
+              ),
+              obscureText: true,
+            ),
+            SizedBox(height: 15),
+            TextField(
+              controller: _confirmPasswordController,
+              decoration: InputDecoration(
+                labelText: 'تاكيد كلمة الرور',
+                labelStyle: TextStyle(color: Colors.red[700]),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.red[700]!),
+                ),
+                fillColor: Colors.white,
+                filled: true,
+                prefixIcon: Icon(Icons.lock_outline, color: Colors.red[700]),
+              ),
+              obscureText: true,
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: signup,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red[700],
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+              ),
+              child: Text(
+                'انشاء حساب',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              TextField(
-                controller: _bloodTypeController,
-                decoration: InputDecoration(labelText: 'Blood Type'),
-              ),
-              TextField(
-                controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
-              ),
-              TextField(
-                controller: _passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
-                obscureText: true,
-              ),
-              TextField(
-                controller: _confirmPasswordController,
-                decoration: InputDecoration(labelText: 'Confirm Password'),
-                obscureText: true,
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: signup,
-                child: Text('Sign Up'),
-              ),
-              SizedBox(height: 20),
-              TextButton(
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => SigninPage()),
-                  );
-                },
-                child: Text(
-                  'Already have an account? Sign in',
-                  style: TextStyle(
-                    color: Color(0xFF6200EA),
-                    fontSize: 16,
-                  ),
+            ),
+            SizedBox(height: 20),
+            TextButton(
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => SigninPage()),
+                );
+              },
+              child: Text(
+                'هل لديك حساب مسبقاً؟تسجيل دخول',
+                style: TextStyle(
+                  color: Colors.red[700],
+                  fontSize: 16,
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
