@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'signup_page.dart'; // تأكد من أنك قد أضفت صفحة SignupPage
-import 'package:frontend/home_page.dart';
+import 'home_page.dart';
+
 class SigninPage extends StatefulWidget {
   @override
   _SigninPageState createState() => _SigninPageState();
@@ -12,140 +13,149 @@ class _SigninPageState extends State<SigninPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-Future<void> signin() async {
-  try {
-    var response = await http.post(
-      Uri.parse('http://localhost:8080/api/auth/signin'), // عنوان الخادم
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'email': _emailController.text,
-        'password': _passwordController.text,
-      }),
-    );
-
-    final responseData = jsonDecode(response.body);
-    print(responseData['message']);
-
-    if (response.statusCode == 200 && responseData['message'] == 'Sign in successful') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('تم تسجيل الدخول بنجاح')),
+  Future<void> signin() async {
+    try {
+      var response = await http.post(
+        Uri.parse('http://localhost:8080/api/auth/signin'), // عنوان الخادم
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': _emailController.text,
+          'password': _passwordController.text,
+        }),
       );
 
-      // الانتقال إلى الصفحة الرئيسية
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
-    } else if (response.statusCode == 400) {
+      final responseData = jsonDecode(response.body);
+      print(responseData['message']);
+
+      if (response.statusCode == 200 &&
+          responseData['message'] == 'Sign in successful') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('تم تسجيل الدخول بنجاح')),
+        );
+
+        // الانتقال إلى الصفحة الرئيسية
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      } else if (response.statusCode == 400) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('بيانات الدخول غير صحيحة')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('فشل في تسجيل الدخول')),
+        );
+      }
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('بيانات الدخول غير صحيحة')),
+        SnackBar(content: Text('حدث خطأ. يرجى المحاولة مرة أخرى لاحقاً.')),
       );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('فشل في تسجيل الدخول')),
-      );
+      print('Error: $e');
     }
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('حدث خطأ. يرجى المحاولة مرة أخرى لاحقاً.')),
-    );
-    print('Error: $e');
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFEFEFEF), // Background color
+      backgroundColor: Color(0xFFF7F3F3), // لون خلفية هادئ
       appBar: AppBar(
-        title: Text('Sign In'),
-        backgroundColor: Color(0xFF6200EA), // AppBar color
+        title: Text('Blood Donation Login'),
+        backgroundColor: Colors.red[700], // لون AppBar يعبر عن التبرع بالدم
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Welcome Back!',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF6200EA), // Primary color
-              ),
-            ),
-            SizedBox(height: 20),
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(
-                labelText: 'Email',
-                labelStyle: TextStyle(color: Color(0xFF6200EA)),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Color(0xFF6200EA)),
-                ),
-                fillColor: Colors.white,
-                filled: true,
-              ),
-            ),
-            SizedBox(height: 20),
-            TextField(
-              controller: _passwordController,
-              decoration: InputDecoration(
-                labelText: 'Password',
-                labelStyle: TextStyle(color: Color(0xFF6200EA)),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Color(0xFF6200EA)),
-                ),
-                fillColor: Colors.white,
-                filled: true,
-              ),
-              obscureText: true,
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: signin,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF6200EA), // Button color
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-              ),
-              child: Text(
-                'Sign In',
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.favorite,
+                  size: 80, color: Colors.red[600]), // أيقونة قلب
+              SizedBox(height: 20),
+              Text(
+                'أول تطبيق تبرع بالدم في سوريا',
                 style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
+                  color: Colors.red[800], // لون نص يعبر عن الحماس للتبرع
                 ),
               ),
-            ),
-            SizedBox(height: 20),
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SignupPage()),
-                );
-              },
-              child: Text(
-                'Don\'t have an account? Sign up',
-                style: TextStyle(
-                  color: Color(0xFF6200EA),
-                  fontSize: 16,
+              SizedBox(height: 20),
+              TextField(
+                controller: _emailController,
+                decoration: InputDecoration(
+                  labelText: 'البريد الالكتروني',
+                  labelStyle: TextStyle(color: Colors.red[700]),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.red[700]!),
+                  ),
+                  fillColor: Colors.white,
+                  filled: true,
+                  prefixIcon: Icon(Icons.email,
+                      color: Colors.red[700]), // أيقونة البريد
                 ),
               ),
-            ),
-          ],
+              SizedBox(height: 20),
+              TextField(
+                controller: _passwordController,
+                decoration: InputDecoration(
+                  labelText: 'كلمة المرور ',
+                  labelStyle: TextStyle(color: Colors.red[700]),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.red[700]!),
+                  ),
+                  fillColor: Colors.white,
+                  filled: true,
+                  prefixIcon:
+                      Icon(Icons.lock, color: Colors.red[700]), // أيقونة القفل
+                ),
+                obscureText: true,
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: signin,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red[700], // لون الزر الأساسي
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                ),
+                child: Text(
+                  'تسجيل الدخول',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SignupPage()),
+                  );
+                },
+                child: Text(
+                  'ليس لديك حساب ؟انشاء حساب',
+                  style: TextStyle(
+                    color: Colors.red[700],
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
