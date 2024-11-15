@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/doctorpage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'signup_page.dart'; // تأكد من أنك قد أضفت صفحة SignupPage
 import 'package:frontend/home_page.dart';
+
+
+
 class SigninPage extends StatefulWidget {
   @override
   _SigninPageState createState() => _SigninPageState();
@@ -12,47 +16,59 @@ class _SigninPageState extends State<SigninPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-Future<void> signin() async {
-  try {
-    var response = await http.post(
-      Uri.parse('http://localhost:8080/api/auth/signin'), // عنوان الخادم
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'email': _emailController.text,
-        'password': _passwordController.text,
-      }),
-    );
-
-    final responseData = jsonDecode(response.body);
-    print(responseData['message']);
-
-    if (response.statusCode == 200 && responseData['message'] == 'Sign in successful') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('تم تسجيل الدخول بنجاح')),
+  Future<void> signin() async {
+    try {
+      var response = await http.post(
+        Uri.parse('http://localhost:8080/api/auth/signin'), // عنوان الخادم
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': _emailController.text,
+          'password': _passwordController.text,
+        }),
       );
 
-      // الانتقال إلى الصفحة الرئيسية
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
-    } else if (response.statusCode == 400) {
+      final responseData = jsonDecode(response.body);
+      print(responseData['message']);
+
+      if (response.statusCode == 200 &&
+          responseData['message'] == 'Sign in successful') {
+        if (responseData['status'] == 'user dashboard') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('تم تسجيل الدخول بنجاح')),
+          );
+
+          // الانتقال إلى الصفحة الرئيسية
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => HomePage()),
+          );
+        } else if (responseData['status'] == 'doctor dashboard') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('تم تسجيل الدخول كطبيب')),
+          );
+
+          // الانتقال إلى الصفحة الرئيسية
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => DoctorPage()),
+          );
+        }
+      } else if (response.statusCode == 400) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('بيانات الدخول غير صحيحة')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('فشل في تسجيل الدخول')),
+        );
+      }
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('بيانات الدخول غير صحيحة')),
+        SnackBar(content: Text('حدث خطأ. يرجى المحاولة مرة أخرى لاحقاً.')),
       );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('فشل في تسجيل الدخول')),
-      );
+      print('Error: $e');
     }
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('حدث خطأ. يرجى المحاولة مرة أخرى لاحقاً.')),
-    );
-    print('Error: $e');
   }
-}
-
 
   @override
   Widget build(BuildContext context) {

@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'doctorpage.dart';
 
-void main() {
-  runApp(MyApp());
-}
 
 class MyApp extends StatelessWidget {
   @override
