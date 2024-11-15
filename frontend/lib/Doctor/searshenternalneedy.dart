@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'donationrequestpage.dart';
+import '../../donationrequestpage.dart';
 
 Future<List<dynamic>> fetchData() async {
   final response =
@@ -16,8 +16,8 @@ Future<List<dynamic>> fetchData() async {
   }
 }
 
-class DataPage extends StatelessWidget {
-  const DataPage({super.key});
+class searchEnternalNeedy extends StatelessWidget {
+  const searchEnternalNeedy({super.key});
 
   void _showDonationOptions(BuildContext context, Map<String, dynamic> needy) {
     showModalBottomSheet(

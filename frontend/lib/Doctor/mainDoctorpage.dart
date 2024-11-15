@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'createrequest.dart';
-import 'Doctor/searchexternalneedy.dart';
+import 'package:frontend/Doctor/createrequest.dart';
 
+import '../createrequest.dart';
+import 'searchexternalneedy.dart';
+import 'doctorpage.dart';
 void main() {
   runApp(MyApp());
 }
@@ -14,30 +16,29 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: HomePage(),
+      home: DoctorHomePage(),
     );
   }
 }
 
-
-class HomePage extends StatefulWidget {
+class DoctorHomePage extends StatefulWidget {
   @override
-  _HomePageState createState() => _HomePageState();
+  _DoctorHomePageState createState() => _DoctorHomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _DoctorHomePageState extends State<DoctorHomePage> {
   int _selectedIndex = 2;
 
   void _onItemTapped(int index) {
     if (index == 1) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => RequestPage()),
+        MaterialPageRoute(builder: (context) => createEnternalRwquest()),
       );
     } else if (index == 3) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => searshexternalneedy()),
+        MaterialPageRoute(builder: (context) =>DoctorPage()),
       );
     } else {
       setState(() {
@@ -59,7 +60,7 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        color: Color(0xFFC62828),
+        color: Color.fromARGB(255, 189, 98, 98),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 5.0),
           child: Row(
@@ -68,8 +69,8 @@ class _HomePageState extends State<HomePage> {
               _buildNavItem(Icons.person, 'الملف الشخصي', 0),
               _buildNavItem(Icons.add_circle, "طلب حاجة", 1),
               _buildNavItem(Icons.home, 'الرئيسية', 2),
-              _buildNavItem(Icons.search, "بحث عن محتاجين", 3),
-              _buildNavItem(Icons.history, 'سجل', 4),
+              _buildNavItem(Icons.search, "الطلبات", 3),
+              _buildNavItem(Icons.history, "المواعيد", 4),
             ],
           ),
         ),

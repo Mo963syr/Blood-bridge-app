@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/doctorpage.dart';
+import 'package:frontend/Doctor/doctorpage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'signup_page.dart'; 
 import 'package:frontend/home_page.dart';
+import 'Doctor/mainDoctorpage.dart';
 class SigninPage extends StatefulWidget {
   @override
   _SigninPageState createState() => _SigninPageState();
@@ -45,7 +46,7 @@ class _SigninPageState extends State<SigninPage> {
           );
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => DoctorPage()),
+            MaterialPageRoute(builder: (context) => DoctorHomePage()),
           );
         }
 

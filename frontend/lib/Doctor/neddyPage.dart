@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'requestpage.dart';
+import 'package:frontend/donationrequestpage.dart';
+import 'searchexternalneedy.dart';
+import 'searshenternalneedy.dart';
 
-class DoctorPage extends StatelessWidget {
+class neddyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,7 +21,8 @@ class DoctorPage extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => RequestsPageD()),
+                  MaterialPageRoute(builder: (context) => searshexternalneedy()),
+                  // MaterialPageRoute(builder: (context) => RequestsPageD()),
                 );
               },
               child: Card(
@@ -37,7 +40,7 @@ class DoctorPage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'طلبات الحاجة',
+                            ' طلبات الحاجة الخارجية',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -46,7 +49,7 @@ class DoctorPage extends StatelessWidget {
                           ),
                           SizedBox(height: 8),
                           Text(
-                            'استعراض جميع طلبات الحاجة للمرضى',
+                            'استعراض جميع طلبات الحاجة الخارجية',
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey[700],
@@ -67,7 +70,11 @@ class DoctorPage extends StatelessWidget {
             SizedBox(height: 20),
             GestureDetector(
               onTap: () {
-                // يمكن إضافة التنقل لصفحة أخرى هنا
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => searchEnternalNeedy()),
+                );
               },
               child: Card(
                 shape: RoundedRectangleBorder(
@@ -84,7 +91,7 @@ class DoctorPage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'طلبات التبرع',
+                            'طلبات الحاجة الكلية',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -93,7 +100,7 @@ class DoctorPage extends StatelessWidget {
                           ),
                           SizedBox(height: 8),
                           Text(
-                            'استعراض جميع طلبات التبرع بالدم',
+                            'استعراض جميع طلبات الحاجة للدم',
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey[700],

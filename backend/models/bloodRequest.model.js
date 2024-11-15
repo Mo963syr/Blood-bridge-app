@@ -28,6 +28,11 @@ const bloodRequestSchema = new mongoose.Schema({
     required: [true, 'Urgency level is required'],
     enum: ['low', 'medium', 'high'], 
   },
+  requestneedytype: {
+    type: String,
+    default: 'external'
+  }
+  ,
   createdAt: {
     type: Date,
     default: Date.now,

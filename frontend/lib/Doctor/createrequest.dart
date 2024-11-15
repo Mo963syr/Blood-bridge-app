@@ -1,16 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'home_page.dart';
-
+import '../home_page.dart';
+import 'mainDoctorpage.dart';
 void main() {
-  runApp(RequestPage());
+  runApp(createEnternalRwquest());
 }
 
-class RequestPage extends StatelessWidget {
+class createEnternalRwquest extends StatefulWidget {
+  @override
+  State<createEnternalRwquest> createState() => _createEnternalRwquestState();
+}
+
+class _createEnternalRwquestState extends State<createEnternalRwquest> {
   final TextEditingController locationController = TextEditingController();
+
   final TextEditingController phoneController = TextEditingController();
+
   String? selectedBloodType;
+
   String? selecteddanger;
 
   final List<String> bloodTypes = [
@@ -28,13 +36,14 @@ class RequestPage extends StatelessWidget {
 
   Future<void> bloodRequest(BuildContext context) async {
     final response = await http.post(
-      Uri.parse('http://localhost:8080/api/blood-request/external'),
+      Uri.parse('http://localhost:8080/api/blood-request/enternal'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'location': locationController.text,
         'bloodType': selectedBloodType,
         'phoneNumber': phoneController.text,
         'urgencyLevel': selecteddanger,
+        'requestneedytype':'enternal'
       }),
     );
 
@@ -46,7 +55,7 @@ class RequestPage extends StatelessWidget {
           SnackBar(content: Text('Request created successfully')));
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomePage()),
+        MaterialPageRoute(builder: (context) =>  DoctorHomePage()),
       );
     } else {
       ScaffoldMessenger.of(context)
