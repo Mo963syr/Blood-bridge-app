@@ -24,7 +24,7 @@ class RequestPage extends StatelessWidget {
     'O-',
   ];
 
-  final List<String> danger = ['قابلة للانتظار', 'مستعجلة', 'حرجة'];
+ final List<String> danger = ['low', 'medium', 'high'];
 
   Future<void> bloodRequest(BuildContext context) async {
     final response = await http.post(

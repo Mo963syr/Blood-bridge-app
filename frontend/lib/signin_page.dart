@@ -3,9 +3,9 @@ import 'package:frontend/doctorpage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'signup_page.dart'; // تأكد من أنك قد أضفت صفحة SignupPage
-
 import 'package:frontend/home_page.dart';
 import 'home_page.dart';
+import 'donationrequestpage.dart';
 class SigninPage extends StatefulWidget {
   @override
   _SigninPageState createState() => _SigninPageState();
@@ -31,7 +31,6 @@ class _SigninPageState extends State<SigninPage> {
 
       if (response.statusCode == 200 &&
           responseData['message'] == 'Sign in successful') {
-
         if (responseData['status'] == 'user dashboard') {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('تم تسجيل الدخول بنجاح')),
@@ -46,8 +45,6 @@ class _SigninPageState extends State<SigninPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('تم تسجيل الدخول كطبيب')),
           );
-
-          // الانتقال إلى الصفحة الرئيسية
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => DoctorPage()),
@@ -56,12 +53,6 @@ class _SigninPageState extends State<SigninPage> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('تم تسجيل الدخول بنجاح')),
-        );
-
-        // الانتقال إلى الصفحة الرئيسية
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage()),
         );
       } else if (response.statusCode == 400) {
         ScaffoldMessenger.of(context).showSnackBar(
