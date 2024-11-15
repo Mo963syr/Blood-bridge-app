@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:frontend/doctorpage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'signup_page.dart'; // تأكد من أنك قد أضفت صفحة SignupPage
+import 'signup_page.dart'; 
 import 'package:frontend/home_page.dart';
-import 'home_page.dart';
-import 'donationrequestpage.dart';
 class SigninPage extends StatefulWidget {
   @override
   _SigninPageState createState() => _SigninPageState();
@@ -18,7 +16,7 @@ class _SigninPageState extends State<SigninPage> {
   Future<void> signin() async {
     try {
       var response = await http.post(
-        Uri.parse('http://localhost:8080/api/auth/signin'), // عنوان الخادم
+        Uri.parse('http://localhost:8080/api/auth/signin'), 
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'email': _emailController.text,
@@ -36,7 +34,7 @@ class _SigninPageState extends State<SigninPage> {
             SnackBar(content: Text('تم تسجيل الدخول بنجاح')),
           );
 
-          // الانتقال إلى الصفحة الرئيسية
+      
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => HomePage()),
