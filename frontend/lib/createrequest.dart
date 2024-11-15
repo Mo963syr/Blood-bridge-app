@@ -24,7 +24,7 @@ class RequestPage extends StatelessWidget {
     'O-',
   ];
 
-  final List<String> danger = ['low', 'medium', 'high'];
+  final List<String> danger = ['قابلة للانتظار', 'مستعجلة', 'حرجة'];
 
   Future<void> bloodRequest(BuildContext context) async {
     final response = await http.post(
@@ -62,9 +62,6 @@ class RequestPage extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          Container(
-            color: Colors.red,
-          ),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -72,24 +69,36 @@ class RequestPage extends StatelessWidget {
                 TextField(
                   controller: locationController,
                   decoration: InputDecoration(
-                      hintText: "مكان التواجد الحالي",
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                          borderSide: BorderSide.none),
-                      fillColor: Colors.white,
-                      filled: true,
-                      prefixIcon: const Icon(Icons.home)),
+                    labelText: 'مكان التواجد الحالي ',
+                    labelStyle: TextStyle(color: Colors.red[700]),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.red[700]!),
+                    ),
+                    fillColor: Colors.white,
+                    filled: true,
+                    prefixIcon: Icon(Icons.email,
+                        color: Colors.red[700]), // أيقونة البريد
+                  ),
                 ),
                 SizedBox(height: 16.0),
                 DropdownButtonFormField<String>(
                   decoration: InputDecoration(
-                      hintText: "فصيلة الدم المطلوبة",
+                      labelText: "فصيلة الدم المطلوبة",
+                      labelStyle: TextStyle(color: Colors.red[700]),
                       border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(18),
                           borderSide: BorderSide.none),
                       fillColor: Colors.white,
                       filled: true,
-                      prefixIcon: const Icon(Icons.bloodtype)),
+                      prefixIcon:
+                          const Icon(Icons.bloodtype, color: Colors.red)),
                   value: selectedBloodType,
                   items: bloodTypes.map((bloodType) {
                     return DropdownMenuItem(
@@ -105,24 +114,36 @@ class RequestPage extends StatelessWidget {
                 TextField(
                   controller: phoneController,
                   decoration: InputDecoration(
-                      hintText: "رقم الهاتف",
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                          borderSide: BorderSide.none),
-                      fillColor: Colors.white,
-                      filled: true,
-                      prefixIcon: const Icon(Icons.phone)),
+                    labelText: "رقم الهاتف",
+                    labelStyle: TextStyle(color: Colors.red[700]),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.red[700]!),
+                    ),
+                    fillColor: Colors.white,
+                    filled: true,
+                    prefixIcon: Icon(Icons.lock,
+                        color: Colors.red[700]), // أيقونة القفل
+                  ),
                 ),
                 SizedBox(height: 16.0),
                 DropdownButtonFormField<String>(
                   decoration: InputDecoration(
-                      hintText: "خطورة الحالة",
+                      labelText: "خطورة الحالة",
+                      labelStyle: TextStyle(color: Colors.red[700]),
                       border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(18),
                           borderSide: BorderSide.none),
                       fillColor: Colors.white,
                       filled: true,
-                      prefixIcon: const Icon(Icons.search)),
+                      prefixIcon:
+                          const Icon(Icons.bloodtype, color: Colors.red)),
                   value: selecteddanger,
                   items: danger.map((danger) {
                     return DropdownMenuItem(
