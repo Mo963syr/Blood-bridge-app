@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'mainDoctorpage.dart';
+
 void main() {
   runApp(createEnternalRwquest());
 }
@@ -31,18 +32,17 @@ class _createEnternalRwquestState extends State<createEnternalRwquest> {
     'O-',
   ];
 
- final List<String> danger = ['low', 'medium', 'high'];
-
+  final List<String> danger = ['low', 'medium', 'high'];
   Future<void> bloodRequest(BuildContext context) async {
     final response = await http.post(
-      Uri.parse('http://localhost:8080/api/blood-request/enternal'),
+      Uri.parse('http://10.0.2.2:8080/api/blood-request/enternal'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'location': locationController.text,
         'bloodType': selectedBloodType,
         'phoneNumber': phoneController.text,
         'urgencyLevel': selecteddanger,
-        'requestneedytype':'enternal'
+        'requestneedytype': 'enternal'
       }),
     );
 
@@ -54,7 +54,7 @@ class _createEnternalRwquestState extends State<createEnternalRwquest> {
           SnackBar(content: Text('Request created successfully')));
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) =>  DoctorHomePage()),
+        MaterialPageRoute(builder: (context) => DoctorHomePage()),
       );
     } else {
       ScaffoldMessenger.of(context)

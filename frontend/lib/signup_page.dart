@@ -29,7 +29,7 @@ class _SignupPageState extends State<SignupPage> {
     }
 
     final response = await http.post(
-      Uri.parse('http://localhost:8080/signup'), // تأكد من ضبط عنوان الخادم
+      Uri.parse('http://10.0.2.2:8080/signup'), // تأكد من ضبط عنوان الخادم
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'firstName': _firstNameController.text,

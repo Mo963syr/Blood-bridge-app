@@ -28,7 +28,7 @@ class RequestPage extends StatelessWidget {
 
   Future<void> bloodRequest(BuildContext context) async {
     final response = await http.post(
-      Uri.parse('http://localhost:8080/api/blood-request/external'),
+      Uri.parse('http://10.0.2.2:8080/api/blood-request/external'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'location': locationController.text,

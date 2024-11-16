@@ -17,7 +17,7 @@ class _SigninPageState extends State<SigninPage> {
   Future<void> signin() async {
     try {
       var response = await http.post(
-        Uri.parse('http://localhost:8080/api/auth/signin'),
+        Uri.parse('http://10.0.2.2:8080/api/auth/signin'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'email': _emailController.text,

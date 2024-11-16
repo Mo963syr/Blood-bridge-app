@@ -27,6 +27,6 @@ app.use(bodyParser.json());
 app.use('/', require('./routes/user.route'));
 app.use('/api/auth', authRoutes);
 app.use('/api', bloodRequestRoutes);
-app.listen(port, () => {
+app.listen(port,'0.0.0.0', () => {
   console.log('port running on ' + port);
 });
