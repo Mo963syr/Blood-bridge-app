@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:frontend/Doctor/doctorpage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'signup_page.dart'; 
+import 'signup_page.dart';
 import 'package:frontend/home_page.dart';
 import 'Doctor/mainDoctorpage.dart';
+
 class SigninPage extends StatefulWidget {
   @override
   _SigninPageState createState() => _SigninPageState();
@@ -17,7 +18,7 @@ class _SigninPageState extends State<SigninPage> {
   Future<void> signin() async {
     try {
       var response = await http.post(
-        Uri.parse('http://localhost:8080/api/auth/signin'), 
+        Uri.parse('http://localhost:8080/api/auth/signin'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'email': _emailController.text,
@@ -35,7 +36,6 @@ class _SigninPageState extends State<SigninPage> {
             SnackBar(content: Text('تم تسجيل الدخول بنجاح')),
           );
 
-      
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => HomePage()),
@@ -73,27 +73,16 @@ class _SigninPageState extends State<SigninPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF7F3F3), // لون خلفية هادئ
-      appBar: AppBar(
-        title: Text('صفحة تسجيل الدخول'),
-        backgroundColor: Colors.red[700], // لون AppBar يعبر عن التبرع بالدم
-      ),
+      backgroundColor: Color(0xFFF7F3F3),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.favorite,
-                  size: 80, color: Colors.red[600]), // أيقونة قلب
-              SizedBox(height: 20),
-              Text(
-                'أول تطبيق تبرع بالدم في سوريا',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red[800], // لون نص يعبر عن الحماس للتبرع
-                ),
+              Image.asset(
+                "assets/images/b.png",
+                width: 100,
               ),
               SizedBox(height: 20),
               TextField(
