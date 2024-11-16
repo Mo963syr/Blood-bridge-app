@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/Doctor/createrequest.dart';
 
-import '../createrequest.dart';
-import 'searchexternalneedy.dart';
 import 'doctorpage.dart';
 void main() {
   runApp(MyApp());

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'createrequest.dart';
-import 'Doctor/searchexternalneedy.dart';
+import 'package:frontend/donationrequestpage.dart';
 
 void main() {
   runApp(MyApp());
@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> {
     } else if (index == 3) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => searshexternalneedy()),
+        MaterialPageRoute(builder: (context) => DonationRequestPage()),
       );
     } else {
       setState(() {
@@ -68,7 +68,7 @@ class _HomePageState extends State<HomePage> {
               _buildNavItem(Icons.person, 'الملف الشخصي', 0),
               _buildNavItem(Icons.add_circle, "طلب حاجة", 1),
               _buildNavItem(Icons.home, 'الرئيسية', 2),
-              _buildNavItem(Icons.search, "بحث عن محتاجين", 3),
+              _buildNavItem(Icons.search, "طلب تبرع", 3),
               _buildNavItem(Icons.history, 'سجل', 4),
             ],
           ),
