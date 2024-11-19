@@ -4,24 +4,18 @@ const Schema = mongoose.Schema;
 const userSchema = new Schema({
   firstName: String,
   lastName: String,
-
   Number: String,
-
   location: String,
-
   bloodType: String,
-
   email: String,
   password: String,
   role: {
     type: String,
-    usertype: ['doctor', 'user', 'admin'],
+    enum: ['doctor', 'user', 'admin'],
     required: true,
     default: 'user',
   },
+  images: [{ type: Schema.Types.ObjectId, ref: 'Image' }], 
 });
 
-userSchema.methods.comparePassword = async function (password) {
-  return await bcrypt.compare(password, this.password);
-};
 module.exports = mongoose.model('User', userSchema);

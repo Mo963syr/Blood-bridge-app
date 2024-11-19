@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:image_picker/image_picker.dart';
+import 'package:dio/dio.dart';
+import 'dart:io';
 import 'home_page.dart';
 
 void main() {
@@ -12,6 +13,7 @@ class RequestPage extends StatelessWidget {
   final TextEditingController phoneController = TextEditingController();
   String? selectedBloodType;
   String? selecteddanger;
+  File? selectedImage;
 
   final List<String> bloodTypes = [
     'A+',
@@ -24,34 +26,72 @@ class RequestPage extends StatelessWidget {
     'O-',
   ];
 
- final List<String> danger = ['low', 'medium', 'high'];
+  final List<String> danger = ['low', 'medium', 'high'];
+
+  Future<void> pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      selectedImage = File(pickedFile.path);
+    }
+  }
 
   Future<void> bloodRequest(BuildContext context) async {
-    final response = await http.post(
-      Uri.parse('http://10.0.2.2:8080/api/blood-request/external'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'location': locationController.text,
-        'bloodType': selectedBloodType,
-        'phoneNumber': phoneController.text,
-        'urgencyLevel': selecteddanger,
-      }),
-    );
-
-    final responseData = jsonDecode(response.body);
-
-    if (response.statusCode == 201 ||
-        responseData['message'] == 'Blood request created') {
+    if (selectedImage == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Request created successfully')));
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
-    } else {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Failed to create request')));
+          SnackBar(content: Text('Please select an image')));
+      return;
     }
+if (locationController.text.isEmpty ||
+    selectedBloodType == null ||
+    phoneController.text.isEmpty ||
+    selecteddanger == null ||
+    selectedImage == null) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text('يرجى ملء جميع الحقول واختيار صورة')),
+  );
+  return;
+}
+    try {
+  final dio = Dio();
+  final formData = FormData.fromMap({
+    'location': locationController.text,
+    'bloodType': selectedBloodType,
+    'phoneNumber': phoneController.text,
+    'urgencyLevel': selecteddanger,
+    'image': await MultipartFile.fromFile(
+      selectedImage!.path,
+      filename: selectedImage!.path.split('/').last,
+    ),
+    'userId':'673cdc35fe8411b2947e6cc7',
+  });
+
+  final response = await dio.post(
+    'http://10.0.2.2:8080/api/requests/blood-request/external',
+    data: formData,
+  );
+
+
+
+
+  if (response.statusCode == 201) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Request created successfully')),
+    );
+  } else {
+    print('Error: ${response.statusCode}');
+    print('Response: ${response.data}');
+  }
+} catch (e) {
+  if (e is DioError) {
+    print('DioError: ${e.response?.statusCode}');
+    print('Error data: ${e.response?.data}');
+  } else {
+    print('Unexpected error: $e');
+  }
+}
+
   }
 
   @override
@@ -69,36 +109,22 @@ class RequestPage extends StatelessWidget {
                 TextField(
                   controller: locationController,
                   decoration: InputDecoration(
-                    labelText: 'مكان التواجد الحالي ',
+                    labelText: 'مكان التواجد الحالي',
                     labelStyle: TextStyle(color: Colors.red[700]),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.red[700]!),
-                    ),
-                    fillColor: Colors.white,
-                    filled: true,
-                    prefixIcon: Icon(Icons.email,
-                        color: Colors.red[700]), // أيقونة البريد
                   ),
                 ),
                 SizedBox(height: 16.0),
                 DropdownButtonFormField<String>(
                   decoration: InputDecoration(
-                      labelText: "فصيلة الدم المطلوبة",
-                      labelStyle: TextStyle(color: Colors.red[700]),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                          borderSide: BorderSide.none),
-                      fillColor: Colors.white,
-                      filled: true,
-                      prefixIcon:
-                          const Icon(Icons.bloodtype, color: Colors.red)),
+                    labelText: "فصيلة الدم المطلوبة",
+                    labelStyle: TextStyle(color: Colors.red[700]),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                   value: selectedBloodType,
                   items: bloodTypes.map((bloodType) {
                     return DropdownMenuItem(
@@ -119,31 +145,17 @@ class RequestPage extends StatelessWidget {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.red[700]!),
-                    ),
-                    fillColor: Colors.white,
-                    filled: true,
-                    prefixIcon: Icon(Icons.lock,
-                        color: Colors.red[700]), // أيقونة القفل
                   ),
                 ),
                 SizedBox(height: 16.0),
                 DropdownButtonFormField<String>(
                   decoration: InputDecoration(
-                      labelText: "خطورة الحالة",
-                      labelStyle: TextStyle(color: Colors.red[700]),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                          borderSide: BorderSide.none),
-                      fillColor: Colors.white,
-                      filled: true,
-                      prefixIcon:
-                          const Icon(Icons.bloodtype, color: Colors.red)),
+                    labelText: "خطورة الحالة",
+                    labelStyle: TextStyle(color: Colors.red[700]),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                   value: selecteddanger,
                   items: danger.map((danger) {
                     return DropdownMenuItem(
@@ -155,7 +167,12 @@ class RequestPage extends StatelessWidget {
                     selecteddanger = value;
                   },
                 ),
-                SizedBox(height: 35.0),
+                SizedBox(height: 16.0),
+                ElevatedButton(
+                  onPressed: pickImage,
+                  child: Text('اختر تقريرًا طبيًا'),
+                ),
+                SizedBox(height: 16.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [

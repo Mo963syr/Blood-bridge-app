@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/Doctor/createrequest.dart';
+import '../imagg.dart';
 
 import 'doctorpage.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -31,12 +33,12 @@ class _DoctorHomePageState extends State<DoctorHomePage> {
     if (index == 1) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => createEnternalRwquest()),
+        MaterialPageRoute(builder: (context) => UploadImage()),
       );
     } else if (index == 3) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) =>DoctorPage()),
+        MaterialPageRoute(builder: (context) => DoctorPage()),
       );
     } else {
       setState(() {
