@@ -19,7 +19,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -52,14 +51,9 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text('الصفحة الرئيسية'),
       ),
-      body: Center(
-        child: Text(
-          'مرحبًا بك في الصفحة الرئيسية! الخيار المحدد هو: ${_selectedIndex + 1}',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-      ),
+      body: Center(),
       bottomNavigationBar: BottomAppBar(
-        color: Color(0xFFC62828),
+        color: Color.fromARGB(255, 241, 27, 27),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 5.0),
           child: Row(
