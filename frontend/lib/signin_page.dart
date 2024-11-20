@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'signup_page.dart';
 import 'package:frontend/home_page.dart';
 import 'Doctor/mainDoctorpage.dart';
@@ -30,6 +31,12 @@ class _SigninPageState extends State<SigninPage> {
 
       if (response.statusCode == 200 &&
           responseData['message'] == 'Sign in successful') {
+        String token = responseData['token']; // JWT Token
+
+        // Store token using SharedPreferences
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('auth_token', token);
+
         if (responseData['status'] == 'user dashboard') {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('تم تسجيل الدخول بنجاح')),
@@ -48,10 +55,6 @@ class _SigninPageState extends State<SigninPage> {
             MaterialPageRoute(builder: (context) => DoctorHomePage()),
           );
         }
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('تم تسجيل الدخول بنجاح')),
-        );
       } else if (response.statusCode == 400) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('بيانات الدخول غير صحيحة')),

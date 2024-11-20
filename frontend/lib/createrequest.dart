@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart';
 import 'dart:io';
 import 'home_page.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // إضافة المكتبة
 
 void main() {
   runApp(RequestPage());
@@ -38,60 +39,66 @@ class RequestPage extends StatelessWidget {
   }
 
   Future<void> bloodRequest(BuildContext context) async {
-    if (selectedImage == null) {
+    if (locationController.text.isEmpty ||
+        selectedBloodType == null ||
+        phoneController.text.isEmpty ||
+        selecteddanger == null ||
+        selectedImage == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Please select an image')));
+        SnackBar(content: Text('يرجى ملء جميع الحقول واختيار صورة')),
+      );
       return;
     }
-if (locationController.text.isEmpty ||
-    selectedBloodType == null ||
-    phoneController.text.isEmpty ||
-    selecteddanger == null ||
-    selectedImage == null) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text('يرجى ملء جميع الحقول واختيار صورة')),
-  );
-  return;
-}
+
     try {
-  final dio = Dio();
-  final formData = FormData.fromMap({
-    'location': locationController.text,
-    'bloodType': selectedBloodType,
-    'phoneNumber': phoneController.text,
-    'urgencyLevel': selecteddanger,
-    'image': await MultipartFile.fromFile(
-      selectedImage!.path,
-      filename: selectedImage!.path.split('/').last,
-    ),
-    'userId':'673cdc35fe8411b2947e6cc7',
-  });
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token'); // استرجاع التوكن المخزن
 
-  final response = await dio.post(
-    'http://10.0.2.2:8080/api/requests/blood-request/external',
-    data: formData,
-  );
+      if (token == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('يرجى تسجيل الدخول أولاً')),
+        );
+        return;
+      }
 
+      final dio = Dio();
+      final formData = FormData.fromMap({
+        'location': locationController.text,
+        'bloodType': selectedBloodType,
+        'phoneNumber': phoneController.text,
+        'urgencyLevel': selecteddanger,
+        'image': await MultipartFile.fromFile(
+          selectedImage!.path,
+          filename: selectedImage!.path.split('/').last,
+        ),
+      });
 
+      final response = await dio.post(
+        'http://10.0.2.2:8080/api/requests/blood-request/external',
+        data: formData,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token', // إرسال التوكن في الهيدر
+          },
+        ),
+      );
 
-
-  if (response.statusCode == 201) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Request created successfully')),
-    );
-  } else {
-    print('Error: ${response.statusCode}');
-    print('Response: ${response.data}');
-  }
-} catch (e) {
-  if (e is DioError) {
-    print('DioError: ${e.response?.statusCode}');
-    print('Error data: ${e.response?.data}');
-  } else {
-    print('Unexpected error: $e');
-  }
-}
-
+      if (response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('تم إنشاء الطلب بنجاح')),
+        );
+      } else {
+        print('Error: ${response.statusCode}');
+        print('Response: ${response.data}');
+      }
+    } catch (e) {
+      if (e is DioError) {
+        print('DioError: ${e.response?.statusCode}');
+        print('Error data: ${e.response?.data}');
+      } else {
+        print('Unexpected error: $e');
+      }
+    }
   }
 
   @override

@@ -1,3 +1,4 @@
+const { request } = require('express');
 const mongoose = require('mongoose');
 
 const bloodRequestSchema = new mongoose.Schema({
@@ -28,6 +29,10 @@ const bloodRequestSchema = new mongoose.Schema({
     default: Date.now,
   },
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  requestStatus:{
+type: String,
+default: 'active'
+  },
 });
 
 const BloodRequest = mongoose.model('BloodRequest', bloodRequestSchema);
