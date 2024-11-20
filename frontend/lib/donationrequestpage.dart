@@ -84,7 +84,6 @@ class _DonationRequestPageState extends State<DonationRequestPage> {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                 
                     if (_medicalReportImage == null ||
                         _selectedWeight == null) {
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -92,7 +91,7 @@ class _DonationRequestPageState extends State<DonationRequestPage> {
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text("تم إرسال الطلب بنجاح!")));
-                      Navigator.pop(context); 
+                      Navigator.pop(context);
                     }
                   },
                   child: Text("إرسال الطلب"),
