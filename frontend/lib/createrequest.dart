@@ -84,7 +84,7 @@ if (locationController.text.isEmpty ||
     print('Response: ${response.data}');
   }
 } catch (e) {
-  if (e is DioError) {
+  if (e is DioException) {
     print('DioError: ${e.response?.statusCode}');
     print('Error data: ${e.response?.data}');
   } else {
