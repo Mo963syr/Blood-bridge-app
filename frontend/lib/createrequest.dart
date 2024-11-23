@@ -10,7 +10,7 @@ void main() {
 
 class RequestPage extends StatelessWidget {
   final TextEditingController locationController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
+  // final TextEditingController phoneController = TextEditingController();
   String? selectedBloodType;
   String? selecteddanger;
   File? selectedImage;
@@ -45,7 +45,7 @@ class RequestPage extends StatelessWidget {
     }
     if (locationController.text.isEmpty ||
         selectedBloodType == null ||
-        phoneController.text.isEmpty ||
+        // phoneController.text.isEmpty ||
         selecteddanger == null ||
         selectedImage == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -58,7 +58,7 @@ class RequestPage extends StatelessWidget {
       final formData = FormData.fromMap({
         'location': locationController.text,
         'bloodType': selectedBloodType,
-        'phoneNumber': phoneController.text,
+        // 'phoneNumber': phoneController.text,
         'urgencyLevel': selecteddanger,
         'image': await MultipartFile.fromFile(
           selectedImage!.path,
@@ -132,17 +132,17 @@ class RequestPage extends StatelessWidget {
                     selectedBloodType = value;
                   },
                 ),
-                SizedBox(height: 16.0),
-                TextField(
-                  controller: phoneController,
-                  decoration: InputDecoration(
-                    labelText: "رقم الهاتف",
-                    labelStyle: TextStyle(color: Colors.red[700]),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
+                // SizedBox(height: 16.0),
+                // TextField(
+                //   controller: phoneController,
+                //   decoration: InputDecoration(
+                //     labelText: "رقم الهاتف",
+                //     labelStyle: TextStyle(color: Colors.red[700]),
+                //     border: OutlineInputBorder(
+                //       borderRadius: BorderRadius.circular(12),
+                //     ),
+                //   ),
+                // ),
                 SizedBox(height: 16.0),
                 DropdownButtonFormField<String>(
                   decoration: InputDecoration(

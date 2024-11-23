@@ -23,6 +23,10 @@ const bloodRequestSchema = new mongoose.Schema({
     type: String,
     default: 'external',
   },
+  requestStatus: {
+    type: String,
+    default: 'active',
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -33,4 +37,3 @@ const bloodRequestSchema = new mongoose.Schema({
 const BloodRequest = mongoose.model('BloodRequest', bloodRequestSchema);
 
 module.exports = BloodRequest;
-

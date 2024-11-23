@@ -43,6 +43,16 @@ router.post(
         createdAt: Date.now(),
         user: userId,
       });
+      const userResponse = {
+        medecalreport: bloodRequest.medecalreport,
+        location: bloodRequest.location,
+        bloodType: bloodRequest.bloodType,
+        urgencyLevel: bloodRequest.urgencyLevel,
+        requestneedytype: 'external',
+        createdAt: Date.now(),
+        user: bloodRequest.user,
+        status: bloodRequest.requestStatus,
+      };
 
       await bloodRequest.save();
       await image.save();
