@@ -39,59 +39,55 @@ class RequestPage extends StatelessWidget {
 
   Future<void> bloodRequest(BuildContext context) async {
     if (selectedImage == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Please select an image')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Please select an image')));
       return;
     }
-if (locationController.text.isEmpty ||
-    selectedBloodType == null ||
-    phoneController.text.isEmpty ||
-    selecteddanger == null ||
-    selectedImage == null) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text('يرجى ملء جميع الحقول واختيار صورة')),
-  );
-  return;
-}
+    if (locationController.text.isEmpty ||
+        selectedBloodType == null ||
+        phoneController.text.isEmpty ||
+        selecteddanger == null ||
+        selectedImage == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('يرجى ملء جميع الحقول واختيار صورة')),
+      );
+      return;
+    }
     try {
-  final dio = Dio();
-  final formData = FormData.fromMap({
-    'location': locationController.text,
-    'bloodType': selectedBloodType,
-    'phoneNumber': phoneController.text,
-    'urgencyLevel': selecteddanger,
-    'image': await MultipartFile.fromFile(
-      selectedImage!.path,
-      filename: selectedImage!.path.split('/').last,
-    ),
-    'userId':'673cdc35fe8411b2947e6cc7',
-  });
+      final dio = Dio();
+      final formData = FormData.fromMap({
+        'location': locationController.text,
+        'bloodType': selectedBloodType,
+        'phoneNumber': phoneController.text,
+        'urgencyLevel': selecteddanger,
+        'image': await MultipartFile.fromFile(
+          selectedImage!.path,
+          filename: selectedImage!.path.split('/').last,
+        ),
+        'userId': '673cdc35fe8411b2947e6cc7',
+      });
 
-  final response = await dio.post(
-    'http://10.0.2.2:8080/api/requests/blood-request/external',
-    data: formData,
-  );
+      final response = await dio.post(
+        'http://10.0.2.2:8080/api/requests/blood-request/external',
+        data: formData,
+      );
 
-
-
-
-  if (response.statusCode == 201) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Request created successfully')),
-    );
-  } else {
-    print('Error: ${response.statusCode}');
-    print('Response: ${response.data}');
-  }
-} catch (e) {
-  if (e is DioException) {
-    print('DioError: ${e.response?.statusCode}');
-    print('Error data: ${e.response?.data}');
-  } else {
-    print('Unexpected error: $e');
-  }
-}
-
+      if (response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Request created successfully')),
+        );
+      } else {
+        print('Error: ${response.statusCode}');
+        print('Response: ${response.data}');
+      }
+    } catch (e) {
+      if (e is DioException) {
+        print('DioError: ${e.response?.statusCode}');
+        print('Error data: ${e.response?.data}');
+      } else {
+        print('Unexpected error: $e');
+      }
+    }
   }
 
   @override
@@ -194,7 +190,10 @@ if (locationController.text.isEmpty ||
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
                       ),
-                      child: Text('الرجوع'),
+                      child: Text(
+                        'الرجوع',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ],
                 ),
