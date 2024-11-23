@@ -14,7 +14,7 @@ class _SignupPageState extends State<SignupPage> {
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
-  final TextEditingController _bloodTypeController = TextEditingController();
+  // final TextEditingController _bloodTypeController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
@@ -29,14 +29,14 @@ class _SignupPageState extends State<SignupPage> {
     }
 
     final response = await http.post(
-      Uri.parse('http://10.0.2.2:8080/api/auth/signup'), // تأكد من ضبط عنوان الخادم
+      Uri.parse(
+          'http://10.0.2.2:8080/api/auth/signup'), // تأكد من ضبط عنوان الخادم
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'firstName': _firstNameController.text,
         'lastName': _lastNameController.text,
         'location': _locationController.text,
         'Number': _phoneNumberController.text,
-        'bloodType': _bloodTypeController.text,
         'email': _emailController.text,
         'password': _passwordController.text,
       }),
@@ -157,7 +157,7 @@ class _SignupPageState extends State<SignupPage> {
             ),
             SizedBox(height: 15),
             TextField(
-              controller: _bloodTypeController,
+              // controller: _bloodTypeController,
               decoration: InputDecoration(
                 labelText: 'زمرة الدم',
                 labelStyle: TextStyle(color: Colors.red[700]),

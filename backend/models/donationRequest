@@ -1,27 +1,25 @@
 const mongoose = require('mongoose');
-
-const bloodRequestSchema = new mongoose.Schema({
+const donationRequestSchema = new mongoose.Schema({
   medecalreport: {
+    type: String,
+  },
+  Weight: {
     type: String,
   },
   location: {
     type: String,
-    required: [true, 'Location is required'],
-    trim: true,
   },
   bloodType: {
     type: String,
     required: [true, 'Blood type is required'],
     enum: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
   },
-  urgencyLevel: {
+  AvailabilityPeriod: {
     type: String,
-    required: [true, 'Urgency level is required'],
-    enum: ['low', 'medium', 'high'],
   },
-  requestneedytype: {
+  requestStatus: {
     type: String,
-    default: 'external',
+    default: 'active',
   },
   createdAt: {
     type: Date,
@@ -29,8 +27,9 @@ const bloodRequestSchema = new mongoose.Schema({
   },
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 });
+const donationRequest = mongoose.model(
+  'DonationRequest',
+  donationRequestSchema
+);
 
-const BloodRequest = mongoose.model('BloodRequest', bloodRequestSchema);
-
-module.exports = BloodRequest;
-
+module.exports = donationRequest;

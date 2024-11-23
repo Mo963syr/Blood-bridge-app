@@ -1,14 +1,13 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User.model');
+const User = require('../models/user.model');
 const router = express.Router();
 
 router.post('/signin', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: 'User not found' });
@@ -21,21 +20,21 @@ router.post('/signin', async (req, res) => {
 
     const token = jwt.sign(
       { userId: user._id, role: user.role },
-      process.env.JWT_SECRET || 'yourSecretKey', 
-      { expiresIn: '1h' } 
+      process.env.JWT_SECRET || 'yourSecretKey',
+      { expiresIn: '1h' }
     );
 
     if (user.role === 'doctor') {
       return res.status(200).json({
         message: 'Sign in successful',
         status: 'doctor dashboard',
-        token, 
+        token,
       });
     } else if (user.role === 'user') {
       return res.status(200).json({
         message: 'Sign in successful',
         status: 'user dashboard',
-        token, 
+        token,
       });
     }
   } catch (error) {
@@ -45,26 +44,20 @@ router.post('/signin', async (req, res) => {
 });
 
 router.post('/signup', async (req, res) => {
-  const { firstName, lastName, number, location, bloodType, email, password } =
-    req.body;
+  const { firstName, lastName, number, email, password } = req.body;
 
   try {
-
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'Email is already in use' });
     }
 
-
     const hashedPassword = await bcrypt.hash(password, 10);
-
 
     const user = new User({
       firstName,
       lastName,
       number,
-      location,
-      bloodType,
       email,
       password: hashedPassword,
     });
@@ -76,8 +69,6 @@ router.post('/signup', async (req, res) => {
       firstName: user.firstName,
       lastName: user.lastName,
       number: user.number,
-      location: user.location,
-      bloodType: user.bloodType,
       email: user.email,
       role: user.role,
     };
