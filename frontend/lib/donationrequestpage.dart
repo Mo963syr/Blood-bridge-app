@@ -8,15 +8,30 @@ class DonationRequestPage extends StatefulWidget {
 }
 
 class _DonationRequestPageState extends State<DonationRequestPage> {
-  XFile? _medicalReportImage;
+  File? _medicalReportImage;
+  TimeOfDay? _selectedTime;
   String? _selectedWeight;
   final picker = ImagePicker();
 
-  Future<void> _pickImage() async {
+  Future<void> pickImage() async {
+    final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    setState(() {
-      _medicalReportImage = pickedFile;
-    });
+
+    if (pickedFile != null) {
+      _medicalReportImage = File(pickedFile.path);
+    }
+  }
+
+  Future<void> pickTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (picked != null && picked != _selectedTime) {
+      setState(() {
+        _selectedTime = picked;
+      });
+    }
   }
 
   @override
@@ -28,63 +43,47 @@ class _DonationRequestPageState extends State<DonationRequestPage> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              "رفع صورة التحليل الطبي",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            GestureDetector(
-              onTap: _pickImage,
-              child: Container(
-                height: 150,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.blueAccent),
+            SizedBox(height: 20),
+            TextField(
+              decoration: InputDecoration(
+                labelText: "الوزن",
+                labelStyle: TextStyle(color: Colors.red[700]),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                child: _medicalReportImage != null
-                    ? Image.file(
-                        File(_medicalReportImage!.path),
-                        fit: BoxFit.cover,
-                      )
-                    : Icon(
-                        Icons.add_photo_alternate,
-                        color: Colors.grey,
-                        size: 50,
-                      ),
               ),
             ),
-            SizedBox(height: 20),
-            Text(
-              "تحديد الوزن (كغ)",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            SizedBox(height: 30),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  _selectedTime == null
+                      ? "لم يتم اختيار وقت"
+                      : "وقت التفرغ: ${_selectedTime!.format(context)}",
+                  style: TextStyle(fontSize: 16, color: Colors.black),
+                ),
+                ElevatedButton(
+                  onPressed: () => pickTime(context),
+                  child: Text("اختر وقت التفرغ"),
+                ),
+              ],
             ),
-            SizedBox(height: 10),
-            DropdownButton<String>(
-              value: _selectedWeight,
-              hint: Text("اختر الوزن"),
-              items: ["50", "55", "60", "65", "70", "75", "80"]
-                  .map((weight) => DropdownMenuItem(
-                        value: weight,
-                        child: Text("$weight كغ"),
-                      ))
-                  .toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedWeight = value;
-                });
-              },
+            SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: pickImage,
+              child: Text('قم بارفاق التحليل الطبي'),
             ),
             SizedBox(height: 30),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF66BB6A)),
                   onPressed: () {
-                 
                     if (_medicalReportImage == null ||
                         _selectedWeight == null) {
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -92,10 +91,13 @@ class _DonationRequestPageState extends State<DonationRequestPage> {
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text("تم إرسال الطلب بنجاح!")));
-                      Navigator.pop(context); 
+                      Navigator.pop(context);
                     }
                   },
-                  child: Text("إرسال الطلب"),
+                  child: Text(
+                    "إرسال الطلب",
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -104,7 +106,10 @@ class _DonationRequestPageState extends State<DonationRequestPage> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
                   ),
-                  child: Text("إلغاء الطلب"),
+                  child: Text(
+                    "إلغاء الطلب",
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ],
             ),
