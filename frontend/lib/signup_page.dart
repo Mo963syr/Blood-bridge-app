@@ -41,15 +41,16 @@ class _SignupPageState extends State<SignupPage> {
         'password': _passwordController.text,
       }),
     );
-
-    if (response.statusCode == 200) {
+    print(response.body);
+    print(response.statusCode);
+    if (response.statusCode == 201) {
       final responseData = jsonDecode(response.body);
       if (responseData['message'] == 'Email is not available') {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Email is not available')));
       } else {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Sign up successful')));
+            .showSnackBar(SnackBar(content: Text('User created successfully')));
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomePage()),

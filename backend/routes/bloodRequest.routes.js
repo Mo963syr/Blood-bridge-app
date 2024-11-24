@@ -86,7 +86,7 @@ router.post('/donation-Request', upload.single('image'), async (req, res) => {
     const { location, Weight, bloodType, AvailabilityPeriod, userId } =
       req.body;
 
-    // تحقق من القيم النصية
+  
     if (
       !location ||
       !Weight ||
