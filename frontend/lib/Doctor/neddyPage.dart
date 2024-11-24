@@ -21,7 +21,7 @@ class neddyPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => searshexternalneedy()),
+                      builder: (context) => Searshexternalneedy()),
                   // MaterialPageRoute(builder: (context) => RequestsPageD()),
                 );
               },
