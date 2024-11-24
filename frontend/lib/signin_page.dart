@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'signup_page.dart';
 import 'package:frontend/home_page.dart';
 import 'Doctor/mainDoctorpage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SigninPage extends StatefulWidget {
   @override
@@ -14,22 +15,28 @@ class _SigninPageState extends State<SigninPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  Future<void> saveUserId(String userId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userId', userId); // حفظ المعرف
+  }
+
   Future<void> signin() async {
     try {
       var response = await http.post(
         Uri.parse('http://10.0.2.2:8080/api/auth/signin'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'email': _emailController.text,
-          'password': _passwordController.text,
+          'email': _emailController.text.trim(),
+          'password': _passwordController.text.trim(),
         }),
       );
 
       final responseData = jsonDecode(response.body);
-      print(responseData['message']);
 
       if (response.statusCode == 200 &&
           responseData['message'] == 'Sign in successful') {
+        final userId = responseData['userId'];
+        await saveUserId(userId);
         if (responseData['status'] == 'user dashboard') {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('تم تسجيل الدخول بنجاح')),
@@ -39,22 +46,23 @@ class _SigninPageState extends State<SigninPage> {
             context,
             MaterialPageRoute(builder: (context) => HomePage()),
           );
+          // final userId = responseData['userId'];
+          // await saveUserId(userId);
         } else if (responseData['status'] == 'doctor dashboard') {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('تم تسجيل الدخول كطبيب')),
           );
+
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => DoctorHomePage()),
           );
         }
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('تم تسجيل الدخول بنجاح')),
-        );
       } else if (response.statusCode == 400) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('بيانات الدخول غير صحيحة')),
+          SnackBar(
+              content:
+                  Text(responseData['message'] ?? 'بيانات الدخول غير صحيحة')),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -62,9 +70,9 @@ class _SigninPageState extends State<SigninPage> {
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('حدث خطأ. يرجى المحاولة مرة أخرى لاحقاً.')),
-      );
+      // // ScaffoldMessenger.of(context).showSnackBar(
+      // //   SnackBar(content: Text('حدث خطأ. يرجى المحاولة مرة أخرى لاحقاً.')),
+      // );
       print('Error: $e');
     }
   }

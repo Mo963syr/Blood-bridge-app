@@ -3,10 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart';
 import 'dart:io';
 import 'home_page.dart';
-
-void main() {
-  runApp(RequestPage());
-}
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RequestPage extends StatelessWidget {
   final TextEditingController locationController = TextEditingController();
@@ -36,8 +33,18 @@ class RequestPage extends StatelessWidget {
       selectedImage = File(pickedFile.path);
     }
   }
+Future<String?> getUserId() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getString('userId'); // استرجاع المعرف
+}
 
   Future<void> bloodRequest(BuildContext context) async {
+
+    final userId = await getUserId();
+    if (userId == null) {
+    print('User ID not found');
+    return;
+  }
     if (selectedImage == null) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Please select an image')));
@@ -64,18 +71,23 @@ class RequestPage extends StatelessWidget {
           selectedImage!.path,
           filename: selectedImage!.path.split('/').last,
         ),
-        'userId': '673cdc35fe8411b2947e6cc7',
+        'userId': userId,
       });
 
       final response = await dio.post(
         'http://10.0.2.2:8080/api/requests/blood-request/external',
         data: formData,
       );
-
+     print(response.statusCode);
+      print(response.data);
       if (response.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Request created successfully')),
         );
+          Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
       } else {
         print('Error: ${response.statusCode}');
         print('Response: ${response.data}');

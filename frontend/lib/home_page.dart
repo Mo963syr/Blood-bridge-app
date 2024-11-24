@@ -53,7 +53,7 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Center(
         child: Text(
-          'مرحبًا بك في الصفحة الرئيسية! الخيار المحدد هو: ${_selectedIndex + 1}',
+          ' welcome to home page ',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
       ),
