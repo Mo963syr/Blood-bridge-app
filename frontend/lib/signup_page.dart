@@ -121,24 +121,7 @@ class _SignupPageState extends State<SignupPage> {
               ),
             ),
             SizedBox(height: 15),
-            TextField(
-              controller: _locationController,
-              decoration: InputDecoration(
-                labelText: 'الموقع',
-                labelStyle: TextStyle(color: Colors.red[700]),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.red[700]!),
-                ),
-                fillColor: Colors.white,
-                filled: true,
-                prefixIcon: Icon(Icons.location_on, color: Colors.red[700]),
-              ),
-            ),
-            SizedBox(height: 15),
+
             TextField(
               controller: _phoneNumberController,
               decoration: InputDecoration(
@@ -156,24 +139,7 @@ class _SignupPageState extends State<SignupPage> {
                 prefixIcon: Icon(Icons.phone, color: Colors.red[700]),
               ),
             ),
-            SizedBox(height: 15),
-            TextField(
-              // controller: _bloodTypeController,
-              decoration: InputDecoration(
-                labelText: 'زمرة الدم',
-                labelStyle: TextStyle(color: Colors.red[700]),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.red[700]!),
-                ),
-                fillColor: Colors.white,
-                filled: true,
-                prefixIcon: Icon(Icons.bloodtype, color: Colors.red[700]),
-              ),
-            ),
+
             SizedBox(height: 15),
             TextField(
               controller: _emailController,
