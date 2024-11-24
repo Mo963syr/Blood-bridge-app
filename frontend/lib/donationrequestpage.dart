@@ -3,17 +3,20 @@ import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart';
 import 'dart:io';
 import 'home_page.dart';
-
-void main() {
-  runApp(DonationRequestPage());
-}
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DonationRequestPage extends StatelessWidget {
   final TextEditingController locationController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
   String? selectedBloodType;
-  String? selecteddanger;
+   String? selectedAvailabilityPeriod;
+  final TextEditingController WeightController = TextEditingController();
   File? selectedImage;
+
+Future<String?> getUserId() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getString('userId'); // استرجاع المعرف
+}
+
 
   final List<String> bloodTypes = [
     'A+',
@@ -25,7 +28,11 @@ class DonationRequestPage extends StatelessWidget {
     'O+',
     'O-',
   ];
-
+ final List<String> availabilityOptions = [
+    'اليوم',
+    'غدًا',
+    'في أي وقت خلال أسبوع',
+  ];
   final List<String> danger = ['low', 'medium', 'high'];
 
   Future<void> pickImage() async {
@@ -37,58 +44,88 @@ class DonationRequestPage extends StatelessWidget {
     }
   }
 
-  Future<void> bloodRequest(BuildContext context) async {
-    if (selectedImage == null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Please select an image')));
-      return;
-    }
-    if (locationController.text.isEmpty ||
-        selectedBloodType == null ||
-        phoneController.text.isEmpty ||
-        selecteddanger == null ||
-        selectedImage == null) {
+Future<void> bloodRequest(BuildContext context) async {
+  final userId = await getUserId();
+  if (userId == null) {
+    print('User ID not found');
+    return;
+  }
+  // التحقق من الإدخالات
+  if (locationController.text.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('يرجى إدخال مكان التواجد الحالي')),
+    );
+    return;
+  }
+
+  if (selectedBloodType == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('يرجى اختيار فصيلة الدم')),
+    );
+    return;
+  }
+
+  final weight = double.tryParse(WeightController.text);
+  if (weight == null || weight <= 50) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('يجب أن يكون وزنك أكبر من 50 كيلو')),
+    );
+    return;
+  }
+
+  if (selectedImage == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('يرجى اختيار التحليل الطبي')),
+    );
+    return;
+  }
+
+  // إرسال البيانات
+  try {
+    final dio = Dio();
+    final formData = FormData.fromMap({
+      'location': locationController.text,
+      'bloodType': selectedBloodType,
+      'AvailabilityPeriod': selectedAvailabilityPeriod,
+      'Weight': WeightController.text,
+      'image': await MultipartFile.fromFile(
+        selectedImage!.path,
+        filename: selectedImage!.path.split('/').last,
+      ),
+      'userId': userId,
+    });
+
+    final response = await dio.post(
+      'http://10.0.2.2:8080/api/requests/donation-Request',
+      data: formData,
+    );
+
+    if (response.statusCode == 201) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('يرجى ملء جميع الحقول واختيار صورة')),
+        SnackBar(content: Text('تم إنشاء الطلب بنجاح')),
       );
-      return;
+        Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('حدث خطأ أثناء إرسال الطلب: ${response.statusCode}')),
+      );
     }
-    try {
-      final dio = Dio();
-      final formData = FormData.fromMap({
-        'location': locationController.text,
-        'bloodType': selectedBloodType,
-        'phoneNumber': phoneController.text,
-        'urgencyLevel': selecteddanger,
-        'image': await MultipartFile.fromFile(
-          selectedImage!.path,
-          filename: selectedImage!.path.split('/').last,
-        ),
-        'userId': '673cdc35fe8411b2947e6cc7',
-      });
-
-      final response = await dio.post(
-        'http://10.0.2.2:8080/api/requests/blood-request/external',
-        data: formData,
+  } catch (e) {
+    if (e is DioException) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('خطأ في الاتصال بالخادم: ${e.response?.statusCode}')),
       );
-
-      if (response.statusCode == 201) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Request created successfully')),
-        );
-      } else {
-        print('Error: ${response.statusCode}');
-        print('Response: ${response.data}');
-      }
-    } catch (e) {
-      if (e is DioException) {
-        print('DioError: ${e.response?.statusCode}');
-        print('Error data: ${e.response?.data}');
-      } else {
-        print('Unexpected error: $e');
-      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('حدث خطأ غير متوقع')),
+      );
     }
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -133,19 +170,28 @@ class DonationRequestPage extends StatelessWidget {
                   },
                 ),
                 SizedBox(height: 16.0),
-                TextField(
-                  controller: phoneController,
-                  decoration: InputDecoration(
-                    labelText: "تحديد الوقت التفرغ",
-                    labelStyle: TextStyle(color: Colors.red[700]),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
+            DropdownButtonFormField<String>(
+              decoration: InputDecoration(
+                labelText: "تحديد وقت التفرغ",
+                labelStyle: TextStyle(color: Colors.red[700]),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
+              ),
+              value: selectedAvailabilityPeriod,
+              items: availabilityOptions.map((option) {
+                return DropdownMenuItem(
+                  value: option,
+                  child: Text(option),
+                );
+              }).toList(),
+              onChanged: (value) {
+                selectedAvailabilityPeriod = value;
+              },
+            ),
                 SizedBox(height: 16.0),
                 TextField(
-                  controller: phoneController,
+                  controller: WeightController,
                   decoration: InputDecoration(
                     labelText: "الوزن",
                     labelStyle: TextStyle(color: Colors.red[700]),

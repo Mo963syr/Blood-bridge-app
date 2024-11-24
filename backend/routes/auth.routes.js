@@ -24,19 +24,21 @@ router.post('/signin', async (req, res) => {
       { expiresIn: '1h' }
     );
 
+    // تضمين userId في الاستجابة
+    const response = {
+      message: 'Sign in successful',
+      token,
+      userId: user._id, // إضافة المعرف
+      role: user.role,
+    };
+
     if (user.role === 'doctor') {
-      return res.status(200).json({
-        message: 'Sign in successful',
-        status: 'doctor dashboard',
-        token,
-      });
+      response.status = 'doctor dashboard';
     } else if (user.role === 'user') {
-      return res.status(200).json({
-        message: 'Sign in successful',
-        status: 'user dashboard',
-        token,
-      });
+      response.status = 'user dashboard';
     }
+
+    return res.status(200).json(response);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
@@ -73,19 +75,12 @@ router.post('/signup', async (req, res) => {
       role: user.role,
     };
 
-    if (user.role === 'user') {
-      return res.status(201).json({
-        message: 'User created successfully',
-        user: userResponse,
-      });
-    } else if (user.role === 'doctor') {
-      return res.status(201).json({
-        message: 'Doctor dashboard',
-        user: {
-          role: user.role,
-        },
-      });
-    }
+    // تضمين userId في الاستجابة
+    return res.status(201).json({
+      message: 'User created successfully',
+      user: userResponse,
+      userId: user._id, // إضافة المعرف
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'An error occurred during sign up' });

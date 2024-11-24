@@ -26,8 +26,10 @@ router.post(
     try {
       const { location, bloodType, urgencyLevel, userId } = req.body;
 
-      if (!location || !bloodType || !urgencyLevel || !req.file || !userId) {
+      if (!location || !bloodType || !urgencyLevel || !userId) {
         return res.status(400).json({ message: 'All fields are required' });
+      } else if (!req.file) {
+        return res.status(400).json({ message: 'image is required' });
       }
 
       const image = new Image({
@@ -44,13 +46,13 @@ router.post(
         user: userId,
       });
       const userResponse = {
-        medecalreport: bloodRequest.medecalreport,
+        medecalreport_id: bloodRequest.medecalreport,
         location: bloodRequest.location,
         bloodType: bloodRequest.bloodType,
         urgencyLevel: bloodRequest.urgencyLevel,
         requestneedytype: 'external',
         createdAt: Date.now(),
-        user: bloodRequest.user,
+        user_id: bloodRequest.user,
         status: bloodRequest.requestStatus,
       };
 
@@ -67,7 +69,7 @@ router.post(
 
       return res.status(201).json({
         message: 'Blood request created and image added to user',
-        bloodRequest,
+        userResponse,
       });
     } catch (err) {
       console.error(err.message);
@@ -86,16 +88,11 @@ router.post('/donation-Request', upload.single('image'), async (req, res) => {
     const { location, Weight, bloodType, AvailabilityPeriod, userId } =
       req.body;
 
-  
-    if (
-      !location ||
-      !Weight ||
-      !bloodType ||
-      !AvailabilityPeriod ||
-      !req.file ||
-      !userId
-    ) {
+    if (!location || !Weight || !bloodType || !AvailabilityPeriod || !userId) {
       return res.status(400).json({ message: 'All fields are required' });
+    } else if (!req.file) {
+      console.log(res.statusCode);
+      return res.status(400).json({ message: 'image is required' });
     }
 
     const image = new Image({
@@ -122,17 +119,21 @@ router.post('/donation-Request', upload.single('image'), async (req, res) => {
 
     user.images.push(image._id);
     await user.save();
-
+if(req.file){
+  console.log(res.statusCode);
     return res.status(201).json({
       message: 'Blood request created and image added to user',
       DonationRequest,
     });
+    }
   } catch (err) {
     console.error(err.message);
     return res
       .status(500)
       .json({ error: 'An error occurred while creating the blood request' });
+      console.log(res.statusCode);
   }
+  
 });
 router.get('/blood-requests', async (req, res) => {
   try {
