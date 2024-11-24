@@ -8,10 +8,8 @@ Future<List<dynamic>> fetchData() async {
       await http.get(Uri.parse('http://10.0.2.2:8080/api/blood-requests'));
 
   if (response.statusCode == 200) {
-    // إذا كان الطلب ناجحًا
     return json.decode(response.body);
   } else {
-    // إذا فشل الطلب
     throw Exception('فشل تحميل البيانات');
   }
 }
@@ -45,7 +43,7 @@ class searchEnternalNeedy extends StatelessWidget {
                 children: [
                   ElevatedButton.icon(
                     onPressed: () {
-                      Navigator.pop(ctx); // إغلاق نافذة الزرين
+                      Navigator.pop(ctx);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -102,7 +100,7 @@ class searchEnternalNeedy extends StatelessWidget {
         title: Text('عرض البيانات'),
       ),
       body: FutureBuilder<List<dynamic>>(
-        future: fetchData(), // دالة جلب البيانات
+        future: fetchData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator()); // تحميل
@@ -111,7 +109,6 @@ class searchEnternalNeedy extends StatelessWidget {
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(child: Text('لا توجد بيانات'));
           } else {
-            // عرض البيانات
             List<dynamic> data = snapshot.data!;
             return ListView.builder(
               itemCount: data.length,
@@ -123,7 +120,7 @@ class searchEnternalNeedy extends StatelessWidget {
                   },
                   child: Card(
                     margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                    elevation: 5, // التحكم في الظل
+                    elevation: 5,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),

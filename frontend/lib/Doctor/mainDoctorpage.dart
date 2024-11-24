@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../imagg.dart';
-
 import 'doctorpage.dart';
+import 'createrequestenternal.dart';
 
 void main() {
   runApp(MyApp());
@@ -32,7 +32,7 @@ class _DoctorHomePageState extends State<DoctorHomePage> {
     if (index == 1) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => UploadImage()),
+        MaterialPageRoute(builder: (context) => createEnternalRwquest()),
       );
     } else if (index == 3) {
       Navigator.push(
@@ -51,50 +51,56 @@ class _DoctorHomePageState extends State<DoctorHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('الصفحة الرئيسية'),
+        backgroundColor: Colors.red[400],
       ),
-      body: Center(
-        child: Text(
-          'مرحبًا بك في الصفحة الرئيسية! الخيار المحدد هو: ${_selectedIndex + 1}',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        color: Color.fromARGB(255, 189, 98, 98),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 5.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(Icons.person, 'الملف الشخصي', 0),
-              _buildNavItem(Icons.add_circle, "طلب حاجة", 1),
-              _buildNavItem(Icons.home, 'الرئيسية', 2),
-              _buildNavItem(Icons.search, "الطلبات", 3),
-              _buildNavItem(Icons.history, "المواعيد", 4),
-            ],
+      body: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10.0),
+            child: GridView.count(
+              crossAxisCount: 2,
+              mainAxisSpacing: 10,
+              crossAxisSpacing: 10,
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              children: [
+                _buildCardItem(Icons.person, 'الملف الشخصي', 0),
+                _buildCardItem(Icons.add_circle, "طلب حاجة", 1),
+                _buildCardItem(Icons.search, "الطلبات", 3),
+                _buildCardItem(Icons.history, "المواعيد", 4),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
+      backgroundColor: Colors.grey[100],
     );
   }
 
-  Widget _buildNavItem(IconData icon, String label, int index) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => _onItemTapped(index),
+  Widget _buildCardItem(IconData icon, String label, int index) {
+    return GestureDetector(
+      onTap: () => _onItemTapped(index),
+      child: Card(
+        color: _selectedIndex == index ? Colors.red[400] : Colors.white,
+        elevation: 10,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               icon,
-              color: _selectedIndex == index ? Colors.white : Colors.white70,
-              size: 22,
+              color: _selectedIndex == index ? Colors.white : Colors.red[400],
+              size: 30,
             ),
-            SizedBox(height: 3),
+            SizedBox(height: 5),
             Text(
               label,
               style: TextStyle(
-                color: _selectedIndex == index ? Colors.white : Colors.white70,
-                fontSize: 10,
+                color: _selectedIndex == index ? Colors.white : Colors.black,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ],
