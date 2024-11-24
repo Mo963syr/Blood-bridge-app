@@ -12,7 +12,7 @@ class SignupPage extends StatefulWidget {
 class _SignupPageState extends State<SignupPage> {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController _locationController = TextEditingController();
+  // final TextEditingController _locationController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
   // final TextEditingController _bloodTypeController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -35,7 +35,6 @@ class _SignupPageState extends State<SignupPage> {
       body: jsonEncode({
         'firstName': _firstNameController.text,
         'lastName': _lastNameController.text,
-        'location': _locationController.text,
         'Number': _phoneNumberController.text,
         'email': _emailController.text,
         'password': _passwordController.text,
@@ -120,8 +119,8 @@ class _SignupPageState extends State<SignupPage> {
                 prefixIcon: Icon(Icons.person_outline, color: Colors.red[700]),
               ),
             ),
+          
             SizedBox(height: 15),
-
             TextField(
               controller: _phoneNumberController,
               decoration: InputDecoration(
@@ -139,7 +138,7 @@ class _SignupPageState extends State<SignupPage> {
                 prefixIcon: Icon(Icons.phone, color: Colors.red[700]),
               ),
             ),
-
+         
             SizedBox(height: 15),
             TextField(
               controller: _emailController,
