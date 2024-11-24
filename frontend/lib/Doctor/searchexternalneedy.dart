@@ -4,8 +4,8 @@ import 'dart:convert';
 import '../donationrequestpage.dart';
 
 Future<List<dynamic>> fetchData() async {
-  final response =
-      await http.get(Uri.parse('http://10.0.2.2:8080/api/blood-requests/external'));
+  final response = await http
+      .get(Uri.parse('http://10.0.2.2:8080/api/blood-requests/external'));
 
   if (response.statusCode == 200) {
     // إذا كان الطلب ناجحًا
