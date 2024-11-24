@@ -16,9 +16,9 @@ class _createEnternalRwquestState extends State<createEnternalRwquest> {
   final TextEditingController locationController = TextEditingController();
 
   final TextEditingController phoneController = TextEditingController();
-
+  String? selecteddanger;
   String? selectedBloodType;
-
+  final List<String> danger = ['low', 'medium', 'high'];
   final List<String> bloodTypes = [
     'A+',
     'A-',
@@ -111,6 +111,26 @@ class _createEnternalRwquestState extends State<createEnternalRwquest> {
                   }).toList(),
                   onChanged: (value) {
                     selectedBloodType = value;
+                  },
+                ),
+                SizedBox(height: 16.0),
+                DropdownButtonFormField<String>(
+                  decoration: InputDecoration(
+                    labelText: "خطورة الحالة",
+                    labelStyle: TextStyle(color: Colors.red[700]),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  value: selecteddanger,
+                  items: danger.map((danger) {
+                    return DropdownMenuItem(
+                      value: danger,
+                      child: Text(danger),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    selecteddanger = value;
                   },
                 ),
                 SizedBox(height: 16.0),
