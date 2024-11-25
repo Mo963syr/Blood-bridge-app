@@ -77,7 +77,10 @@ class DonationDetailsPage extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
                   ),
-                  child: Text('موافقة'),
+                  child: Text(
+                    'موافقة',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -86,7 +89,7 @@ class DonationDetailsPage extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
                   ),
-                  child: Text('رفض'),
+                  child: Text('رفض', style: TextStyle(color: Colors.white)),
                 ),
               ],
             ),
