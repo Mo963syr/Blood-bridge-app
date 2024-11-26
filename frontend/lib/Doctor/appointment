@@ -1,0 +1,181 @@
+Mohammad Al Hosein, [11/20/2024 9:10 PM]
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(BloodDonationApp());
+}
+
+class BloodDonationApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: AppointmentsScreen(),
+      theme: ThemeData(
+        primarySwatch: Colors.red,
+        fontFamily: 'Roboto',
+      ),
+    );
+  }
+}
+
+class AppointmentsScreen extends StatefulWidget {
+  @override
+  _AppointmentsScreenState createState() => _AppointmentsScreenState();
+}
+
+class _AppointmentsScreenState extends State<AppointmentsScreen> {
+  final List<Map<String, String>> appointments = [];
+  final TextEditingController donorNameController = TextEditingController();
+  final TextEditingController recipientNameController = TextEditingController();
+  final TextEditingController appointmentDateController = TextEditingController();
+
+  void addAppointment() {
+    final String donorName = donorNameController.text;
+    final String recipientName = recipientNameController.text;
+    final String appointmentDate = appointmentDateController.text;
+
+    if (donorName.isNotEmpty &&
+        recipientName.isNotEmpty &&
+        appointmentDate.isNotEmpty) {
+      setState(() {
+        appointments.add({
+          'donor': donorName,
+          'recipient': recipientName,
+          'date': appointmentDate,
+        });
+      });
+
+      donorNameController.clear();
+      recipientNameController.clear();
+      appointmentDateController.clear();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'مواعيد التبرع بالدم',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Input Section
+            Container(
+              padding: EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Colors.red[50],
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'إضافة موعد جديد',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red[700],
+                    ),
+                  ),
+                  SizedBox(height: 8.0),
+                  TextField(
+                    controller: donorNameController,
+                    decoration: InputDecoration(
+                      labelText: 'اسم المتبرع',
+                      prefixIcon: Icon(Icons.person),
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(height: 8.0),
+                  TextField(
+                    controller: recipientNameController,
+                    decoration: InputDecoration(
+                      labelText: 'اسم المتبرع له',
+                      prefixIcon: Icon(Icons.person_outline),
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(height: 8.0),
+                  TextField(
+                    controller: appointmentDateController,
+                    decoration: InputDecoration(
+                      labelText: 'تاريخ الموعد (مثال: 12-11-2023)',
+                      prefixIcon: Icon(Icons.calendar_today),
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(height: 16.0),
+                  ElevatedButton.icon(
+                    onPressed: addAppointment,
+                    icon: Icon(Icons.add),
+                    label: Text('إضافة الموعد'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red[700],
+
+Mohammad Al Hosein, [11/20/2024 9:10 PM]
+padding: EdgeInsets.symmetric(vertical: 12.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 16.0),
+
+            // Appointments List
+            Expanded(
+              child: appointments.isEmpty
+                  ? Center(
+                      child: Text(
+                        'لا توجد مواعيد مضافة بعد.',
+                        style: TextStyle(fontSize: 16.0, color: Colors.grey),
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: appointments.length,
+                      itemBuilder: (context, index) {
+                        final appointment = appointments[index];
+                        return Card(
+                          margin: EdgeInsets.symmetric(vertical: 8.0),
+                          elevation: 4.0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: Colors.red[700],
+                              child: Icon(
+                                Icons.calendar_today,
+                                color: Colors.white,
+                              ),
+                            ),
+                            title: Text(
+                              'المتبرع: ${appointment['donor']}',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            subtitle: Text(
+                              'المتبرع له: ${appointment['recipient']}\n'
+                              'التاريخ: ${appointment['date']}',
+                              style: TextStyle(height: 1.5),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
