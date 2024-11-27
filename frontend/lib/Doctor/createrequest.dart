@@ -1,25 +1,16 @@
+
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'mainDoctorpage.dart';
-
-void main() {
-  runApp(createEnternalRwquest());
-}
-
-class createEnternalRwquest extends StatefulWidget {
-  @override
-  State<createEnternalRwquest> createState() => _createEnternalRwquestState();
-}
-
-class _createEnternalRwquestState extends State<createEnternalRwquest> {
+import 'package:image_picker/image_picker.dart';
+import 'package:dio/dio.dart';
+import 'dart:io';
+import 'home_page.dart';
+import 'services/user_preferences.dart';
+class RequestPage extends StatelessWidget {
   final TextEditingController locationController = TextEditingController();
-
-  final TextEditingController phoneController = TextEditingController();
-
+  // final TextEditingController phoneController = TextEditingController();
   String? selectedBloodType;
-
   String? selecteddanger;
+  File? selectedImage;
 
   final List<String> bloodTypes = [
     'A+',
@@ -33,36 +24,81 @@ class _createEnternalRwquestState extends State<createEnternalRwquest> {
   ];
 
   final List<String> danger = ['low', 'medium', 'high'];
-  Future<void> bloodRequest(BuildContext context) async {
-    final response = await http.post(
-      Uri.parse('http://10.0.2.2:8080/api/blood-request/enternal'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'location': locationController.text,
-        'bloodType': selectedBloodType,
-        'phoneNumber': phoneController.text,
-        'urgencyLevel': selecteddanger,
-        'requestneedytype': 'enternal'
-      }),
-    );
 
-    final responseData = jsonDecode(response.body);
+  Future<void> pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
-    if (response.statusCode == 201 ||
-        responseData['message'] == 'Blood request created') {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Request created successfully')));
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => DoctorHomePage()),
-      );
-    } else {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Failed to create request')));
+    if (pickedFile != null) {
+      selectedImage = File(pickedFile.path);
     }
   }
 
-  @override
+  Future<void> bloodRequest(BuildContext context) async {
+
+ String? userId = await UserPreferences.getUserId();
+    if (userId == null) {
+    print('User ID not found');
+    return;
+  }
+    if (selectedImage == null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Please select an image')));
+      return;
+    }
+    if (locationController.text.isEmpty 
+        selectedBloodType == null 
+        // phoneController.text.isEmpty 
+        selecteddanger == null 
+        selectedImage == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('يرجى ملء جميع الحقول واختيار صورة')),
+      );
+      return;
+    }
+    try {
+      final dio = Dio();
+      final formData = FormData.fromMap({
+        'location': locationController.text,
+        'bloodType': selectedBloodType,
+        // 'phoneNumber': phoneController.text,
+        'urgencyLevel': selecteddanger,
+        'image': await MultipartFile.fromFile(
+          selectedImage!.path,
+          filename: selectedImage!.path.split('/').last,
+        ),
+        'userId': userId,
+      });
+
+      final response = await dio.post(
+        'http://10.0.2.2:8080/api/requests/blood-request/external',
+        data: formData,
+      );
+     print(response.statusCode);
+      print(response.data);
+      if (response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Request created successfully')),
+        );
+          Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+      } else {
+        print('Error: ${response.statusCode}');
+        print('Response: ${response.data}');
+      }
+    } catch (e) {
+      if (e is DioException) {
+        print('DioError: ${e.response?.statusCode}');
+        print('Error data: ${e.response?.data}');
+      } else {
+        print('Unexpected error: $e');
+      }
+    }
+  }
+
+@override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -77,36 +113,23 @@ class _createEnternalRwquestState extends State<createEnternalRwquest> {
                 TextField(
                   controller: locationController,
                   decoration: InputDecoration(
-                    labelText: 'مكان التواجد الحالي ',
+                    labelText: 'مكان التواجد الحالي',
                     labelStyle: TextStyle(color: Colors.red[700]),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.red[700]!),
-                    ),
-                    fillColor: Colors.white,
-                    filled: true,
-                    prefixIcon: Icon(Icons.email,
-                        color: Colors.red[700]), // أيقونة البريد
                   ),
                 ),
                 SizedBox(height: 16.0),
                 DropdownButtonFormField<String>(
                   decoration: InputDecoration(
-                      labelText: "فصيلة الدم المطلوبة",
-                      labelStyle: TextStyle(color: Colors.red[700]),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                          borderSide: BorderSide.none),
-                      fillColor: Colors.white,
-                      filled: true,
-                      prefixIcon:
-                          const Icon(Icons.bloodtype, color: Colors.red)),
+                    labelText: "فصيلة الدم المطلوبة",
+                    labelStyle: TextStyle(color: Colors.red[700]),
+
+border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                   value: selectedBloodType,
                   items: bloodTypes.map((bloodType) {
                     return DropdownMenuItem(
@@ -118,40 +141,26 @@ class _createEnternalRwquestState extends State<createEnternalRwquest> {
                     selectedBloodType = value;
                   },
                 ),
+                // SizedBox(height: 16.0),
+                // TextField(
+                //   controller: phoneController,
+                //   decoration: InputDecoration(
+                //     labelText: "رقم الهاتف",
+                //     labelStyle: TextStyle(color: Colors.red[700]),
+                //     border: OutlineInputBorder(
+                //       borderRadius: BorderRadius.circular(12),
+                //     ),
+                //   ),
+                // ),
                 SizedBox(height: 16.0),
-                TextField(
-                  controller: phoneController,
+                DropdownButtonFormField<String>(
                   decoration: InputDecoration(
-                    labelText: "رقم الهاتف",
+                    labelText: "خطورة الحالة",
                     labelStyle: TextStyle(color: Colors.red[700]),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.red[700]!),
-                    ),
-                    fillColor: Colors.white,
-                    filled: true,
-                    prefixIcon: Icon(Icons.lock,
-                        color: Colors.red[700]), // أيقونة القفل
                   ),
-                ),
-                SizedBox(height: 16.0),
-                DropdownButtonFormField<String>(
-                  decoration: InputDecoration(
-                      labelText: "خطورة الحالة",
-                      labelStyle: TextStyle(color: Colors.red[700]),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                          borderSide: BorderSide.none),
-                      fillColor: Colors.white,
-                      filled: true,
-                      prefixIcon:
-                          const Icon(Icons.bloodtype, color: Colors.red)),
                   value: selecteddanger,
                   items: danger.map((danger) {
                     return DropdownMenuItem(
@@ -163,7 +172,12 @@ class _createEnternalRwquestState extends State<createEnternalRwquest> {
                     selecteddanger = value;
                   },
                 ),
-                SizedBox(height: 35.0),
+                SizedBox(height: 16.0),
+                ElevatedButton(
+                  onPressed: pickImage,
+                  child: Text('اختر تقريرًا طبيًا'),
+                ),
+                SizedBox(height: 16.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -185,10 +199,14 @@ class _createEnternalRwquestState extends State<createEnternalRwquest> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
                       ),
-                      child: Text('الرجوع'),
+                      child: Text(
+                        'الرجوع',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ],
-                ),
+
+),
               ],
             ),
           ),
