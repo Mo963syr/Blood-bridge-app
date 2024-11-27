@@ -1,10 +1,10 @@
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart';
 import 'dart:io';
 import 'home_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
+import 'services/user_preferences.dart';
 class RequestPage extends StatelessWidget {
   final TextEditingController locationController = TextEditingController();
   // final TextEditingController phoneController = TextEditingController();
@@ -33,14 +33,10 @@ class RequestPage extends StatelessWidget {
       selectedImage = File(pickedFile.path);
     }
   }
-Future<String?> getUserId() async {
-  final prefs = await SharedPreferences.getInstance();
-  return prefs.getString('userId'); // استرجاع المعرف
-}
 
   Future<void> bloodRequest(BuildContext context) async {
 
-    final userId = await getUserId();
+ String? userId = await UserPreferences.getUserId();
     if (userId == null) {
     print('User ID not found');
     return;
@@ -52,7 +48,7 @@ Future<String?> getUserId() async {
     }
     if (locationController.text.isEmpty ||
         selectedBloodType == null ||
-        // phoneController.text.isEmpty ||
+        // phoneController.text.isEmpty 
         selecteddanger == null ||
         selectedImage == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -102,7 +98,8 @@ Future<String?> getUserId() async {
     }
   }
 
-  @override
+
+@override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -208,7 +205,8 @@ Future<String?> getUserId() async {
                       ),
                     ),
                   ],
-                ),
+
+),
               ],
             ),
           ),

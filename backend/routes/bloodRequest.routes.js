@@ -64,7 +64,6 @@ router.post(
         });
         await image.save();
         user.images.push(image._id);
-        
       }
 
       await bloodRequest.save();
@@ -151,6 +150,7 @@ router.get('/blood-requests', async (req, res) => {
   try {
     const bloodRequests = await BloodRequest.find();
     res.json(bloodRequests);
+    console.log(bloodRequests);
   } catch (err) {
     console.error(err);
     res
@@ -158,6 +158,20 @@ router.get('/blood-requests', async (req, res) => {
       .json({ error: 'An error occurred while fetching blood requests' });
   }
 });
+router.get('/blood-requests/external', async (req, res) => {
+  try {
+    // فلترة الطلبات حسب النوع
+    const bloodRequests = await BloodRequest.find({ requestneedytype: 'external' }); 
+    res.json(bloodRequests);
+    console.log(bloodRequests);
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .json({ error: 'An error occurred while fetching blood requests' });
+  }
+});
+
 router.get('/requestImage/:userId/', async (req, res) => {
   try {
     const { userId } = req.params;

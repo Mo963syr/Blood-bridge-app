@@ -1,8 +1,10 @@
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'mainDoctorpage.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
+import '../services/user_preferences.dart';
 void main() {
   runApp(createEnternalRwquest());
 }
@@ -14,10 +16,10 @@ class createEnternalRwquest extends StatefulWidget {
 
 class _createEnternalRwquestState extends State<createEnternalRwquest> {
   final TextEditingController locationController = TextEditingController();
-
-  final TextEditingController phoneController = TextEditingController();
-  String? selecteddanger;
   String? selectedBloodType;
+  String? selecteddanger;
+  // final TextEditingController phoneController = TextEditingController();
+
   final List<String> danger = ['low', 'medium', 'high'];
   final List<String> bloodTypes = [
     'A+',
@@ -30,22 +32,32 @@ class _createEnternalRwquestState extends State<createEnternalRwquest> {
     'O-',
   ];
 
+
   Future<void> bloodRequest(BuildContext context) async {
+    String? userId = await UserPreferences.getUserId();
+    if (userId == null) {
+      print('User ID not found');
+      return;
+    }
     final response = await http.post(
-      Uri.parse('http://10.0.2.2:8080/api/blood-request/enternal'),
+      Uri.parse('http://10.0.2.2:8080/api/requests/blood-request/external'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'location': locationController.text,
         'bloodType': selectedBloodType,
-        'phoneNumber': phoneController.text,
-        'requestneedytype': 'enternal'
+        'urgencyLevel': selecteddanger,
+        'userId': userId,
+        // 'phoneNumber': phoneController.text,
       }),
     );
 
     final responseData = jsonDecode(response.body);
+    print(response.body);
+    print(responseData);
+    print(response.statusCode);
 
     if (response.statusCode == 201 ||
-        responseData['message'] == 'Blood request created') {
+        responseData['message'] == 'Blood request created successfully') {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Request created successfully')));
       Navigator.pushReplacement(
@@ -58,7 +70,7 @@ class _createEnternalRwquestState extends State<createEnternalRwquest> {
     }
   }
 
-  @override
+@override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -133,24 +145,6 @@ class _createEnternalRwquestState extends State<createEnternalRwquest> {
                     selecteddanger = value;
                   },
                 ),
-                SizedBox(height: 16.0),
-                TextField(
-                  controller: phoneController,
-                  decoration: InputDecoration(
-                    labelText: "رقم الهاتف",
-                    labelStyle: TextStyle(color: Colors.red[700]),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.red[700]!),
-                    ),
-                    fillColor: Colors.white,
-                    filled: true,
-                    prefixIcon: Icon(Icons.lock, color: Colors.red[700]),
-                  ),
-                ),
                 SizedBox(height: 35.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -179,7 +173,8 @@ class _createEnternalRwquestState extends State<createEnternalRwquest> {
                 ),
               ],
             ),
-          ),
+
+),
         ],
       ),
     );
