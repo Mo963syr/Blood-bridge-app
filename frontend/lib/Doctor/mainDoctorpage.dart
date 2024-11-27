@@ -51,7 +51,11 @@ class _DoctorHomePageState extends State<DoctorHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('الصفحة الرئيسية'),
+        title: Text(
+          'صفحة الطبيب',
+          style: TextStyle(),
+        ),
+        centerTitle: true,
         backgroundColor: Colors.red[400],
       ),
       body: Column(
