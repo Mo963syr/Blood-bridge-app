@@ -9,7 +9,7 @@ const router = express.Router();
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/');
+    cb(null, 'images/externalreport/');
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + '-' + file.originalname);
@@ -47,8 +47,7 @@ router.post(
           : 'unknown';
 
       const bloodRequest = new BloodRequest({
-        medecalreport: req.file ? `/uploads/${req.file.filename}` : null,
-
+        medecalreport: req.file ? `../backend/images/externalreport/${req.file.filename}` : null,
         location,
         bloodType,
         urgencyLevel,
@@ -60,7 +59,7 @@ router.post(
       let image;
       if (req.file) {
         image = new Image({
-          filePath: `/uploads/${req.file.filename}`,
+          filePath: `images/externalreport/${req.file.filename}`,
         });
         await image.save();
         user.images.push(image._id);

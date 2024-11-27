@@ -206,9 +206,7 @@ class RequestDetailsPage extends StatelessWidget {
                 style: TextStyle(fontSize: 16),
               ),
               SizedBox(height: 20),
-              if (request['medecalreport'] != null &&
-                  File(request['medecalreport'])
-                      .existsSync()) // تحقق من وجود الملف
+              if (request['medecalreport'] != null)
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -218,12 +216,7 @@ class RequestDetailsPage extends StatelessWidget {
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 10),
-                    Image.file(
-                      (request['medecalreport']), // تحميل الصورة من المسار
-                      height: 200,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
+                    Image.asset('${request['medecalreport']}'),
                   ],
                 )
               else
