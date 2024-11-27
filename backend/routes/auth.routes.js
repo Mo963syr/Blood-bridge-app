@@ -23,12 +23,11 @@ router.post('/signin', async (req, res) => {
       process.env.JWT_SECRET || 'yourSecretKey',
       { expiresIn: '1h' }
     );
-
-    // تضمين userId في الاستجابة
     const response = {
       message: 'Sign in successful',
       token,
-      userId: user._id, // إضافة المعرف
+      userId: user._id,
+
       role: user.role,
     };
 
@@ -74,12 +73,10 @@ router.post('/signup', async (req, res) => {
       email: user.email,
       role: user.role,
     };
-
-    // تضمين userId في الاستجابة
     return res.status(201).json({
       message: 'User created successfully',
       user: userResponse,
-      userId: user._id, // إضافة المعرف
+      userId: user._id,
     });
   } catch (err) {
     console.error(err);
