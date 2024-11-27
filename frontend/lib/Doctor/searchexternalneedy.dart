@@ -231,6 +231,33 @@ class RequestDetailsPage extends StatelessWidget {
                   'لا يوجد تقرير طبي مرفق أو الملف غير موجود.',
                   style: TextStyle(fontSize: 16, color: Colors.grey),
                 ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      onApprove(request);
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                    ),
+                    child: Text(
+                      'موافقة',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                    ),
+                    child: Text('رفض', style: TextStyle(color: Colors.white)),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
@@ -238,3 +265,5 @@ class RequestDetailsPage extends StatelessWidget {
     );
   }
 }
+
+void onApprove(Map<String, dynamic> request) {}
