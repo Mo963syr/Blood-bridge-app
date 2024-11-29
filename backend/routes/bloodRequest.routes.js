@@ -181,9 +181,40 @@ router.get('/blood-requests', async (req, res) => {
 });
 router.get('/blood-requests/external', async (req, res) => {
   try {
-    // فلترة الطلبات حسب النوع
+
     const bloodRequests = await BloodRequest.find({
       requestneedytype: 'external',
+      requestStatus: 'active',
+    });
+    res.json(bloodRequests);
+    console.log(bloodRequests);
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .json({ error: 'An error occurred while fetching blood requests' });
+  }
+});
+router.get('/blood-requests/approve', async (req, res) => {
+  try {
+
+    const bloodRequests = await BloodRequest.find({
+      requestneedytype: 'external',
+      requestStatus: 'approved',
+    });
+    res.json(bloodRequests);
+    console.log(bloodRequests);
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .json({ error: 'An error occurred while fetching blood requests' });
+  }
+});
+router.get('/blood-requests/enternal', async (req, res) => {
+  try {
+    const bloodRequests = await BloodRequest.find({
+      requestneedytype: 'internal',
     });
     res.json(bloodRequests);
     console.log(bloodRequests);
@@ -196,7 +227,7 @@ router.get('/blood-requests/external', async (req, res) => {
 });
 router.get('/donationrequest', async (req, res) => {
   try {
-    // فلترة الطلبات حسب النوع
+
     const donationrequest = await donationRequest.find({
       requestStatus: 'active',
     });
@@ -231,6 +262,34 @@ router.get('/requestImage/:userId/', async (req, res) => {
     res
       .status(500)
       .json({ error: 'An error occurred while fetching user images' });
+  }
+});
+router.put('/update-status', async (req, res) => {
+  const { requestId, requestStatus } = req.body;
+
+  if (!requestId || !requestStatus) {
+    return res.status(400).json({ error: 'يجب إدخال requestId و status' });
+  }
+
+  try {
+    const updatedRequest = await BloodRequest.findByIdAndUpdate(
+      requestId,
+      { requestStatus },
+      { new: true } 
+
+    );
+
+    if (!updatedRequest) {
+      return res.status(404).json({ error: 'الطلب غير موجود' });
+    }
+
+    res.status(200).json({
+      message: 'تم تحديث الحالة بنجاح',
+      updatedRequest,
+    });
+  } catch (error) {
+    console.error('Error updating request:', error);
+    res.status(500).json({ error: 'حدث خطأ أثناء تحديث الحالة' });
   }
 });
 

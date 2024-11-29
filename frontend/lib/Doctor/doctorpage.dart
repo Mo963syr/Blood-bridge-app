@@ -135,14 +135,14 @@ class _DoctorPageState extends State<DoctorPage> {
             SizedBox(height: 20),
             GestureDetector(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ApprovedRequestsPage(
-                      approvedRequests: approvedRequests,
-                    ),
-                  ),
-                );
+                // Navigator.push(
+                //   context,
+                //   // MaterialPageRoute(
+                //   //   builder: (context) => ApprovedRequestsPage(
+                //   //     approvedRequests: approvedRequests,
+                //   //   ),
+                //   // ),
+                // );
               },
               child: Card(
                 shape: RoundedRectangleBorder(

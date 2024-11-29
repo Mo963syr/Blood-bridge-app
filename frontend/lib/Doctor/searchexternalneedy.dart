@@ -165,6 +165,37 @@ class RequestDetailsPage extends StatelessWidget {
   final Map<String, dynamic> request;
   RequestDetailsPage({required this.request});
 
+  Future<void> _updateRequestStatus(BuildContext context, String status) async {
+    final String apiUrl = 'http://10.0.2.2:8080/api/requests/update-status';
+    try {
+      final response = await http.put(
+        Uri.parse(apiUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+// erorr in id
+
+          'requestId': request['_id'], // معرّف الطلب
+          'requestStatus': status, // الحالة الجديدة
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        // إذا تمت العملية بنجاح
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('تم تعديل الحالة بنجاح!')),
+        );
+        Navigator.pop(context); // الرجوع إلى الشاشة السابقة
+      } else {
+        throw Exception('Failed to update status: ${response.body}');
+      }
+    } catch (error) {
+      // في حالة حدوث خطأ
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('حدث خطأ أثناء تعديل الحالة: $error')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     print('مسار الصورة: ${request['medecalreport']}');
@@ -190,11 +221,6 @@ class RequestDetailsPage extends StatelessWidget {
                 'فصيلة الدم: ${request['bloodType']}',
                 style: TextStyle(fontSize: 16),
               ),
-              // SizedBox(height: 10),
-              // Text(
-              //   'رقم الهاتف: ${request['phoneNumber']}',
-              //   style: TextStyle(fontSize: 16),
-              // ),
               SizedBox(height: 10),
               Text(
                 'مستوى الخطورة: ${request['urgencyLevel']}',
@@ -206,39 +232,13 @@ class RequestDetailsPage extends StatelessWidget {
                 style: TextStyle(fontSize: 16),
               ),
               SizedBox(height: 20),
-              if (request['medecalreport'] != null &&
-                  request['medecalreport'].endsWith('.jpg') ||
-                  request['medecalreport'].endsWith('.png'))
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'التقرير الطبي:',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 10),
-                    Image.asset(
-                      request['medecalreport'], width: 200, height: 200
-                  ,  errorBuilder: (context, error, stackTrace) {
-                        return Text('فشل في تحميل الصورة.');
-                      },
-                    ),
-                  ],
-                )
-              else
-                Text(
-                  'الرابط غير صالح أو ليس صورة.',
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
-                ),
-              SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      onApprove(request);
-                      Navigator.pop(context);
+                      _updateRequestStatus(
+                          context, 'approved'); // استدعاء الدالة مع الحالة
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
@@ -266,6 +266,5 @@ class RequestDetailsPage extends StatelessWidget {
     );
   }
 }
-
 
 void onApprove(Map<String, dynamic> request) {}

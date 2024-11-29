@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'searchexternalneedy.dart';
 import 'searshenternalneedy.dart';
+import 'package:frontend/Doctor/approverequestpage.dart';
 
 class neddyPage extends StatelessWidget {
+  List<Map<String, dynamic>> approvedRequests = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,7 +93,7 @@ class neddyPage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'طلبات الحاجة الكلية',
+                            'طلبات الحاجة الداحلية',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -100,7 +102,7 @@ class neddyPage extends StatelessWidget {
                           ),
                           SizedBox(height: 8),
                           Text(
-                            'استعراض جميع طلبات الحاجة للدم',
+                            'استعراض جميع طلبات الحاجة الداخلية',
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey[700],
@@ -111,6 +113,60 @@ class neddyPage extends StatelessWidget {
                       Icon(
                         Icons.favorite,
                         color: Colors.red[400],
+                        size: 40,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ApprovedRequestsPage(
+                      approvedRequests: approvedRequests,
+                    ),
+                  ),
+                );
+              },
+              child: Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                elevation: 5,
+                color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'الطلبات التي تمت الموافقة عليها',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'استعراض الطلبات التي تمت الموافقة عليها',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                        ],
+                      ),
+                      Icon(
+                        Icons.done,
+                        color: const Color.fromARGB(255, 51, 255, 0),
                         size: 40,
                       ),
                     ],

@@ -4,8 +4,8 @@ import 'dart:convert';
 import '../../donationrequestpage.dart';
 
 Future<List<dynamic>> fetchData() async {
-  final response =
-      await http.get(Uri.parse('http://10.0.2.2:8080/api/blood-requests'));
+  final response = await http.get(
+      Uri.parse('http://10.0.2.2:8080/api/requests/blood-requests/enternal'));
 
   if (response.statusCode == 200) {
     return json.decode(response.body);
@@ -43,12 +43,12 @@ class searchEnternalNeedy extends StatelessWidget {
                 children: [
                   ElevatedButton.icon(
                     onPressed: () {
-                      Navigator.pop(ctx);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => DonationRequestPage()),
-                      );
+                      // Navigator.pop(ctx);
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //       builder: (context) =>),
+                      // );
                     },
                     icon: Icon(Icons.favorite, color: Colors.white),
                     label: Text(
@@ -93,58 +93,121 @@ class searchEnternalNeedy extends StatelessWidget {
     );
   }
 
+  Color _getUrgencyColor(String urgency) {
+    switch (urgency) {
+      case 'high':
+        return const Color.fromARGB(255, 244, 130, 130)!;
+      case 'medium':
+        return const Color.fromARGB(255, 245, 222, 148)!;
+      case 'low':
+        return const Color.fromARGB(255, 175, 246, 179)!;
+      default:
+        return Colors.grey[300]!;
+    }
+  }
+
+  String _timeAgo(DateTime dateTime) {
+    final Duration difference = DateTime.now().difference(dateTime);
+    if (difference.inMinutes < 60) {
+      return '${difference.inMinutes} دقائق مضت';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours} ساعات مضت';
+    } else {
+      return '${difference.inDays} أيام مضت';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('عرض البيانات'),
+        backgroundColor: Colors.red[400], // نفس لون AppBar
+        centerTitle: true,
       ),
       body: FutureBuilder<List<dynamic>>(
         future: fetchData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator()); // تحميل
+            return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('حدث خطأ: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(child: Text('لا توجد بيانات'));
           } else {
             List<dynamic> data = snapshot.data!;
-            return ListView.builder(
-              itemCount: data.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    _showDonationOptions(
-                        context, data[index] as Map<String, dynamic>);
-                  },
-                  child: Card(
-                    margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                    elevation: 5,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: ListTile(
-                      title: Text(
-                        'Blood Type: ${data[index]['bloodType'] ?? 'نوع الدم غير متاح'}',
-                        style:
-                            TextStyle(fontWeight: FontWeight.bold), // لون النص
+            return Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: ListView.builder(
+                itemCount: data.length,
+                itemBuilder: (context, index) {
+                  final request = data[index];
+                  return GestureDetector(
+                    onTap: () {
+                      _showDonationOptions(
+                          context, request as Map<String, dynamic>);
+                    },
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
                       ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                              'Urgency Level: ${data[index]['urgencyLevel'] ?? 'خطورة الحالة غير متاحة'}'),
-                          Text(
-                              'Location: ${data[index]['location'] ?? 'مكان التواجد غير متاح'}'),
-                          Text(
-                              'Requested In: ${data[index]['createdAt'] ?? 'تاريخ الانشاء غير متاح'}'),
-                        ],
+                      elevation: 5,
+                      margin: EdgeInsets.only(bottom: 16),
+                      color: _getUrgencyColor(request['urgencyLevel']),
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'الموقع: ${request['location'] ?? 'غير متاح'}',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  'فصيلة الدم: ${request['bloodType'] ?? 'غير متاح'}',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  'الوقت: ${_timeAgo(DateTime.parse(request['createdAt']))}',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  'مستوى الخطورة: ${request['urgencyLevel'] ?? 'غير متاح'}',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Icon(
+                              Icons.warning_rounded,
+                              color: Colors.black,
+                              size: 40,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             );
           }
         },
