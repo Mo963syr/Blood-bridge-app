@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'createrequest.dart';
 import 'package:frontend/donationrequestpage.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   runApp(MyApp());
@@ -10,6 +11,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      locale: WidgetsBinding.instance.window.locale,
+      supportedLocales: [
+        Locale('en', 'US'),
+        Locale('ar', 'AE'),
+      ],
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
