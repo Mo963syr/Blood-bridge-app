@@ -68,131 +68,134 @@ class _createEnternalRwquestState extends State<createEnternalRwquest> {
       appBar: AppBar(
         title: Text('إنشاء طلب حاجة'),
       ),
-      body: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                TextField(
-                  controller: locationController,
-                  decoration: InputDecoration(
-                    labelText: 'مكان التواجد الحالي ',
-                    labelStyle: TextStyle(color: Colors.red[700]),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.red[700]!),
-                    ),
-                    fillColor: Colors.white,
-                    filled: true,
-                    prefixIcon: Icon(Icons.email,
-                        color: Colors.red[700]), // أيقونة البريد
-                  ),
-                ),
-                SizedBox(height: 16.0),
-                DropdownButtonFormField<String>(
-                  decoration: InputDecoration(
-                      labelText: "فصيلة الدم المطلوبة",
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  TextField(
+                    controller: locationController,
+                    decoration: InputDecoration(
+                      labelText: 'مكان التواجد الحالي ',
                       labelStyle: TextStyle(color: Colors.red[700]),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                       focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                          borderSide: BorderSide.none),
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.red[700]!),
+                      ),
                       fillColor: Colors.white,
                       filled: true,
-                      prefixIcon:
-                          const Icon(Icons.bloodtype, color: Colors.red)),
-                  value: selectedBloodType,
-                  items: bloodTypes.map((bloodType) {
-                    return DropdownMenuItem(
-                      value: bloodType,
-                      child: Text(bloodType),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    selectedBloodType = value;
-                  },
-                ),
-                SizedBox(height: 16.0),
-                TextField(
-                  controller: phoneController,
-                  decoration: InputDecoration(
-                    labelText: "رقم الهاتف",
-                    labelStyle: TextStyle(color: Colors.red[700]),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      prefixIcon: Icon(Icons.email,
+                          color: Colors.red[700]), // أيقونة البريد
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.red[700]!),
-                    ),
-                    fillColor: Colors.white,
-                    filled: true,
-                    prefixIcon: Icon(Icons.lock,
-                        color: Colors.red[700]), // أيقونة القفل
                   ),
-                ),
-                SizedBox(height: 16.0),
-                DropdownButtonFormField<String>(
-                  decoration: InputDecoration(
-                      labelText: "خطورة الحالة",
+                  SizedBox(height: 16.0),
+                  DropdownButtonFormField<String>(
+                    decoration: InputDecoration(
+                        labelText: "فصيلة الدم المطلوبة",
+                        labelStyle: TextStyle(color: Colors.red[700]),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18),
+                            borderSide: BorderSide.none),
+                        fillColor: Colors.white,
+                        filled: true,
+                        prefixIcon:
+                            const Icon(Icons.bloodtype, color: Colors.red)),
+                    value: selectedBloodType,
+                    items: bloodTypes.map((bloodType) {
+                      return DropdownMenuItem(
+                        value: bloodType,
+                        child: Text(bloodType),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      selectedBloodType = value;
+                    },
+                  ),
+                  SizedBox(height: 16.0),
+                  TextField(
+                    controller: phoneController,
+                    decoration: InputDecoration(
+                      labelText: "رقم الهاتف",
                       labelStyle: TextStyle(color: Colors.red[700]),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                       focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                          borderSide: BorderSide.none),
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.red[700]!),
+                      ),
                       fillColor: Colors.white,
                       filled: true,
-                      prefixIcon:
-                          const Icon(Icons.bloodtype, color: Colors.red)),
-                  value: selecteddanger,
-                  items: danger.map((danger) {
-                    return DropdownMenuItem(
-                      value: danger,
-                      child: Text(danger),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    selecteddanger = value;
-                  },
-                ),
-                SizedBox(height: 35.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        bloodRequest(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF66BB6A)),
-                      child: Text(
-                        'إرسال الطلب',
-                        style: TextStyle(color: Colors.white),
-                      ),
+                      prefixIcon: Icon(Icons.lock,
+                          color: Colors.red[700]), // أيقونة القفل
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
+                  ),
+                  SizedBox(height: 16.0),
+                  DropdownButtonFormField<String>(
+                    decoration: InputDecoration(
+                        labelText: "خطورة الحالة",
+                        labelStyle: TextStyle(color: Colors.red[700]),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18),
+                            borderSide: BorderSide.none),
+                        fillColor: Colors.white,
+                        filled: true,
+                        prefixIcon:
+                            const Icon(Icons.bloodtype, color: Colors.red)),
+                    value: selecteddanger,
+                    items: danger.map((danger) {
+                      return DropdownMenuItem(
+                        value: danger,
+                        child: Text(danger),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      selecteddanger = value;
+                    },
+                  ),
+                  SizedBox(height: 35.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          bloodRequest(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFF66BB6A)),
+                        child: Text(
+                          'إرسال الطلب',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
-                      child: Text('الرجوع'),
-                    ),
-                  ],
-                ),
-              ],
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                        ),
+                        child: Text('الرجوع'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

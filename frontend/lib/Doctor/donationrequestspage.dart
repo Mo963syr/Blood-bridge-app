@@ -62,6 +62,7 @@ class _DonationRequestsPageState extends State<DonationRequestsPage> {
         backgroundColor: Colors.red[400],
         centerTitle: true,
       ),
+<<<<<<< HEAD
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : donationrequest.isEmpty
@@ -99,6 +100,35 @@ class _DonationRequestsPageState extends State<DonationRequestsPage> {
             ),
           );
         },
+=======
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: ListView.builder(
+          itemCount: donationRequests.length,
+          itemBuilder: (context, index) {
+            final request = donationRequests[index];
+            return Card(
+              child: ListTile(
+                title: Text('الموقع: ${request['location']}'),
+                subtitle: Text('فصيلة الدم: ${request['bloodType']}'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DonationDetailsPage(
+                        request: request,
+                        onApprove: (approvedRequest) {
+                          onApprove(approvedRequest);
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
+            );
+          },
+        ),
+>>>>>>> 3690e73bfde4cd11ddff220ab5022bbfb7a2c72a
       ),
     );
   }

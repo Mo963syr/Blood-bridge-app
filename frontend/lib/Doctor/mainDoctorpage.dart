@@ -58,25 +58,28 @@ class _DoctorHomePageState extends State<DoctorHomePage> {
         centerTitle: true,
         backgroundColor: Colors.red[400],
       ),
-      body: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10.0),
-            child: GridView.count(
-              crossAxisCount: 2,
-              mainAxisSpacing: 10,
-              crossAxisSpacing: 10,
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              children: [
-                _buildCardItem(Icons.person, 'الملف الشخصي', 0),
-                _buildCardItem(Icons.add_circle, "طلب حاجة", 1),
-                _buildCardItem(Icons.search, "الطلبات", 3),
-                _buildCardItem(Icons.history, "المواعيد", 4),
-              ],
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10.0),
+              child: GridView.count(
+                crossAxisCount: 2,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                children: [
+                  _buildCardItem(Icons.person, 'الملف الشخصي', 0),
+                  _buildCardItem(Icons.add_circle, "طلب حاجة", 1),
+                  _buildCardItem(Icons.search, "الطلبات", 3),
+                  _buildCardItem(Icons.history, "المواعيد", 4),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       backgroundColor: Colors.grey[100],
     );

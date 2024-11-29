@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/signin_page.dart';
 import 'createrequest.dart';
 import 'package:frontend/donationrequestpage.dart';
 
@@ -10,6 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -45,15 +47,50 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void _logout() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('هل تريد تسجيل الخروج؟'),
+          content: Text('سيتم تسجيل الخروج من الحساب الحالي.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('لا'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => SigninPage()),
+                );
+              },
+              child: Text('نعم'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('الصفحة الرئيسية'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.exit_to_app),
+            onPressed: _logout,
+          ),
+        ],
       ),
       body: Center(
         child: Text(
-          ' welcome to home page ',
+          ' لاتوجد منشورات حالياً',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
       ),
