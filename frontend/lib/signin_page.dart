@@ -83,91 +83,94 @@ class _SigninPageState extends State<SigninPage> {
       backgroundColor: Color(0xFFF7F3F3),
       body: Directionality(
         textDirection: TextDirection.rtl,
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  "assets/images/b.png",
-                  width: 100,
-                ),
-                SizedBox(height: 20),
-                TextField(
-                  controller: _emailController,
-                  decoration: InputDecoration(
-                    labelText: 'البريد الالكتروني',
-                    labelStyle: TextStyle(color: Colors.red[700]),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.red[700]!),
-                    ),
-                    fillColor: Colors.white,
-                    filled: true,
-                    prefixIcon: Icon(Icons.email,
-                        color: Colors.red[700]), // أيقونة البريد
+        child: Center(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    "assets/images/b.png",
+                    width: 100,
                   ),
-                ),
-                SizedBox(height: 20),
-                TextField(
-                  controller: _passwordController,
-                  decoration: InputDecoration(
-                    labelText: 'كلمة المرور ',
-                    labelStyle: TextStyle(color: Colors.red[700]),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.red[700]!),
-                    ),
-                    fillColor: Colors.white,
-                    filled: true,
-                    prefixIcon: Icon(Icons.lock,
-                        color: Colors.red[700]), // أيقونة القفل
-                  ),
-                  obscureText: true,
-                ),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: signin,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red[700], // لون الزر الأساسي
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                  ),
-                  child: Text(
-                    'تسجيل الدخول',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                  SizedBox(height: 20),
+                  TextField(
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      labelText: 'البريد الالكتروني',
+                      labelStyle: TextStyle(color: Colors.red[700]),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.red[700]!),
+                      ),
+                      fillColor: Colors.white,
+                      filled: true,
+                      prefixIcon: Icon(Icons.email,
+                          color: Colors.red[700]), // أيقونة البريد
                     ),
                   ),
-                ),
-                SizedBox(height: 20),
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SignupPage()),
-                    );
-                  },
-                  child: Text(
-                    'ليس لديك حساب ؟انشاء حساب',
-                    style: TextStyle(
-                      color: Colors.red[700],
-                      fontSize: 16,
+                  SizedBox(height: 20),
+                  TextField(
+                    controller: _passwordController,
+                    decoration: InputDecoration(
+                      labelText: 'كلمة المرور ',
+                      labelStyle: TextStyle(color: Colors.red[700]),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.red[700]!),
+                      ),
+                      fillColor: Colors.white,
+                      filled: true,
+                      prefixIcon: Icon(Icons.lock,
+                          color: Colors.red[700]), // أيقونة القفل
+                    ),
+                    obscureText: true,
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: signin,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red[700], // لون الزر الأساسي
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                    ),
+                    child: Text(
+                      'تسجيل الدخول',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                  SizedBox(height: 20),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SignupPage()),
+                      );
+                    },
+                    child: Text(
+                      'ليس لديك حساب ؟انشاء حساب',
+                      style: TextStyle(
+                        color: Colors.red[700],
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
