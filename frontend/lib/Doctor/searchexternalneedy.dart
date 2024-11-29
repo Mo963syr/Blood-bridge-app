@@ -190,11 +190,11 @@ class RequestDetailsPage extends StatelessWidget {
                 'فصيلة الدم: ${request['bloodType']}',
                 style: TextStyle(fontSize: 16),
               ),
-              SizedBox(height: 10),
-              Text(
-                'رقم الهاتف: ${request['phoneNumber']}',
-                style: TextStyle(fontSize: 16),
-              ),
+              // SizedBox(height: 10),
+              // Text(
+              //   'رقم الهاتف: ${request['phoneNumber']}',
+              //   style: TextStyle(fontSize: 16),
+              // ),
               SizedBox(height: 10),
               Text(
                 'مستوى الخطورة: ${request['urgencyLevel']}',
@@ -206,7 +206,9 @@ class RequestDetailsPage extends StatelessWidget {
                 style: TextStyle(fontSize: 16),
               ),
               SizedBox(height: 20),
-              if (request['medecalreport'] != null)
+              if (request['medecalreport'] != null &&
+                  request['medecalreport'].endsWith('.jpg') ||
+                  request['medecalreport'].endsWith('.png'))
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -216,14 +218,20 @@ class RequestDetailsPage extends StatelessWidget {
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 10),
-                    Image.asset('${request['medecalreport']}'),
+                    Image.asset(
+                      request['medecalreport'], width: 200, height: 200
+                  ,  errorBuilder: (context, error, stackTrace) {
+                        return Text('فشل في تحميل الصورة.');
+                      },
+                    ),
                   ],
                 )
               else
                 Text(
-                  'لا يوجد تقرير طبي مرفق أو الملف غير موجود.',
+                  'الرابط غير صالح أو ليس صورة.',
                   style: TextStyle(fontSize: 16, color: Colors.grey),
                 ),
+              SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -258,5 +266,6 @@ class RequestDetailsPage extends StatelessWidget {
     );
   }
 }
+
 
 void onApprove(Map<String, dynamic> request) {}
