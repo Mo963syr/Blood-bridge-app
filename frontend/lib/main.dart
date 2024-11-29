@@ -9,6 +9,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       locale: WidgetsBinding.instance.window.locale,
       supportedLocales: [
         Locale('en', 'US'),
