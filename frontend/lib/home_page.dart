@@ -48,9 +48,31 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _logout() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => SigninPage()),
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('هل تريد تسجيل الخروج؟'),
+          content: Text('سيتم تسجيل الخروج من الحساب الحالي.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('لا'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => SigninPage()),
+                );
+              },
+              child: Text('نعم'),
+            ),
+          ],
+        );
+      },
     );
   }
 
