@@ -9,14 +9,22 @@ const router = express.Router();
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'images/externalreport/');
+    cb(null, '../frontend/assets/externalreport');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + '-' + file.originalname);
+  },
+});
+const donation = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, '../frontend/assets/donationreport');
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + '-' + file.originalname);
   },
 });
 const upload = multer({ storage: storage });
-
+const upload_donation_repo = multer({ storage: donation });
 router.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 router.post(
   '/blood-request/external',
@@ -47,7 +55,9 @@ router.post(
           : 'unknown';
 
       const bloodRequest = new BloodRequest({
-        medecalreport: req.file ? `../backend/images/externalreport/${req.file.filename}` : null,
+        medecalreport: req.file
+          ? `assets/externalreport/${req.file.filename}`
+          : null,
         location,
         bloodType,
         urgencyLevel,
@@ -59,7 +69,7 @@ router.post(
       let image;
       if (req.file) {
         image = new Image({
-          filePath: `images/externalreport/${req.file.filename}`,
+          filePath: `assets/externalreport/${req.file.filename}`,
         });
         await image.save();
         user.images.push(image._id);
@@ -68,7 +78,7 @@ router.post(
       await bloodRequest.save();
       await user.save();
       const userResponse = {
-        medecalreport_id: bloodRequest.medecalreport,
+        medecalreport: bloodRequest.medecalreport,
         location: bloodRequest.location,
         bloodType: bloodRequest.bloodType,
         urgencyLevel: bloodRequest.urgencyLevel,
@@ -91,60 +101,72 @@ router.post(
   }
 );
 
-router.post('/donation-Request', upload.single('image'), async (req, res) => {
-  try {
-    console.log(req.file);
-    console.log(req.files);
-    console.log(req.body);
-    const { location, Weight, bloodType, AvailabilityPeriod, userId } =
-      req.body;
+router.post(
+  '/donation-Request',
+  upload_donation_repo.single('image'),
+  async (req, res) => {
+    try {
+      console.log(req.file);
+      console.log(req.files);
+      console.log(req.body);
+      const { location, Weight, bloodType, AvailabilityPeriod, userId } =
+        req.body;
 
-    if (!location || !Weight || !bloodType || !AvailabilityPeriod || !userId) {
-      return res.status(400).json({ message: 'All fields are required' });
-    } else if (!req.file) {
-      console.log(res.statusCode);
-      return res.status(400).json({ message: 'image is required' });
-    }
+      if (
+        !location ||
+        !Weight ||
+        !bloodType ||
+        !AvailabilityPeriod ||
+        !userId
+      ) {
+        return res.status(400).json({ message: 'All fields are required' });
+      } else if (!req.file) {
+        console.log(res.statusCode);
+        return res.status(400).json({ message: 'image is required' });
+      }
 
-    const image = new Image({
-      filePath: `/uploads/${req.file.filename}`,
-    });
-
-    const DonationRequest = new donationRequest({
-      medecalreport: image._id,
-      Weight,
-      location,
-      bloodType,
-      AvailabilityPeriod,
-      createdAt: Date.now(),
-      user: userId,
-    });
-
-    await DonationRequest.save();
-    await image.save();
-
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    user.images.push(image._id);
-    await user.save();
-    if (req.file) {
-      console.log(res.statusCode);
-      return res.status(201).json({
-        message: 'Blood request created and image added to user',
-        DonationRequest,
+      const image = new Image({
+        filePath: `assets/donationreport/${req.file.filename}`,
       });
+
+      const DonationRequest = new donationRequest({
+        medecalreport: req.file
+          ? `assets/donationreport/${req.file.filename}`
+          : null,
+        Weight,
+        location,
+        bloodType,
+        AvailabilityPeriod,
+        createdAt: Date.now(),
+        user: userId,
+      });
+
+      await DonationRequest.save();
+      await image.save();
+
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      user.images.push(image._id);
+      await user.save();
+      if (req.file) {
+        console.log(res.statusCode);
+        return res.status(201).json({
+          message: 'Blood request created and image added to user',
+          DonationRequest,
+        });
+      }
+    } catch (err) {
+      console.error(err.message);
+      return res
+        .status(500)
+        .json({ error: 'An error occurred while creating the blood request' });
+      console.log(res.statusCode);
     }
-  } catch (err) {
-    console.error(err.message);
-    return res
-      .status(500)
-      .json({ error: 'An error occurred while creating the blood request' });
-    console.log(res.statusCode);
   }
-});
+);
 router.get('/blood-requests', async (req, res) => {
   try {
     const bloodRequests = await BloodRequest.find();
@@ -160,9 +182,26 @@ router.get('/blood-requests', async (req, res) => {
 router.get('/blood-requests/external', async (req, res) => {
   try {
     // فلترة الطلبات حسب النوع
-    const bloodRequests = await BloodRequest.find({ requestneedytype: 'external' }); 
+    const bloodRequests = await BloodRequest.find({
+      requestneedytype: 'external',
+    });
     res.json(bloodRequests);
     console.log(bloodRequests);
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .json({ error: 'An error occurred while fetching blood requests' });
+  }
+});
+router.get('/donationrequest', async (req, res) => {
+  try {
+    // فلترة الطلبات حسب النوع
+    const donationrequest = await donationRequest.find({
+      requestStatus: 'active',
+    });
+    res.json(donationrequest);
+    console.log(donationrequest);
   } catch (err) {
     console.error(err);
     res
