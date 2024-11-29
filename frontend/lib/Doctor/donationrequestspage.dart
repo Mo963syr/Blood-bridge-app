@@ -34,30 +34,33 @@ class DonationRequestsPage extends StatelessWidget {
         backgroundColor: Colors.red[400],
         centerTitle: true,
       ),
-      body: ListView.builder(
-        itemCount: donationRequests.length,
-        itemBuilder: (context, index) {
-          final request = donationRequests[index];
-          return Card(
-            child: ListTile(
-              title: Text('الموقع: ${request['location']}'),
-              subtitle: Text('فصيلة الدم: ${request['bloodType']}'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DonationDetailsPage(
-                      request: request,
-                      onApprove: (approvedRequest) {
-                        onApprove(approvedRequest);
-                      },
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: ListView.builder(
+          itemCount: donationRequests.length,
+          itemBuilder: (context, index) {
+            final request = donationRequests[index];
+            return Card(
+              child: ListTile(
+                title: Text('الموقع: ${request['location']}'),
+                subtitle: Text('فصيلة الدم: ${request['bloodType']}'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DonationDetailsPage(
+                        request: request,
+                        onApprove: (approvedRequest) {
+                          onApprove(approvedRequest);
+                        },
+                      ),
                     ),
-                  ),
-                );
-              },
-            ),
-          );
-        },
+                  );
+                },
+              ),
+            );
+          },
+        ),
       ),
     );
   }

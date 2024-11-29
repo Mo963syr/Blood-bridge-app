@@ -1,10 +1,10 @@
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart';
 import 'dart:io';
 import 'home_page.dart';
 import 'services/user_preferences.dart';
+
 class RequestPage extends StatelessWidget {
   final TextEditingController locationController = TextEditingController();
   // final TextEditingController phoneController = TextEditingController();
@@ -35,12 +35,11 @@ class RequestPage extends StatelessWidget {
   }
 
   Future<void> bloodRequest(BuildContext context) async {
-
- String? userId = await UserPreferences.getUserId();
+    String? userId = await UserPreferences.getUserId();
     if (userId == null) {
-    print('User ID not found');
-    return;
-  }
+      print('User ID not found');
+      return;
+    }
     if (selectedImage == null) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Please select an image')));
@@ -48,7 +47,7 @@ class RequestPage extends StatelessWidget {
     }
     if (locationController.text.isEmpty ||
         selectedBloodType == null ||
-        // phoneController.text.isEmpty 
+        // phoneController.text.isEmpty
         selecteddanger == null ||
         selectedImage == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -74,16 +73,16 @@ class RequestPage extends StatelessWidget {
         'http://10.0.2.2:8080/api/requests/blood-request/external',
         data: formData,
       );
-     print(response.statusCode);
+      print(response.statusCode);
       print(response.data);
       if (response.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Request created successfully')),
         );
-          Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
       } else {
         print('Error: ${response.statusCode}');
         print('Response: ${response.data}');
@@ -98,119 +97,120 @@ class RequestPage extends StatelessWidget {
     }
   }
 
-
-@override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('إنشاء طلب حاجة'),
       ),
-      body: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                TextField(
-                  controller: locationController,
-                  decoration: InputDecoration(
-                    labelText: 'مكان التواجد الحالي',
-                    labelStyle: TextStyle(color: Colors.red[700]),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 16.0),
-                DropdownButtonFormField<String>(
-                  decoration: InputDecoration(
-                    labelText: "فصيلة الدم المطلوبة",
-                    labelStyle: TextStyle(color: Colors.red[700]),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  value: selectedBloodType,
-                  items: bloodTypes.map((bloodType) {
-                    return DropdownMenuItem(
-                      value: bloodType,
-                      child: Text(bloodType),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    selectedBloodType = value;
-                  },
-                ),
-                // SizedBox(height: 16.0),
-                // TextField(
-                //   controller: phoneController,
-                //   decoration: InputDecoration(
-                //     labelText: "رقم الهاتف",
-                //     labelStyle: TextStyle(color: Colors.red[700]),
-                //     border: OutlineInputBorder(
-                //       borderRadius: BorderRadius.circular(12),
-                //     ),
-                //   ),
-                // ),
-                SizedBox(height: 16.0),
-                DropdownButtonFormField<String>(
-                  decoration: InputDecoration(
-                    labelText: "خطورة الحالة",
-                    labelStyle: TextStyle(color: Colors.red[700]),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  value: selecteddanger,
-                  items: danger.map((danger) {
-                    return DropdownMenuItem(
-                      value: danger,
-                      child: Text(danger),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    selecteddanger = value;
-                  },
-                ),
-                SizedBox(height: 16.0),
-                ElevatedButton(
-                  onPressed: pickImage,
-                  child: Text('اختر تقريرًا طبيًا'),
-                ),
-                SizedBox(height: 16.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        bloodRequest(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF66BB6A)),
-                      child: Text(
-                        'إرسال الطلب',
-                        style: TextStyle(color: Colors.white),
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  TextField(
+                    controller: locationController,
+                    decoration: InputDecoration(
+                      labelText: 'مكان التواجد الحالي',
+                      labelStyle: TextStyle(color: Colors.red[700]),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                      ),
-                      child: Text(
-                        'الرجوع',
-                        style: TextStyle(color: Colors.white),
+                  ),
+                  SizedBox(height: 16.0),
+                  DropdownButtonFormField<String>(
+                    decoration: InputDecoration(
+                      labelText: "فصيلة الدم المطلوبة",
+                      labelStyle: TextStyle(color: Colors.red[700]),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                  ],
-
-),
-              ],
+                    value: selectedBloodType,
+                    items: bloodTypes.map((bloodType) {
+                      return DropdownMenuItem(
+                        value: bloodType,
+                        child: Text(bloodType),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      selectedBloodType = value;
+                    },
+                  ),
+                  // SizedBox(height: 16.0),
+                  // TextField(
+                  //   controller: phoneController,
+                  //   decoration: InputDecoration(
+                  //     labelText: "رقم الهاتف",
+                  //     labelStyle: TextStyle(color: Colors.red[700]),
+                  //     border: OutlineInputBorder(
+                  //       borderRadius: BorderRadius.circular(12),
+                  //     ),
+                  //   ),
+                  // ),
+                  SizedBox(height: 16.0),
+                  DropdownButtonFormField<String>(
+                    decoration: InputDecoration(
+                      labelText: "خطورة الحالة",
+                      labelStyle: TextStyle(color: Colors.red[700]),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    value: selecteddanger,
+                    items: danger.map((danger) {
+                      return DropdownMenuItem(
+                        value: danger,
+                        child: Text(danger),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      selecteddanger = value;
+                    },
+                  ),
+                  SizedBox(height: 16.0),
+                  ElevatedButton(
+                    onPressed: pickImage,
+                    child: Text('اختر تقريرًا طبيًا'),
+                  ),
+                  SizedBox(height: 16.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          bloodRequest(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFF66BB6A)),
+                        child: Text(
+                          'إرسال الطلب',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                        ),
+                        child: Text(
+                          'الرجوع',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

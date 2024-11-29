@@ -90,7 +90,7 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Center(
         child: Text(
-          ' welcome to home page ',
+          ' لاتوجد منشورات حالياً',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
       ),
