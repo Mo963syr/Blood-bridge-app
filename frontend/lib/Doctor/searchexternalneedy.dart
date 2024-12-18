@@ -45,11 +45,11 @@ class _SearshexternalneedyState extends State<Searshexternalneedy> {
   Color _getUrgencyColor(String urgency) {
     switch (urgency) {
       case 'high':
-        return const Color.fromARGB(255, 244, 130, 130)!;
+        return const Color.fromARGB(255, 244, 130, 130);
       case 'medium':
-        return const Color.fromARGB(255, 245, 222, 148)!;
+        return const Color.fromARGB(255, 245, 222, 148);
       case 'low':
-        return const Color.fromARGB(255, 175, 246, 179)!;
+        return const Color.fromARGB(255, 175, 246, 179);
       default:
         return Colors.grey[300]!;
     }

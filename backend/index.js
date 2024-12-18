@@ -20,12 +20,14 @@ const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const bloodRequestRoutes = require('./routes/bloodRequest.routes');
 const uploadRoutes = require('./routes/upload.routes');
+const appointmentRoutes = require('./routes/appointment.routes');
 
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/requests', bloodRequestRoutes);
 app.use('/api/uploads', uploadRoutes);
+app.use('/api', appointmentRoutes);
 
 
 app.listen(port,'0.0.0.0', () => {

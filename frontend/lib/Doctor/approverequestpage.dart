@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/Doctor/ScheduleAppointmentPage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../../donationrequestpage.dart';
 
 Future<List<dynamic>> fetchData() async {
   final response = await http.get(
@@ -44,12 +44,14 @@ class ApprovedRequestsPage extends StatelessWidget {
                 children: [
                   ElevatedButton.icon(
                     onPressed: () {
-                      // Navigator.pop(ctx);
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //       builder: (context) => DonationRequestPage()),
-                      // );
+                      Navigator.pop(ctx);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ScheduleAppointmentPage(needy: needy),
+                        ),
+                      );
                     },
                     icon: Icon(Icons.favorite, color: Colors.white),
                     label: Text(

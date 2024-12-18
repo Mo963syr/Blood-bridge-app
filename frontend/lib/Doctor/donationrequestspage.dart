@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:io';
 
 class DonationRequestsPage extends StatefulWidget {
   final Function(Map<String, dynamic>) onApprove;
@@ -110,6 +109,38 @@ class DonationDetailsPage extends StatelessWidget {
 
   DonationDetailsPage({required this.request, required this.onApprove});
 
+  Future<void> _updateRequestStatus(BuildContext context, String status) async {
+    final String apiUrl =
+        'http://10.0.2.2:8080/api/requests/update-status-donation';
+    try {
+      final response = await http.put(
+        Uri.parse(apiUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+// erorr in id
+
+          'requestId': request['_id'], // معرّف الطلب
+          'requestStatus': status, // الحالة الجديدة
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        // إذا تمت العملية بنجاح
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('تم تعديل الحالة بنجاح!')),
+        );
+        Navigator.pop(context); // الرجوع إلى الشاشة السابقة
+      } else {
+        throw Exception('Failed to update status: ${response.body}');
+      }
+    } catch (error) {
+      // في حالة حدوث خطأ
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('حدث خطأ أثناء تعديل الحالة: $error')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     print('مسار الصورة: ${request['medecalreport']}');
@@ -147,41 +178,41 @@ class DonationDetailsPage extends StatelessWidget {
               'الوزن: ${request['Weight']}',
               style: TextStyle(fontSize: 16),
             ),
-          SizedBox(height: 20),
-              if (request['medecalreport'] != null &&
-                  request['medecalreport'].endsWith('.jpg') ||
-                  request['medecalreport'].endsWith('.png'))
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'التقرير الطبي:',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 10),
-                    Image.asset(
-                      request['medecalreport'], width: 800, height: 500
-                     , errorBuilder: (context, error, stackTrace) {
-                        return Text('فشل في تحميل الصورة.');
-                      },
-                    ),
-                  ],
-                )
-              else
-                Text(
-                  'الرابط غير صالح أو ليس صورة.',
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
-                ),
-            
+            SizedBox(height: 20),
+            if (request['medecalreport'] != null &&
+                    request['medecalreport'].endsWith('.jpg') ||
+                request['medecalreport'].endsWith('.png'))
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'التقرير الطبي:',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 10),
+                  Image.asset(
+                    request['medecalreport'],
+                    width: 800,
+                    height: 500,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Text('فشل في تحميل الصورة.');
+                    },
+                  ),
+                ],
+              )
+            else
+              Text(
+                'الرابط غير صالح أو ليس صورة.',
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+
             Spacer(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    // إجراء الموافقة
-                    onApprove(request);
+                    _updateRequestStatus(context, 'approved');
                     Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(

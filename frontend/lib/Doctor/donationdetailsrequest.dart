@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '';
 
 class DonationDetailsPage extends StatelessWidget {
   final Map<String, dynamic> request;
@@ -11,7 +10,7 @@ class DonationDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('تفاصيل طلب التبرع'),
+        title: Text('تفاصيل طب التبرع'),
         backgroundColor: Colors.red[400],
       ),
       body: Directionality(
