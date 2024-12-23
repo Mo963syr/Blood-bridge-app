@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/signin_page.dart';
 import 'createrequest.dart';
+import 'profilepage.dart';
 import 'package:frontend/donationrequestpage.dart';
 
 void main() {
@@ -30,7 +31,12 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 2;
 
   void _onItemTapped(int index) {
-    if (index == 1) {
+    if (index == 0) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ProfilePage()),
+      );
+    } else if (index == 1) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => RequestPage()),
