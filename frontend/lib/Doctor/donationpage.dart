@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/Doctor/neddyPage.dart';
 import 'donationrequestspage.dart';
-import 'donationpage.dart';
+import 'donation-requests-approved.dart';
 
-class DoctorPage extends StatefulWidget {
+class donationpage extends StatefulWidget {
   @override
-  _DoctorPageState createState() => _DoctorPageState();
+  _donationpageState createState() => _donationpageState();
 }
 
-class _DoctorPageState extends State<DoctorPage> {
+class _donationpageState extends State<donationpage> {
+ 
   List<Map<String, dynamic>> approvedRequests = [];
 
   @override
@@ -24,67 +25,18 @@ class _DoctorPageState extends State<DoctorPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => neddyPage()),
-                );
-              },
-              child: Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                elevation: 5,
-                color: Colors.white,
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'طلبات الحاجة',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            'استعراض جميع طلبات الحاجة للمرضى',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey[700],
-                            ),
-                          ),
-                        ],
-                      ),
-                      Icon(
-                        Icons.add_alert,
-                        color: Colors.red[400],
-                        size: 40,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
             SizedBox(height: 20),
             GestureDetector(
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => donationpage(
-                      // onApprove: (approvedRequest) {
-                      //   setState(() {
-                      //     approvedRequests.add(approvedRequest);
-                      //   });
-                      // },
+                    builder: (context) => DonationRequestsPage(
+                      onApprove: (approvedRequest) {
+                        setState(() {
+                          approvedRequests.add(approvedRequest);
+                        });
+                      },
                     ),
                   ),
                 );
@@ -104,7 +56,7 @@ class _DoctorPageState extends State<DoctorPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'طلبات التبرع',
+                            'طلبات التبرع الجديدة',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -133,15 +85,19 @@ class _DoctorPageState extends State<DoctorPage> {
             ),
             SizedBox(height: 20),
             GestureDetector(
-              onTap: () {
-                // Navigator.push(
-                //   context,
-                //   // MaterialPageRoute(
-                //   //   builder: (context) => ApprovedRequestsPage(
-                //   //     approvedRequests: approvedRequests,
-                //   //   ),
-                //   // ),
-                // );
+           onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DonationRequestsPageApproved(
+                      onApprove: (approvedRequest) {
+                        setState(() {
+                          approvedRequests.add(approvedRequest);
+                        });
+                      },
+                    ),
+                  ),
+                );
               },
               child: Card(
                 shape: RoundedRectangleBorder(

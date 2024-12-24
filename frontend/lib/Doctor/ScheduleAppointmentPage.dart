@@ -15,16 +15,44 @@ class ScheduleAppointmentPage extends StatefulWidget {
 class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
+  List<Map<String, dynamic>> _needyList = [];
+  Map<String, dynamic>? _selectedNeedy;
+  bool _isLoading = true;
+
+  Future<void> _fetchNeedyList() async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://10.0.2.2:8080/api/requests/blood-requests-with-user'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        setState(() {
+          _needyList = data.map((item) => item as Map<String, dynamic>).toList();
+          _isLoading = false;
+        });
+      } else {
+        throw Exception('Failed to fetch needy list');
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('خطأ في جلب البيانات: $e')),
+      );
+    }
+  }
 
   Future<void> _sendAppointmentToServer() async {
-    if (_selectedDate == null || _selectedTime == null) {
+    if (_selectedDate == null || _selectedTime == null || _selectedNeedy == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('يرجى تحديد التاريخ والوقت')),
+        SnackBar(content: Text('يرجى تحديد المحتاج والتاريخ والوقت')),
       );
       return;
     }
 
-    // تحويل التاريخ والوقت إلى صيغة مناسبة
     final DateTime appointmentDateTime = DateTime(
       _selectedDate!.year,
       _selectedDate!.month,
@@ -33,35 +61,38 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
       _selectedTime!.minute,
     );
 
-    // بيانات الطلب
     final Map<String, dynamic> requestBody = {
-      'needyId': widget.needy['user'].toString(),
-      'appointmentDateTime': appointmentDateTime.toIso8601String().toString(),
-      // أضف الحقول الأخرى التي تحتاجها هنا مع تحويلها إلى نصوص
+      'needyId': _selectedNeedy?['id']?.toString() ?? '',
+      'appointmentDateTime': appointmentDateTime.toIso8601String(),
     };
 
-    print(requestBody);
-    // إرسال الطلب
     try {
       final response = await http.post(
         Uri.parse('http://10.0.2.2:8080/api/appointments'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(requestBody),
       );
-      print(requestBody);
+
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('تم تحديد الموعد بنجاح')),
         );
         Navigator.pop(context);
       } else {
-        throw Exception('فشل في تحد الموعد: ${response.body}');
+        final errorMessage = json.decode(response.body)['message'] ?? 'خطأ غير معروف';
+        throw Exception('فشل في تحديد الموعد: $errorMessage');
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('خطأ: $e')),
       );
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchNeedyList();
   }
 
   @override
@@ -97,6 +128,75 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
               'مستوى الخطورة: ${widget.needy['urgencyLevel'] ?? 'غير متاح'}',
               style: TextStyle(fontSize: 18),
             ),
+            SizedBox(height: 30),
+            Text(
+              'اختر محتاجًا:',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 20),
+            _isLoading
+                ? Center(child: CircularProgressIndicator())
+                : DropdownButtonFormField<Map<String, dynamic>>(
+                    decoration: InputDecoration(
+                      labelText: 'اختر محتاجًا',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: _needyList.map((needy) {
+                      return DropdownMenuItem<Map<String, dynamic>>(
+                        value: needy,
+                        child: Card(
+                          elevation: 4,
+                          margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          color: _getUrgencyColor(needy['urgencyLevel']),
+                          child: Padding(
+                            padding: const EdgeInsets.all(15.0),
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  backgroundColor: Colors.white,
+                                  child: Icon(
+                                    Icons.person,
+                                    color: _getUrgencyTextColor(needy['urgencyLevel']),
+                                  ),
+                                ),
+                                SizedBox(width: 15),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      needy['user']['firstName'] ?? 'غير معروف',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: _getUrgencyTextColor(needy['urgencyLevel']),
+                                      ),
+                                    ),
+                                    SizedBox(height: 5),
+                                    Text(
+                                      'مستوى الخطورة: ${needy['urgencyLevel'] ?? 'غير معروف'}',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: _getUrgencyTextColor(needy['urgencyLevel']),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedNeedy = value;
+                      });
+                    },
+                    value: _selectedNeedy,
+                  ),
             SizedBox(height: 30),
             Text(
               'حدد تاريخ ووقت الموعد:',
@@ -172,5 +272,29 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
         ),
       ),
     );
+  }
+
+  Color _getUrgencyColor(String? urgencyLevel) {
+    switch (urgencyLevel) {
+      case 'high':
+        return Colors.red;
+      case 'medium':
+        return Colors.orange;
+      case 'low':
+        return Colors.green;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  Color _getUrgencyTextColor(String? urgencyLevel) {
+    switch (urgencyLevel) {
+      case 'high':
+      case 'medium':
+      case 'low':
+        return Colors.white;
+      default:
+        return Colors.black;
+    }
   }
 }

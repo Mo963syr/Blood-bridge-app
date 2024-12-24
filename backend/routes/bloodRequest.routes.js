@@ -181,7 +181,6 @@ router.get('/blood-requests', async (req, res) => {
 });
 router.get('/blood-requests/external', async (req, res) => {
   try {
-
     const bloodRequests = await BloodRequest.find({
       requestneedytype: 'external',
       requestStatus: 'active',
@@ -197,7 +196,6 @@ router.get('/blood-requests/external', async (req, res) => {
 });
 router.get('/blood-requests/approve', async (req, res) => {
   try {
-
     const bloodRequests = await BloodRequest.find({
       requestneedytype: 'external',
       requestStatus: 'approved',
@@ -225,11 +223,24 @@ router.get('/blood-requests/enternal', async (req, res) => {
       .json({ error: 'An error occurred while fetching blood requests' });
   }
 });
-router.get('/donationrequest', async (req, res) => {
+router.get('/donation-request', async (req, res) => {
   try {
-
     const donationrequest = await donationRequest.find({
       requestStatus: 'active',
+    });
+    res.json(donationrequest);
+    console.log(donationrequest);
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .json({ error: 'An error occurred while fetching blood requests' });
+  }
+});
+router.get('/donation-request-approved', async (req, res) => {
+  try {
+    const donationrequest = await donationRequest.find({
+      requestStatus: 'approved',
     });
     res.json(donationrequest);
     console.log(donationrequest);
@@ -275,8 +286,7 @@ router.put('/update-status', async (req, res) => {
     const updatedRequest = await BloodRequest.findByIdAndUpdate(
       requestId,
       { requestStatus },
-      { new: true } 
-
+      { new: true }
     );
 
     if (!updatedRequest) {
@@ -303,8 +313,7 @@ router.put('/update-status-donation', async (req, res) => {
     const updatedRequest = await donationRequest.findByIdAndUpdate(
       requestId,
       { requestStatus },
-      { new: true } 
-
+      { new: true }
     );
 
     if (!updatedRequest) {
@@ -320,5 +329,20 @@ router.put('/update-status-donation', async (req, res) => {
     res.status(500).json({ error: 'حدث خطأ أثناء تحديث الحالة' });
   }
 });
+router.get('/blood-requests-with-user', async (req, res) => {
+  try {
+    const bloodRequests = await BloodRequest.find()
+      .select('urgencyLevel user')
+      .populate('user', 'firstName')
+      .sort({ urgencyLevel: 1 }) // تضمين الحقل firstName من جدول User
+      .exec();
 
+    res.status(200).json(bloodRequests);
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .json({ error: 'An error occurred while fetching blood requests' });
+  }
+});
 module.exports = router;
