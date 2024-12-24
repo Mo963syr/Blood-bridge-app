@@ -9,6 +9,7 @@ class DonationRequestPage extends StatelessWidget {
   final TextEditingController locationController = TextEditingController();
   String? selectedBloodType;
   String? selectedAvailabilityPeriod;
+  DateTime? _selectedDate;
   final TextEditingController WeightController = TextEditingController();
   File? selectedImage;
 
@@ -174,24 +175,31 @@ class DonationRequestPage extends StatelessWidget {
                     },
                   ),
                   SizedBox(height: 16.0),
-                  DropdownButtonFormField<String>(
+                  TextField(
                     decoration: InputDecoration(
-                      labelText: "تحديد وقت التفرغ",
-                      labelStyle: TextStyle(color: Colors.red[700]),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                      labelText: 'التاريخ',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.calendar_today),
                     ),
-                    value: selectedAvailabilityPeriod,
-                    items: availabilityOptions.map((option) {
-                      return DropdownMenuItem(
-                        value: option,
-                        child: Text(option),
+                    readOnly: true,
+                    onTap: () async {
+                      final DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime(2100),
                       );
-                    }).toList(),
-                    onChanged: (value) {
-                      selectedAvailabilityPeriod = value;
+                      if (pickedDate != null) {
+                        setState(() {
+                          _selectedDate = pickedDate;
+                        });
+                      }
                     },
+                    controller: TextEditingController(
+                      text: _selectedDate == null
+                          ? ''
+                          : '${_selectedDate!.year}-${_selectedDate!.month}-${_selectedDate!.day}',
+                    ),
                   ),
                   SizedBox(height: 16.0),
                   TextField(
@@ -246,4 +254,16 @@ class DonationRequestPage extends StatelessWidget {
       ),
     );
   }
+
+  void setState(Null Function() param0) {}
 }
+
+extension on Type {
+  get month => null;
+
+  get year => null;
+
+  get day => null;
+}
+
+class _selectedDate {}
