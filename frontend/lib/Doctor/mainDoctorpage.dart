@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'doctorpage.dart';
 import 'createrequestenternal.dart';
+import 'Appointmentpage.dart';
 
 void main() {
   runApp(MyApp());
@@ -29,7 +30,12 @@ class _DoctorHomePageState extends State<DoctorHomePage> {
   int _selectedIndex = 2;
 
   void _onItemTapped(int index) {
-    if (index == 1) {
+    if (index == 4) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => AppointmentsPage()),
+      );
+    } else if (index == 1) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => createEnternalRwquest()),
