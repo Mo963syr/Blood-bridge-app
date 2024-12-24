@@ -1,115 +1,269 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:dio/dio.dart';
 import 'dart:io';
+import 'home_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class DonationRequestPage extends StatefulWidget {
-  @override
-  _DonationRequestPageState createState() => _DonationRequestPageState();
-}
+class DonationRequestPage extends StatelessWidget {
+  final TextEditingController locationController = TextEditingController();
+  String? selectedBloodType;
+  String? selectedAvailabilityPeriod;
+  DateTime? _selectedDate;
+  final TextEditingController WeightController = TextEditingController();
+  File? selectedImage;
 
-class _DonationRequestPageState extends State<DonationRequestPage> {
-  XFile? _medicalReportImage;
-  String? _selectedWeight;
-  final picker = ImagePicker();
+  Future<String?> getUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('userId'); // استرجاع المعرف
+  }
 
-  Future<void> _pickImage() async {
+  final List<String> bloodTypes = [
+    'A+',
+    'A-',
+    'B+',
+    'B-',
+    'AB+',
+    'AB-',
+    'O+',
+    'O-',
+  ];
+  final List<String> availabilityOptions = [
+    'اليوم',
+    'غدًا',
+    'في أي وقت خلال أسبوع',
+  ];
+  final List<String> danger = ['low', 'medium', 'high'];
+
+  Future<void> pickImage() async {
+    final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    setState(() {
-      _medicalReportImage = pickedFile;
-    });
+
+    if (pickedFile != null) {
+      selectedImage = File(pickedFile.path);
+    }
+  }
+
+  Future<void> bloodRequest(BuildContext context) async {
+    final userId = await getUserId();
+    if (userId == null) {
+      print('User ID not found');
+      return;
+    }
+    // التحقق من الإدخالات
+    if (locationController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('يرجى إدخال مكان التواجد الحالي')),
+      );
+      return;
+    }
+
+    if (selectedBloodType == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('يرجى اختيار فصيلة الدم')),
+      );
+      return;
+    }
+
+    final weight = double.tryParse(WeightController.text);
+    if (weight == null || weight <= 50) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('يجب أن يكون وزنك أكبر من 50 كيلو')),
+      );
+      return;
+    }
+
+    if (selectedImage == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('يرجى اختيار التحليل الطبي')),
+      );
+      return;
+    }
+
+    // إرسال البيانات
+    try {
+      final dio = Dio();
+      final formData = FormData.fromMap({
+        'location': locationController.text,
+        'bloodType': selectedBloodType,
+        'AvailabilityPeriod': selectedAvailabilityPeriod,
+        'Weight': WeightController.text,
+        'image': await MultipartFile.fromFile(
+          selectedImage!.path,
+          filename: selectedImage!.path.split('/').last,
+        ),
+        'userId': userId,
+      });
+
+      final response = await dio.post(
+        'http://10.0.2.2:8080/api/requests/donation-Request',
+        data: formData,
+      );
+
+      if (response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('تم إنشاء الطلب بنجاح')),
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content:
+                  Text('حدث خطأ أثناء إرسال الطلب: ${response.statusCode}')),
+        );
+      }
+    } catch (e) {
+      if (e is DioException) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content:
+                  Text('خطأ في الاتصال بالخادم: ${e.response?.statusCode}')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('حدث خطأ غير متوقع')),
+        );
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("طلب التبرع"),
+        title: Text("انشاء طلب تبرع"),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Stack(
           children: [
-            Text(
-              "رفع صورة التحليل الطبي",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            GestureDetector(
-              onTap: _pickImage,
-              child: Container(
-                height: 150,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.blueAccent),
-                ),
-                child: _medicalReportImage != null
-                    ? Image.file(
-                        File(_medicalReportImage!.path),
-                        fit: BoxFit.cover,
-                      )
-                    : Icon(
-                        Icons.add_photo_alternate,
-                        color: Colors.grey,
-                        size: 50,
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  TextField(
+                    controller: locationController,
+                    decoration: InputDecoration(
+                      labelText: 'مكان التواجد الحالي',
+                      labelStyle: TextStyle(color: Colors.red[700]),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-              ),
-            ),
-            SizedBox(height: 20),
-            Text(
-              "تحديد الوزن (كغ)",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            DropdownButton<String>(
-              value: _selectedWeight,
-              hint: Text("اختر الوزن"),
-              items: ["50", "55", "60", "65", "70", "75", "80"]
-                  .map((weight) => DropdownMenuItem(
-                        value: weight,
-                        child: Text("$weight كغ"),
-                      ))
-                  .toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedWeight = value;
-                });
-              },
-            ),
-            SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    if (_medicalReportImage == null ||
-                        _selectedWeight == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text("يرجى إكمال جميع الحقول قبل الإرسال")));
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("تم إرسال الطلب بنجاح!")));
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: Text("إرسال الطلب"),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
+                    ),
                   ),
-                  child: Text("إلغاء الطلب"),
-                ),
-              ],
+                  SizedBox(height: 16.0),
+                  DropdownButtonFormField<String>(
+                    decoration: InputDecoration(
+                      labelText: "فصيلة الدم المطلوبة",
+                      labelStyle: TextStyle(color: Colors.red[700]),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    value: selectedBloodType,
+                    items: bloodTypes.map((bloodType) {
+                      return DropdownMenuItem(
+                        value: bloodType,
+                        child: Text(bloodType),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      selectedBloodType = value;
+                    },
+                  ),
+                  SizedBox(height: 16.0),
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: 'التاريخ',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.calendar_today),
+                    ),
+                    readOnly: true,
+                    onTap: () async {
+                      final DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime(2100),
+                      );
+                      if (pickedDate != null) {
+                        setState(() {
+                          _selectedDate = pickedDate;
+                        });
+                      }
+                    },
+                    controller: TextEditingController(
+                      text: _selectedDate == null
+                          ? ''
+                          : '${_selectedDate!.year}-${_selectedDate!.month}-${_selectedDate!.day}',
+                    ),
+                  ),
+                  SizedBox(height: 16.0),
+                  TextField(
+                    controller: WeightController,
+                    decoration: InputDecoration(
+                      labelText: "الوزن",
+                      labelStyle: TextStyle(color: Colors.red[700]),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16.0),
+                  ElevatedButton(
+                    onPressed: pickImage,
+                    child: Text("اختر التحليل الطبي"),
+                  ),
+                  SizedBox(height: 16.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          bloodRequest(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFF66BB6A)),
+                        child: Text(
+                          'إرسال الطلب',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                        ),
+                        child: Text(
+                          'الرجوع',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),
       ),
     );
   }
+
+  void setState(Null Function() param0) {}
 }
+
+extension on Type {
+  get month => null;
+
+  get year => null;
+
+  get day => null;
+}
+
+class _selectedDate {}
