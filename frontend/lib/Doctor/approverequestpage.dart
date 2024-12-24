@@ -99,11 +99,11 @@ class ApprovedRequestsPage extends StatelessWidget {
   Color _getUrgencyColor(String urgency) {
     switch (urgency) {
       case 'high':
-        return Color.fromARGB(255, 244, 130, 130); // أحمر
+        return Color.fromARGB(255, 244, 130, 130); // 
       case 'medium':
-        return Color.fromARGB(255, 245, 222, 148); // أصفر
+        return Color.fromARGB(255, 245, 222, 148); // 
       case 'low':
-        return Color.fromARGB(255, 175, 246, 179); // أخضر
+        return Color.fromARGB(255, 175, 246, 179); // 
       default:
         return Colors.grey[300]!;
     }
@@ -125,7 +125,7 @@ class ApprovedRequestsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('الطلبات الموافق عليها'),
-        backgroundColor: Colors.red[400], // لون العنوان الرئيسي
+        backgroundColor: Colors.red[400], 
         centerTitle: true,
       ),
       body: FutureBuilder<List<dynamic>>(

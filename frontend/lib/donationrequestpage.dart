@@ -14,7 +14,7 @@ class DonationRequestPage extends StatelessWidget {
 
   Future<String?> getUserId() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('userId'); // استرجاع المعرف
+    return prefs.getString('userId'); 
   }
 
   final List<String> bloodTypes = [
@@ -49,7 +49,6 @@ class DonationRequestPage extends StatelessWidget {
       print('User ID not found');
       return;
     }
-    // التحقق من الإدخالات
     if (locationController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('يرجى إدخال مكان التواجد الحالي')),
@@ -78,8 +77,7 @@ class DonationRequestPage extends StatelessWidget {
       );
       return;
     }
-
-    // إرسال البيانات
+ 
     try {
       final dio = Dio();
       final formData = FormData.fromMap({

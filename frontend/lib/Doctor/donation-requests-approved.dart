@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:frontend/Doctor/ScheduleAppointmentPage.dart';
 
-class DonationRequestsPage extends StatefulWidget {
+class DonationRequestsPageApproved extends StatefulWidget {
   final Function(Map<String, dynamic>) onApprove;
 
-  DonationRequestsPage({required this.onApprove});
+  DonationRequestsPageApproved({required this.onApprove});
 
   @override
-  State<DonationRequestsPage> createState() => _DonationRequestsPageState();
+  State<DonationRequestsPageApproved> createState() =>
+      _DonationRequestsPageApprovedState();
 }
 
-class _DonationRequestsPageState extends State<DonationRequestsPage> {
+class _DonationRequestsPageApprovedState
+    extends State<DonationRequestsPageApproved> {
   List<Map<String, dynamic>> donationrequest = [];
   bool isLoading = true;
 
@@ -23,8 +26,8 @@ class _DonationRequestsPageState extends State<DonationRequestsPage> {
 
   Future<void> fetchdonationrequest() async {
     try {
-      final response = await http
-          .get(Uri.parse('http://10.0.2.2:8080/api/requests/donation-request'));
+      final response = await http.get(Uri.parse(
+          'http://10.0.2.2:8080/api/requests/donation-request-approved'));
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         setState(() {
@@ -129,7 +132,7 @@ class DonationDetailsPage extends StatelessWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('تم تعديل الحالة بنجاح!')),
         );
-        Navigator.pop(context); // الرجوع إلى الشاشة السابقة
+        Navigator.pop(context); 
       } else {
         throw Exception('Failed to update status: ${response.body}');
       }
@@ -139,6 +142,84 @@ class DonationDetailsPage extends StatelessWidget {
         SnackBar(content: Text('حدث خطأ أثناء تعديل الحالة: $error')),
       );
     }
+  }
+
+  void _showDonationOptions(BuildContext context, Map<String, dynamic> needy) {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+      ),
+      builder: (BuildContext ctx) {
+        return Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: 20),
+              Text(
+                "زمرة الدم: ${needy['bloodType']}",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.redAccent,
+                ),
+              ),
+              SizedBox(height: 30),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ScheduleAppointmentPage(needy: needy),
+                        ),
+                      );
+                    },
+                    icon: Icon(Icons.favorite, color: Colors.white),
+                    label: Text(
+                      "تحديد موعد",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      textStyle: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      // Navigator.pop(ctx);
+                    },
+                    icon: Icon(Icons.cancel, color: Colors.white),
+                    label: Text(
+                      "إلغاء",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      textStyle: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -212,8 +293,8 @@ class DonationDetailsPage extends StatelessWidget {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    _updateRequestStatus(context, 'approved');
-                    Navigator.pop(context);
+                    _showDonationOptions(
+                        context, request as Map<String, dynamic>);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
