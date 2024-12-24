@@ -302,37 +302,54 @@ router.put('/update-status', async (req, res) => {
     res.status(500).json({ error: 'حدث خطأ أثناء تحديث الحالة' });
   }
 });
-router.put('/update-status-donation', async (req, res) => {
-  const { requestId, requestStatus } = req.body;
+router.put('/update-status-requests', async (req, res) => {
+  const { donationRequestId, needRequestId, requestStatus } = req.body;
 
-  if (!requestId || !requestStatus) {
-    return res.status(400).json({ error: 'يجب إدخال requestId و status' });
+  if (!requestStatus || (!donationRequestId && !needRequestId)) {
+    return res.status(400).json({
+      error:
+        'يجب إدخال requestStatus ومعرّف واحد على الأقل (donationRequestId أو needRequestId)',
+    });
   }
 
   try {
-    const updatedRequest = await donationRequest.findByIdAndUpdate(
-      requestId,
-      { requestStatus },
-      { new: true }
-    );
+    if (donationRequestId) {
+      updatedDonationRequest = await donationRequest.findByIdAndUpdate(
+        donationRequestId,
+        { requestStatus },
+        { new: true }
+      );
+    }
+    if (needRequestId) {
+      updatedNeedyRequest = await BloodRequest.findByIdAndUpdate(
+        needRequestId,
+        { requestStatus },
+        { new: true }
+      );
+    }
 
-    if (!updatedRequest) {
+    if (!updatedDonationRequest && !needRequestId) {
       return res.status(404).json({ error: 'الطلب غير موجود' });
     }
 
     res.status(200).json({
       message: 'تم تحديث الحالة بنجاح',
-      updatedRequest,
+      updatedDonationRequest,
+      updatedNeedyRequest,
     });
   } catch (error) {
     console.error('Error updating request:', error);
     res.status(500).json({ error: 'حدث خطأ أثناء تحديث الحالة' });
   }
 });
-router.get('/blood-requests-with-user', async (req, res) => {
+
+router.get('/donation-requests-with-user', async (req, res) => {
   try {
-    const bloodRequests = await BloodRequest.find()
-      .select('urgencyLevel user')
+    const bloodRequests = await donationRequest
+      .find({
+        requestStatus: 'approved',
+      })
+      .select('AvailabilityPeriod user')
       .populate('user', 'firstName')
       .sort({ urgencyLevel: 1 }) // تضمين الحقل firstName من جدول User
       .exec();

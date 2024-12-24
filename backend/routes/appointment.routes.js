@@ -3,10 +3,10 @@ const Appointment = require('../models/appointments');
 const router = express.Router();
 router.post('/appointments', async (req, res) => {
   try {
-    const { needyId, appointmentDateTime } = req.body;
+    const { donorId,needyId, appointmentDateTime } = req.body;
 
     // تحقق من وجود البيانات المطلوبة
-    if (!needyId || !appointmentDateTime) {
+    if (!donorId||!needyId || !appointmentDateTime) {
       return res
         .status(400)
         .json({ error: 'يرجى إدخال جميع البيانات المطلوبة' });
@@ -14,6 +14,7 @@ router.post('/appointments', async (req, res) => {
 
     // إنشاء وحفظ الموعد في قاعدة البيانات
     const newAppointment = new Appointment({
+      donorId,
       needyId,
       appointmentDateTime,
     });

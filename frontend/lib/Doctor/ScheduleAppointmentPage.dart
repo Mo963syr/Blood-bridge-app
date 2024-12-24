@@ -15,21 +15,54 @@ class ScheduleAppointmentPage extends StatefulWidget {
 class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
-  List<Map<String, dynamic>> _needyList = [];
-  Map<String, dynamic>? _selectedNeedy;
+  List<Map<String, dynamic>> _donorsList = [];
+  Map<String, dynamic>? _selectedDonor;
   bool _isLoading = true;
+
+  Future<void> _updateRequestStatus(BuildContext context, String status) async {
+    final String apiUrl =
+        'http://10.0.2.2:8080/api/requests/update-status-requests';
+    try {
+      final response = await http.put(
+        Uri.parse(apiUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          "donationRequestId": _selectedDonor!['_id']?.toString() ?? '',
+          "needRequestId": widget.needy['_id']?.toString() ?? '', // معرّف الطلب
+          'requestStatus': status, // الحالة الجديدة
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        // إذا تمت العملية بنجاح
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('تم تعديل الحالة بنجاح!')),
+        );
+        Navigator.pop(context); // الرجوع إلى الشاشة السابقة
+      } else {
+        throw Exception('Failed to update status: ${response.body}');
+      }
+    } catch (error) {
+      // في حالة حدوث خطأ
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('حدث خطأ أثناء تعديل الحالة: $error')),
+      );
+    }
+  }
 
   Future<void> _fetchNeedyList() async {
     try {
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:8080/api/requests/blood-requests-with-user'),
+        Uri.parse(
+            'http://10.0.2.2:8080/api/requests/donation-requests-with-user'),
         headers: {'Content-Type': 'application/json'},
       );
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         setState(() {
-          _needyList = data.map((item) => item as Map<String, dynamic>).toList();
+          _donorsList =
+              data.map((item) => item as Map<String, dynamic>).toList();
           _isLoading = false;
         });
       } else {
@@ -45,8 +78,17 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
     }
   }
 
+  void _handleButtonPress() {
+    _updateRequestStatus(context, 'assigned');
+    _sendAppointmentToServer();
+
+    // أضف المزيد من التوابع هنا إذا لزم الأمر
+  }
+
   Future<void> _sendAppointmentToServer() async {
-    if (_selectedDate == null || _selectedTime == null || _selectedNeedy == null) {
+    if (_selectedDate == null ||
+        _selectedTime == null ||
+        _selectedDonor == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('يرجى تحديد المحتاج والتاريخ والوقت')),
       );
@@ -62,7 +104,8 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
     );
 
     final Map<String, dynamic> requestBody = {
-      'needyId': _selectedNeedy?['id']?.toString() ?? '',
+      'donorId': _selectedDonor!['_id']?.toString() ?? '',
+      'needyId': widget.needy['_id']?.toString() ?? '',
       'appointmentDateTime': appointmentDateTime.toIso8601String(),
     };
 
@@ -79,7 +122,8 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
         );
         Navigator.pop(context);
       } else {
-        final errorMessage = json.decode(response.body)['message'] ?? 'خطأ غير معروف';
+        final errorMessage =
+            json.decode(response.body)['message'] ?? 'خطأ غير معروف';
         throw Exception('فشل في تحديد الموعد: $errorMessage');
       }
     } catch (e) {
@@ -130,7 +174,7 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
             ),
             SizedBox(height: 30),
             Text(
-              'اختر محتاجًا:',
+              'اختر متبرعا:',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20),
@@ -138,15 +182,16 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
                 ? Center(child: CircularProgressIndicator())
                 : DropdownButtonFormField<Map<String, dynamic>>(
                     decoration: InputDecoration(
-                      labelText: 'اختر محتاجًا',
+                      labelText: 'اختر متبرعا',
                       border: OutlineInputBorder(),
                     ),
-                    items: _needyList.map((needy) {
+                    items: _donorsList.map((needy) {
                       return DropdownMenuItem<Map<String, dynamic>>(
                         value: needy,
                         child: Card(
                           elevation: 4,
-                          margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                          margin:
+                              EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -159,7 +204,8 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
                                   backgroundColor: Colors.white,
                                   child: Icon(
                                     Icons.person,
-                                    color: _getUrgencyTextColor(needy['urgencyLevel']),
+                                    color: _getUrgencyTextColor(
+                                        needy['urgencyLevel']),
                                   ),
                                 ),
                                 SizedBox(width: 15),
@@ -171,15 +217,17 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
                                       style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
-                                        color: _getUrgencyTextColor(needy['urgencyLevel']),
+                                        color: _getUrgencyTextColor(
+                                            needy['urgencyLevel']),
                                       ),
                                     ),
                                     SizedBox(height: 5),
                                     Text(
-                                      'مستوى الخطورة: ${needy['urgencyLevel'] ?? 'غير معروف'}',
+                                      ' وقت التفرغ: ${needy['AvailabilityPeriod'] ?? 'غير معروف'}',
                                       style: TextStyle(
                                         fontSize: 16,
-                                        color: _getUrgencyTextColor(needy['urgencyLevel']),
+                                        color: _getUrgencyTextColor(
+                                            needy['urgencyLevel']),
                                       ),
                                     ),
                                   ],
@@ -192,10 +240,10 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
                     }).toList(),
                     onChanged: (value) {
                       setState(() {
-                        _selectedNeedy = value;
+                        _selectedDonor = value;
                       });
                     },
-                    value: _selectedNeedy,
+                    value: _selectedDonor,
                   ),
             SizedBox(height: 30),
             Text(
@@ -256,18 +304,34 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
             ),
             SizedBox(height: 40),
             Center(
-              child: ElevatedButton.icon(
-                onPressed: _sendAppointmentToServer,
-                icon: Icon(Icons.check),
-                label: Text('تأكيد الموعد'),
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                  textStyle:
-                      TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  backgroundColor: Colors.green,
-                ),
+                child: ElevatedButton(
+              onPressed: () {
+                _handleButtonPress();
+                // print('Request ID: ${widget.needy['_id']}');
+                print('selectedDonor ID: ${_selectedDonor!['_id']}');
+
+                // Replace 'new_status' with the actual status you want to set
+              },
+              child: Text('تحديث الحالة'),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                backgroundColor: Colors.blue,
               ),
-            ),
+            )
+
+                // child: ElevatedButton.icon(
+                //   onPressed: _sendAppointmentToServer,
+                //   icon: Icon(Icons.check),
+                //   label: Text('تأكيد الموعد'),
+                //   style: ElevatedButton.styleFrom(
+                //     padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                //     textStyle:
+                //         TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                //     backgroundColor: Colors.green,
+                //   ),
+                // ),
+                ),
           ],
         ),
       ),
