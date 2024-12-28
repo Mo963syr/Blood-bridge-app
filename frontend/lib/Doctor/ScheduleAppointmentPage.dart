@@ -105,7 +105,9 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
 
     final Map<String, dynamic> requestBody = {
       'donorId': _selectedDonor!['_id']?.toString() ?? '',
+      'donorname': _selectedDonor!['user']['firstName']?.toString() ?? '',
       'needyId': widget.needy['_id']?.toString() ?? '',
+      'needyname': widget.needy['user']['firstName']?.toString() ?? '',
       'appointmentDateTime': appointmentDateTime.toIso8601String(),
     };
 
@@ -309,6 +311,8 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
                 _handleButtonPress();
                 // print('Request ID: ${widget.needy['_id']}');
                 print('selectedDonor ID: ${_selectedDonor!['_id']}');
+                print(
+                    'selectedDonor ID: ${widget.needy['user']['firstName']?.toString() ?? ''}');
 
                 // Replace 'new_status' with the actual status you want to set
               },

@@ -3,10 +3,17 @@ const Appointment = require('../models/appointments');
 const router = express.Router();
 router.post('/appointments', async (req, res) => {
   try {
-    const { donorId,needyId, appointmentDateTime } = req.body;
+    const { donorname, needyname, donorId, needyId, appointmentDateTime } =
+      req.body;
 
     // تحقق من وجود البيانات المطلوبة
-    if (!donorId||!needyId || !appointmentDateTime) {
+    if (
+      !donorname ||
+      !needyname ||
+      !donorId ||
+      !needyId ||
+      !appointmentDateTime
+    ) {
       return res
         .status(400)
         .json({ error: 'يرجى إدخال جميع البيانات المطلوبة' });
@@ -15,7 +22,9 @@ router.post('/appointments', async (req, res) => {
     // إنشاء وحفظ الموعد في قاعدة البيانات
     const newAppointment = new Appointment({
       donorId,
+      donorname,
       needyId,
+      needyname,
       appointmentDateTime,
     });
 
@@ -27,4 +36,4 @@ router.post('/appointments', async (req, res) => {
       .json({ error: 'حدث خطأ أثناء تحديد الموعد', details: error.message });
   }
 });
-module.exports = router; 
+module.exports = router;

@@ -184,7 +184,7 @@ router.get('/blood-requests/external', async (req, res) => {
     const bloodRequests = await BloodRequest.find({
       requestneedytype: 'external',
       requestStatus: 'active',
-    });
+    }).populate('user', 'firstName');
     res.json(bloodRequests);
     console.log(bloodRequests);
   } catch (err) {
@@ -199,7 +199,7 @@ router.get('/blood-requests/approve', async (req, res) => {
     const bloodRequests = await BloodRequest.find({
       requestneedytype: 'external',
       requestStatus: 'approved',
-    });
+    }).populate('user', 'firstName');
     res.json(bloodRequests);
     console.log(bloodRequests);
   } catch (err) {
