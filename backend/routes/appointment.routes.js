@@ -36,4 +36,16 @@ router.post('/appointments', async (req, res) => {
       .json({ error: 'حدث خطأ أثناء تحديد الموعد', details: error.message });
   }
 });
+
+router.get('/View-appointments', async (req, res) => {
+  try {
+    const Appointments = await Appointment.find();
+    res.status(200).json(Appointments);
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .json({ error: 'An error occurred while fetching blood requests' });
+  }
+});
 module.exports = router;

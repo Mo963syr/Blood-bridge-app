@@ -1,23 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class AppointmentsPage extends StatelessWidget {
-  final List<Map<String, String>> appointments = [
-    {
-      "donorName": "محمد علي",
-      "recipientName": "أحمد سعيد",
-      "appointmentDate": "2024-12-30"
-    },
-    {
-      "donorName": "خالد يوسف",
-      "recipientName": "سمير حسن",
-      "appointmentDate": "2024-12-28"
-    },
-    {
-      "donorName": "عمر فؤاد",
-      "recipientName": "محمود عبد الله",
-      "appointmentDate": "2024-12-27"
-    },
-  ];
+  Future<List<Map<String, String>>> fetchAppointments() async {
+    try {
+      final response = await http
+          .get(Uri.parse('http://10.0.2.2:8080/api/View-appointments'));
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
+        return data.map<Map<String, String>>((item) {
+          return {
+            "donorname": item["donorname"] ?? '',
+            "needyname": item["needyname"] ?? '',
+            "appointmentDateTime": item["appointmentDateTime"] ?? '',
+          };
+        }).toList();
+      } else {
+        throw Exception('Failed to load appointments');
+      }
+    } catch (e) {
+      throw Exception('Error fetching data: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,67 +32,86 @@ class AppointmentsPage extends StatelessWidget {
         backgroundColor: Colors.red[400],
         centerTitle: true,
       ),
-      body: appointments.isEmpty
-          ? Center(
+      body: FutureBuilder<List<Map<String, String>>>(
+        future: fetchAppointments(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                'حدث خطأ أثناء تحميل البيانات.',
+                style: TextStyle(fontSize: 18, color: Colors.red),
+              ),
+            );
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(
               child: Text(
                 'لا توجد مواعيد حالياً.',
                 style: TextStyle(fontSize: 18, color: Colors.grey),
               ),
-            )
-          : Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: ListView.builder(
-                itemCount: appointments.length,
-                itemBuilder: (context, index) {
-                  final appointment = appointments[index];
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AppointmentDetailsPage(
-                            appointment: appointment,
-                          ),
+            );
+          }
+
+          final appointments = snapshot.data!;
+          return Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: ListView.builder(
+              itemCount: appointments.length,
+              itemBuilder: (context, index) {
+                final appointment = appointments[index];
+
+                return GestureDetector(
+                  onTap: () {
+                    print(appointment);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AppointmentDetailsPage(
+                          appointment: appointment,
                         ),
-                      );
-                    },
-                    child: Card(
-                      elevation: 5,
-                      margin: EdgeInsets.symmetric(vertical: 10),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(15.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "اسم المتبرع: ${appointment['donorName']}",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.red[400],
-                              ),
+                    );
+                  },
+                  child: Card(
+                    elevation: 5,
+                    margin: EdgeInsets.symmetric(vertical: 10),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "اسم المتبرع: ${appointment['donorname']}",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.red[400],
                             ),
-                            SizedBox(height: 10),
-                            Text(
-                              "اسم المحتاج: ${appointment['recipientName']}",
-                              style: TextStyle(fontSize: 14),
-                            ),
-                            SizedBox(height: 10),
-                            Text(
-                              "تاريخ الموعد: ${appointment['appointmentDate']}",
-                              style: TextStyle(fontSize: 14),
-                            ),
-                          ],
-                        ),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            "اسم المحتاج: ${appointment['needyname']}",
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            "تاريخ الموعد: ${appointment['appointmentDateTime']}",
+                            style: TextStyle(fontSize: 14),
+                          ),
+                        ],
                       ),
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
+          );
+        },
+      ),
     );
   }
 }
@@ -111,7 +135,7 @@ class AppointmentDetailsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "اسم المتبرع: ${appointment['donorName']}",
+              "اسم المتبرع: ${appointment['donorname']}",
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -120,12 +144,12 @@ class AppointmentDetailsPage extends StatelessWidget {
             ),
             SizedBox(height: 10),
             Text(
-              "اسم المحتاج: ${appointment['recipientName']}",
+              "اسم المحتاج: ${appointment['needyname']}",
               style: TextStyle(fontSize: 16),
             ),
             SizedBox(height: 10),
             Text(
-              "تاريخ الموعد: ${appointment['appointmentDate']}",
+              "تاريخ الموعد: ${appointment['appointmentDateTime']}",
               style: TextStyle(fontSize: 16),
             ),
             SizedBox(height: 20),
@@ -151,7 +175,7 @@ class AppointmentDetailsPage extends StatelessWidget {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    // ضع هنا الكود المطلوب عند التأكيد
+                    // تنفيذ الإجراء المطلوب عند الضغط على "تأكيد"
                     Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(
