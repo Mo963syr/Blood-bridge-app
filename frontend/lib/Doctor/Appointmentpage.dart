@@ -158,6 +158,33 @@ class AppointmentDetailsPage extends StatelessWidget {
         appointment['notes'] ?? ''; // تحميل الملاحظات الحالية إن وجدت
   }
 
+  Future<void> markAppointmentAsCompleted(
+      BuildContext context, String appointmentId) async {
+    final String apiUrl =
+        'http://10.0.2.2:8080/api/appointments-status/$appointmentId';
+
+    try {
+      final response = await http.put(
+        Uri.parse(apiUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'status': 'completed'}),
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('تم تحديث حالة الموعد إلى منتهي بنجاح')),
+        );
+        Navigator.pop(context); // الرجوع إلى الشاشة السابقة
+      } else {
+        throw Exception('Failed to update status: ${response.body}');
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('حدث خطأ أثناء تحديث الحالة: $error')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -196,7 +223,7 @@ class AppointmentDetailsPage extends StatelessWidget {
             ),
             SizedBox(height: 20),
             Text(
-              "ملاحظات:",
+              "ملاحظات: ",
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -218,7 +245,6 @@ class AppointmentDetailsPage extends StatelessWidget {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    // تأكد من أن حقل 'id' موجود وليس فارغًا
                     final appointmentId = appointment['id'];
                     if (appointmentId != null && appointmentId.isNotEmpty) {
                       updateAppointmentNotes(
@@ -237,6 +263,26 @@ class AppointmentDetailsPage extends StatelessWidget {
                     padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                   ),
                   child: Text('تأكيد'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    final appointmentId = appointment['id'];
+                    print(appointmentId);
+                    print(appointment);
+
+                    if (appointmentId != null && appointmentId.isNotEmpty) {
+                      markAppointmentAsCompleted(context, appointmentId);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('معرّف الموعد غير صالح')),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                  ),
+                  child: Text('إنهاء الموعد'),
                 ),
                 ElevatedButton(
                   onPressed: () {

@@ -362,4 +362,31 @@ router.get('/donation-requests-with-user', async (req, res) => {
       .json({ error: 'An error occurred while fetching blood requests' });
   }
 });
+router.put('/update-status-donation', async (req, res) => {
+  const { requestId, requestStatus } = req.body;
+
+  if (!requestId || !requestStatus) {
+    return res.status(400).json({ error: 'يجب إدخال requestId و status' });
+  }
+
+  try {
+    const updatedRequest = await donationRequest.findByIdAndUpdate(
+      requestId,
+      { requestStatus },
+      { new: true }
+    );
+
+    if (!updatedRequest) {
+      return res.status(404).json({ error: 'الطلب غير موجود' });
+    }
+
+    res.status(200).json({
+      message: 'تم تحديث الحالة بنجاح',
+      updatedRequest,
+    });
+  } catch (error) {
+    console.error('Error updating request:', error);
+    res.status(500).json({ error: 'حدث خطأ أثناء تحديث الحالة' });
+  }
+});
 module.exports = router;

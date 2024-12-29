@@ -29,7 +29,9 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
         body: json.encode({
           "donationRequestId": _selectedDonor!['_id']?.toString() ?? '',
           "needRequestId": widget.needy['_id']?.toString() ?? '', // معرّف الطلب
-          'requestStatus': status, // الحالة الجديدة
+          'requestStatus': status,
+
+          // الحالة الجديدة
         }),
       );
 
@@ -109,6 +111,7 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
       'needyId': widget.needy['_id']?.toString() ?? '',
       'needyname': widget.needy['user']['firstName']?.toString() ?? '',
       'appointmentDateTime': appointmentDateTime.toIso8601String(),
+      'status': 'pending', // الحالة الجديدة
     };
 
     try {

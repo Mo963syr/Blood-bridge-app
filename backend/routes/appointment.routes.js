@@ -3,11 +3,25 @@ const Appointment = require('../models/appointments');
 const router = express.Router();
 router.post('/appointments', async (req, res) => {
   try {
-    const { donorname, needyname, donorId, needyId, appointmentDateTime, status } = req.body;
+    const {
+      donorname,
+      needyname,
+      donorId,
+      needyId,
+      appointmentDateTime,
+      status,
+    } = req.body;
 
     // التحقق من وجود البيانات المطلوبة
-    if (!donorname || !needyname || !donorId || !needyId || !appointmentDateTime || !status) {
-      return res.status(400).json({ 
+    if (
+      !donorname ||
+      !needyname ||
+      !donorId ||
+      !needyId ||
+      !appointmentDateTime ||
+      !status
+    ) {
+      return res.status(400).json({
         error: 'يرجى إدخال جميع البيانات المطلوبة',
         missingFields: {
           donorname: !!donorname,
@@ -16,7 +30,7 @@ router.post('/appointments', async (req, res) => {
           needyId: !!needyId,
           appointmentDateTime: !!appointmentDateTime,
           status: !!status,
-        }
+        },
       });
     }
 
@@ -32,12 +46,14 @@ router.post('/appointments', async (req, res) => {
 
     await newAppointment.save();
 
-    res.status(200).json({ message: 'تم تحديد الموعد بنجاح', appointment: newAppointment });
+    res
+      .status(200)
+      .json({ message: 'تم تحديد الموعد بنجاح', appointment: newAppointment });
   } catch (error) {
     console.error('Error saving appointment:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'حدث خطأ أثناء تحديد الموعد',
-      details: error.message 
+      details: error.message,
     });
   }
 });
@@ -75,7 +91,9 @@ router.put('/appointments-notes/:id', async (req, res) => {
 
 router.get('/View-appointments', async (req, res) => {
   try {
-    const Appointments = await Appointment.find();
+    const Appointments = await Appointment.find({
+      status:'assigned',
+    });
     res.status(200).json(Appointments);
   } catch (err) {
     console.error(err);
@@ -84,5 +102,27 @@ router.get('/View-appointments', async (req, res) => {
       .json({ error: 'An error occurred while fetching blood requests' });
   }
 });
+router.put('/appointments-status/:id', async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
 
+  try {
+    const updatedAppointment = await Appointment.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedAppointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+
+    res.json({
+      message: 'Status updated successfully',
+      appointment: updatedAppointment,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating status', error });
+  }
+});
 module.exports = router;
