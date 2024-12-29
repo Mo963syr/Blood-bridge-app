@@ -11,9 +11,11 @@ class AppointmentsPage extends StatelessWidget {
         List<dynamic> data = json.decode(response.body);
         return data.map<Map<String, String>>((item) {
           return {
+            "id": item["_id"] ?? '', // تأكد من أن حقل 'id' موجود
             "donorname": item["donorname"] ?? '',
             "needyname": item["needyname"] ?? '',
             "appointmentDateTime": item["appointmentDateTime"] ?? '',
+            "note": item["notes"] ?? '',
           };
         }).toList();
       } else {
@@ -21,6 +23,33 @@ class AppointmentsPage extends StatelessWidget {
       }
     } catch (e) {
       throw Exception('Error fetching data: $e');
+    }
+  }
+
+  Future<void> updateAppointmentNotes(
+      BuildContext context, String appointmentId, String notes) async {
+    final String apiUrl =
+        'http://10.0.2.2:8080/api/appointments-notes/$appointmentId';
+
+    try {
+      final response = await http.put(
+        Uri.parse(apiUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'notes': notes}),
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('تم تحديث الملاحظات بنجاح')),
+        );
+        Navigator.pop(context); // الرجوع إلى الشاشة السابقة
+      } else {
+        throw Exception('Failed to update notes: ${response.body}');
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('حدث خطأ أثناء تحديث الملاحظات: $error')),
+      );
     }
   }
 
@@ -63,12 +92,12 @@ class AppointmentsPage extends StatelessWidget {
 
                 return GestureDetector(
                   onTap: () {
-                    print(appointment);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => AppointmentDetailsPage(
                           appointment: appointment,
+                          updateAppointmentNotes: updateAppointmentNotes,
                         ),
                       ),
                     );
@@ -118,8 +147,16 @@ class AppointmentsPage extends StatelessWidget {
 
 class AppointmentDetailsPage extends StatelessWidget {
   final Map<String, String> appointment;
+  final TextEditingController _notesController = TextEditingController();
+  final Function(BuildContext, String, String) updateAppointmentNotes;
 
-  AppointmentDetailsPage({required this.appointment});
+  AppointmentDetailsPage({
+    required this.appointment,
+    required this.updateAppointmentNotes,
+  }) {
+    _notesController.text =
+        appointment['notes'] ?? ''; // تحميل الملاحظات الحالية إن وجدت
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -152,6 +189,11 @@ class AppointmentDetailsPage extends StatelessWidget {
               "تاريخ الموعد: ${appointment['appointmentDateTime']}",
               style: TextStyle(fontSize: 16),
             ),
+            SizedBox(height: 10),
+            Text(
+              "الملاحظات : ${appointment['note']}",
+              style: TextStyle(fontSize: 16),
+            ),
             SizedBox(height: 20),
             Text(
               "ملاحظات:",
@@ -163,6 +205,7 @@ class AppointmentDetailsPage extends StatelessWidget {
             ),
             SizedBox(height: 10),
             TextField(
+              controller: _notesController,
               maxLines: 3,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
@@ -175,8 +218,19 @@ class AppointmentDetailsPage extends StatelessWidget {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    // تنفيذ الإجراء المطلوب عند الضغط على "تأكيد"
-                    Navigator.pop(context);
+                    // تأكد من أن حقل 'id' موجود وليس فارغًا
+                    final appointmentId = appointment['id'];
+                    if (appointmentId != null && appointmentId.isNotEmpty) {
+                      updateAppointmentNotes(
+                        context,
+                        appointmentId,
+                        _notesController.text,
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('معرّف الموعد غير صالح')),
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,

@@ -7,6 +7,8 @@ const appointmentSchema = new Schema({
   needyId: String,
   needyname: String,
   appointmentDateTime: String,
+  notes: String,
+  status: String,
 });
 
 module.exports = mongoose.model('Appointment', appointmentSchema);
