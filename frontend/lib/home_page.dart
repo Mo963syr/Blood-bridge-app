@@ -3,6 +3,7 @@ import 'package:frontend/signin_page.dart';
 import 'createrequest.dart';
 import 'profilepage.dart';
 import 'package:frontend/donationrequestpage.dart';
+import 'appointmentsUser.dart'; // استيراد صفحة المواعيد
 
 void main() {
   runApp(MyApp());
@@ -45,6 +46,13 @@ class _HomePageState extends State<HomePage> {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => DonationRequestPage()),
+      );
+    } else if (index == 4) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                AppointmentsPage()), // الانتقال إلى صفحة المواعيد
       );
     } else {
       setState(() {
@@ -111,7 +119,7 @@ class _HomePageState extends State<HomePage> {
               _buildNavItem(Icons.add_circle, "طلب حاجة", 1),
               _buildNavItem(Icons.home, 'الرئيسية', 2),
               _buildNavItem(Icons.search, "طلب تبرع", 3),
-              _buildNavItem(Icons.history, 'سجل', 4),
+              _buildNavItem(Icons.history, 'مواعيد', 4), // زر المواعيد
             ],
           ),
         ),
