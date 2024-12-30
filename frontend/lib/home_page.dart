@@ -2,23 +2,47 @@ import 'package:flutter/material.dart';
 import 'package:frontend/signin_page.dart';
 import 'createrequest.dart';
 import 'profilepage.dart';
+import 'package:provider/provider.dart';
 import 'package:frontend/donationrequestpage.dart';
-import 'appointmentsUser.dart'; // استيراد صفحة المواعيد
+import 'appointmentsUser.dart';
+import 'setting_page.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ThemeProvider(),
+      child: MyApp(),
+    ),
+  );
+}
+
+class ThemeProvider extends ChangeNotifier {
+  ThemeData _themeData = ThemeData.light();
+
+  ThemeData get themeData => _themeData;
+
+  void setDarkMode() {
+    _themeData = ThemeData.dark();
+    notifyListeners();
+  }
+
+  void setLightMode() {
+    _themeData = ThemeData.light();
+    notifyListeners();
+  }
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: HomePage(),
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: themeProvider.themeData,
+          home: HomePage(),
+        );
+      },
     );
   }
 }
@@ -50,44 +74,18 @@ class _HomePageState extends State<HomePage> {
     } else if (index == 4) {
       Navigator.push(
         context,
-        MaterialPageRoute(
-            builder: (context) =>
-                AppointmentsPage()), // الانتقال إلى صفحة المواعيد
+        MaterialPageRoute(builder: (context) => AppointmentsPage()),
+      );
+    } else if (index == 5) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => SettingsPage()),
       );
     } else {
       setState(() {
         _selectedIndex = index;
       });
     }
-  }
-
-  void _logout() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('هل تريد تسجيل الخروج؟'),
-          content: Text('سيتم تسجيل الخروج من الحساب الحالي.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('لا'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => SigninPage()),
-                );
-              },
-              child: Text('نعم'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -97,8 +95,13 @@ class _HomePageState extends State<HomePage> {
         title: Text('الصفحة الرئيسية'),
         actions: [
           IconButton(
-            icon: Icon(Icons.exit_to_app),
-            onPressed: _logout,
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsPage()),
+              );
+            },
           ),
         ],
       ),
@@ -119,7 +122,7 @@ class _HomePageState extends State<HomePage> {
               _buildNavItem(Icons.add_circle, "طلب حاجة", 1),
               _buildNavItem(Icons.home, 'الرئيسية', 2),
               _buildNavItem(Icons.search, "طلب تبرع", 3),
-              _buildNavItem(Icons.history, 'مواعيد', 4), // زر المواعيد
+              _buildNavItem(Icons.history, 'مواعيد', 4),
             ],
           ),
         ),

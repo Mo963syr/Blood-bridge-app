@@ -33,6 +33,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   animated_text_kit: ^4.2.1
+  provider: ^6.0.1
 
   # The following addsthe Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
