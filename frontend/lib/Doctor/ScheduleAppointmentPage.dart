@@ -27,7 +27,7 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
         Uri.parse(apiUrl),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
-          "donationRequestId": _selectedDonor!['_id']?.toString() ?? '',
+          "donationRequestId": _selectedDonor!['user']['_id']?.toString() ?? '',
           "needRequestId": widget.needy['_id']?.toString() ?? '', // معرّف الطلب
           'requestStatus': status,
 
@@ -106,9 +106,9 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
     );
 
     final Map<String, dynamic> requestBody = {
-      'donorId': _selectedDonor!['_id']?.toString() ?? '',
+      'donorId': _selectedDonor!['user']['_id']?.toString() ?? '',
       'donorname': _selectedDonor!['user']['firstName']?.toString() ?? '',
-      'needyId': widget.needy['_id']?.toString() ?? '',
+      'needyId': widget.needy['user']['_id']?.toString() ?? '',
       'needyname': widget.needy['user']['firstName']?.toString() ?? '',
       'appointmentDateTime': appointmentDateTime.toIso8601String(),
       'status': 'pending', // الحالة الجديدة
@@ -247,6 +247,8 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
                       setState(() {
                         _selectedDonor = value;
                       });
+                      print(
+                          'selectedDonor ID: ${_selectedDonor!['user']['_id']}');
                     },
                     value: _selectedDonor,
                   ),
@@ -313,9 +315,9 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
               onPressed: () {
                 _handleButtonPress();
                 // print('Request ID: ${widget.needy['_id']}');
-                print('selectedDonor ID: ${_selectedDonor!['_id']}');
+                print('selectedDonor ID: ${_selectedDonor!['user']['_id']}');
                 print(
-                    'selectedDonor ID: ${widget.needy['user']['firstName']?.toString() ?? ''}');
+                    'selectedneedy ID: ${widget.needy['user']['_id']?.toString() ?? ''}');
 
                 // Replace 'new_status' with the actual status you want to set
               },

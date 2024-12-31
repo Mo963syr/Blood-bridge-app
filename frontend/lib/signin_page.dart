@@ -36,6 +36,7 @@ class _SigninPageState extends State<SigninPage> {
       if (response.statusCode == 200 &&
           responseData['message'] == 'Sign in successful') {
         final userId = responseData['userId'];
+        print(userId);
         await saveUserId(userId);
         if (responseData['status'] == 'user dashboard') {
           ScaffoldMessenger.of(context).showSnackBar(

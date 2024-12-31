@@ -6,9 +6,6 @@ import 'package:provider/provider.dart';
 import 'package:frontend/donationrequestpage.dart';
 import 'appointmentsUser.dart';
 import 'setting_page.dart';
-import 'Awareness Coordinato/mainCoordinator.dart';
-import 'dart:io';
-import 'package:video_player/video_player.dart';
 
 void main() {
   runApp(
@@ -21,10 +18,8 @@ void main() {
 
 class ThemeProvider extends ChangeNotifier {
   ThemeData _themeData = ThemeData.light();
-  List<Map<String, dynamic>> _posts = [];
 
   ThemeData get themeData => _themeData;
-  List<Map<String, dynamic>> get posts => _posts;
 
   void setDarkMode() {
     _themeData = ThemeData.dark();
@@ -33,11 +28,6 @@ class ThemeProvider extends ChangeNotifier {
 
   void setLightMode() {
     _themeData = ThemeData.light();
-    notifyListeners();
-  }
-
-  void addPost(Map<String, dynamic> post) {
-    _posts.add(post);
     notifyListeners();
   }
 }
@@ -105,88 +95,21 @@ class _HomePageState extends State<HomePage> {
         title: Text('الصفحة الرئيسية'),
         actions: [
           IconButton(
-            icon: Icon(Icons.add),
+            icon: Icon(Icons.settings),
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        AwarenessCoordinatorPage()), // فتح صفحة المنسق التوعوي
+                MaterialPageRoute(builder: (context) => SettingsPage()),
               );
             },
           ),
         ],
       ),
-      body: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, child) {
-          return ListView.builder(
-            itemCount: themeProvider.posts.length,
-            itemBuilder: (context, index) {
-              var post = themeProvider.posts[index];
-              return Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 5,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (post['image'] != null)
-                          Image.file(
-                            post['image'],
-                            width: double.infinity,
-                            height: 200,
-                            fit: BoxFit.cover,
-                          ),
-                        if (post['video'] != null)
-                          Container(
-                            height: 200,
-                            child: VideoPlayer(
-                              VideoPlayerController.file(post['video'])
-                                ..initialize().then((_) {
-                                  setState(() {});
-                                  // Autoplay video
-                                  VideoPlayerController.file(post['video'])
-                                      .play();
-                                }),
-                            ),
-                          ),
-                        SizedBox(height: 8),
-                        Text(
-                          post['text'] ?? '',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            IconButton(
-                              icon: Icon(Icons.thumb_up),
-                              onPressed: () {},
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.comment),
-                              onPressed: () {},
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            },
-          );
-        },
+      body: Center(
+        child: Text(
+          ' لاتوجد منشورات حالياً',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
       ),
       bottomNavigationBar: BottomAppBar(
         color: Color(0xFFC62828),

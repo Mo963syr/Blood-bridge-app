@@ -89,11 +89,22 @@ router.put('/appointments-notes/:id', async (req, res) => {
   }
 });
 
-router.get('/View-appointments', async (req, res) => {
+router.get('/View-appointments-assigned', async (req, res) => {
   try {
     const Appointments = await Appointment.find({
       status:'assigned',
     });
+    res.status(200).json(Appointments);
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .json({ error: 'An error occurred while fetching blood requests' });
+  }
+});
+router.get('/View-appointments', async (req, res) => {
+  try {
+    const Appointments = await Appointment.find();
     res.status(200).json(Appointments);
   } catch (err) {
     console.error(err);

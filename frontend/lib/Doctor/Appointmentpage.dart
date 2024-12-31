@@ -6,12 +6,12 @@ class AppointmentsPage extends StatelessWidget {
   Future<List<Map<String, String>>> fetchAppointments() async {
     try {
       final response = await http
-          .get(Uri.parse('http://10.0.2.2:8080/api/View-appointments'));
+          .get(Uri.parse('http://10.0.2.2:8080/api/View-appointments-assigned'));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         return data.map<Map<String, String>>((item) {
           return {
-            "id": item["_id"] ?? '', // تأكد من أن حقل 'id' موجود
+            'id': item["_id"] ?? '', // تأكد من أن حقل 'id' موجود
             "donorname": item["donorname"] ?? '',
             "needyname": item["needyname"] ?? '',
             "appointmentDateTime": item["appointmentDateTime"] ?? '',
