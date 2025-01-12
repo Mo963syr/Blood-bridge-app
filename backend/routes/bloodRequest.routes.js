@@ -7,6 +7,7 @@ const User = require('../models/user.model');
 const Image = require('../models/Image');
 const { Console } = require('console');
 const router = express.Router();
+const mongoose = require('mongoose');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -425,17 +426,20 @@ router.post('/count', async (req, res) => {
       return res.status(400).json({ error: 'User ID is required' });
     }
 
-    // تحويل userId إلى ObjectId
-    const objectId = mongoose.Types.ObjectId(userId);
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: 'Invalid User ID' });
+    }
 
-    // استعلام لحساب عدد الطلبات
-    const requestCount = await BloodRequest.countDocuments({ user: objectId });
+    // const objectId = new mongoose.Types.ObjectId(userId);
 
-    // إرجاع النتيجة
+    const requestCount = await BloodRequest.countDocuments({ user: userId });
+
     res.status(200).json({ userId, requestCount });
   } catch (error) {
     console.error('Error fetching request count:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+
 module.exports = router;
