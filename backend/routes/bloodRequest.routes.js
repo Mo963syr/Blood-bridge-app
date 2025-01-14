@@ -5,7 +5,9 @@ const multer = require('multer');
 const path = require('path');
 const User = require('../models/user.model');
 const Image = require('../models/Image');
+const { Console } = require('console');
 const router = express.Router();
+const mongoose = require('mongoose');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -342,16 +344,42 @@ router.put('/update-status-requests', async (req, res) => {
     res.status(500).json({ error: 'حدث خطأ أثناء تحديث الحالة' });
   }
 });
+// تحديد زمر الدم المتوافقة
+const getCompatibleBloodTypes = (bloodType) => {
+  const compatibility = {
+    'O-': ['O-'],
+    'O+': ['O-', 'O+'],
+    'A-': ['O-', 'A-'],
+    'A+': ['O-', 'O+', 'A-', 'A+'],
+    'B-': ['O-', 'B-'],
+    'B+': ['O-', 'O+', 'B-', 'B+'],
+    'AB-': ['O-', 'A-', 'B-', 'AB-'],
+    'AB+': ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'],
+  };
 
+  return compatibility[bloodType] || [];
+};
+
+// API لعرض طلبات التبرع بزمر الدم المتوافقة
 router.get('/donation-requests-with-user', async (req, res) => {
   try {
+    const { bloodType } = req.query; // استلام زمرة الدم من الواجهة
+    if (!bloodType) {
+      return res.status(400).json({ error: 'Blood type is required' });
+    }
+
+    // جلب الزمر المتوافقة مع الزمرة المطلوبة
+    const compatibleBloodTypes = getCompatibleBloodTypes(bloodType);
+    console.log(compatibleBloodTypes);
+    console.log(bloodType);
+    // البحث عن الطلبات المتوافقة
     const bloodRequests = await donationRequest
       .find({
+        bloodType: { $in: compatibleBloodTypes },
         requestStatus: 'approved',
       })
-      .select('AvailabilityPeriod user')
+      .select('AvailabilityPeriod user bloodType')
       .populate('user', 'firstName')
-      .sort({ urgencyLevel: 1 }) // تضمين الحقل firstName من جدول User
       .exec();
 
     res.status(200).json(bloodRequests);
@@ -362,6 +390,7 @@ router.get('/donation-requests-with-user', async (req, res) => {
       .json({ error: 'An error occurred while fetching blood requests' });
   }
 });
+
 router.put('/update-status-donation', async (req, res) => {
   const { requestId, requestStatus } = req.body;
 
@@ -389,4 +418,28 @@ router.put('/update-status-donation', async (req, res) => {
     res.status(500).json({ error: 'حدث خطأ أثناء تحديث الحالة' });
   }
 });
+router.post('/count', async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ error: 'User ID is required' });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: 'Invalid User ID' });
+    }
+
+    // const objectId = new mongoose.Types.ObjectId(userId);
+
+    const requestCount = await BloodRequest.countDocuments({ user: userId });
+
+    res.status(200).json({ userId, requestCount });
+  } catch (error) {
+    console.error('Error fetching request count:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
 module.exports = router;

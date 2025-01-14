@@ -1,6 +1,7 @@
 const express = require('express');
 const Appointment = require('../models/appointments');
 const router = express.Router();
+const mongoose = require('mongoose');
 router.post('/appointments', async (req, res) => {
   try {
     const {
@@ -92,7 +93,7 @@ router.put('/appointments-notes/:id', async (req, res) => {
 router.get('/View-appointments-assigned', async (req, res) => {
   try {
     const Appointments = await Appointment.find({
-      status:'assigned',
+      status: 'assigned',
     });
     res.status(200).json(Appointments);
   } catch (err) {
@@ -134,6 +135,37 @@ router.put('/appointments-status/:id', async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: 'Error updating status', error });
+  }
+});
+
+router.post('/donation-count', async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ error: 'User ID is required' });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: 'Invalid User ID' });
+    }
+
+    // const objectId = new mongoose.Types.ObjectId(userId);
+
+    const requestCount = await Appointment.countDocuments({
+      donorId: userId,
+      status: 'completed',
+    });
+    let certificate = false;
+
+    if (requestCount >= 3) {
+      certificate = true;
+    }
+    points = requestCount * 10;
+    res.status(200).json({ userId, requestCount, points, certificate });
+  } catch (error) {
+    console.error('Error fetching request count:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 module.exports = router;

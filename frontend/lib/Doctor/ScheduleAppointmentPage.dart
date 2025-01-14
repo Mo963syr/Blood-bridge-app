@@ -54,9 +54,10 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
 
   Future<void> _fetchNeedyList() async {
     try {
+      final blood = widget.needy['bloodType'];
       final response = await http.get(
         Uri.parse(
-            'http://10.0.2.2:8080/api/requests/donation-requests-with-user'),
+            'http://10.0.2.2:8080/api/requests/donation-requests-with-user?bloodType=$blood'),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -111,7 +112,7 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
       'needyId': widget.needy['user']['_id']?.toString() ?? '',
       'needyname': widget.needy['user']['firstName']?.toString() ?? '',
       'appointmentDateTime': appointmentDateTime.toIso8601String(),
-      'status': 'pending', // الحالة الجديدة
+      'status': 'assigned', // الحالة الجديدة
     };
 
     try {
@@ -190,9 +191,9 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
                       labelText: 'اختر متبرعا',
                       border: OutlineInputBorder(),
                     ),
-                    items: _donorsList.map((needy) {
+                    items: _donorsList.map((donor) {
                       return DropdownMenuItem<Map<String, dynamic>>(
-                        value: needy,
+                        value: donor,
                         child: Card(
                           elevation: 4,
                           margin:
@@ -200,7 +201,7 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          color: _getUrgencyColor(needy['urgencyLevel']),
+                          color: _getUrgencyColor(donor['urgencyLevel']),
                           child: Padding(
                             padding: const EdgeInsets.all(15.0),
                             child: Row(
@@ -210,7 +211,7 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
                                   child: Icon(
                                     Icons.person,
                                     color: _getUrgencyTextColor(
-                                        needy['urgencyLevel']),
+                                        donor['urgencyLevel']),
                                   ),
                                 ),
                                 SizedBox(width: 15),
@@ -218,21 +219,30 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      needy['user']['firstName'] ?? 'غير معروف',
+                                      donor['user']['firstName'] ?? 'غير معروف',
                                       style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                         color: _getUrgencyTextColor(
-                                            needy['urgencyLevel']),
+                                            donor['urgencyLevel']),
                                       ),
                                     ),
                                     SizedBox(height: 5),
                                     Text(
-                                      ' وقت التفرغ: ${needy['AvailabilityPeriod'] ?? 'غير معروف'}',
+                                      ' وقت التفرغ: ${donor['AvailabilityPeriod'] ?? 'غير معروف'}',
                                       style: TextStyle(
                                         fontSize: 16,
                                         color: _getUrgencyTextColor(
-                                            needy['urgencyLevel']),
+                                            donor['urgencyLevel']),
+                                      ),
+                                    ),
+                                    SizedBox(height: 5),
+                                    Text(
+                                      ' bloodtype : ${donor['bloodType'] ?? 'غير معروف'}',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: _getUrgencyTextColor(
+                                            donor['urgencyLevel']),
                                       ),
                                     ),
                                   ],
