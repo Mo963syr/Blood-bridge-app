@@ -66,7 +66,7 @@ class _SigninPageState extends State<SigninPage> {
 
           Navigator.pushReplacement(
             context,
-           MaterialPageRoute(builder: (context) => AwarenessCoordinatorPage()),
+            MaterialPageRoute(builder: (context) => AwarenessCoordinatorPage()),
           );
         }
       } else if (response.statusCode == 400) {
