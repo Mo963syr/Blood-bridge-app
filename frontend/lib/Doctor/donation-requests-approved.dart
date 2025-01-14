@@ -294,7 +294,7 @@ class DonationDetailsPage extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () {
                     _showDonationOptions(
-                        context, request as Map<String, dynamic>);
+                        context, request);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,

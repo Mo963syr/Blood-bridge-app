@@ -36,6 +36,9 @@ router.post('/signin', async (req, res) => {
     } else if (user.role === 'user') {
       response.status = 'user dashboard';
     }
+    else if (user.role === 'coordinator') {
+      response.status = 'coordinator dashboard';
+    }
 
     return res.status(200).json(response);
   } catch (error) {
@@ -51,6 +54,8 @@ router.post('/signup', async (req, res) => {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'Email is already in use' });
+    }else if (email==null) {
+      return res.status(400).json({ message: 'email not vaild' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);

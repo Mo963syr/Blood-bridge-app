@@ -5,6 +5,7 @@ import 'signup_page.dart';
 import 'package:frontend/home_page.dart';
 import 'Doctor/mainDoctorpage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import './Awareness Coordinato/mainCoordinator.dart';
 
 class SigninPage extends StatefulWidget {
   @override
@@ -57,6 +58,15 @@ class _SigninPageState extends State<SigninPage> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => DoctorHomePage()),
+          );
+        } else if (responseData['status'] == 'coordinator dashboard') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('تم تسجيل الدخول كمنسق توعوي')),
+          );
+
+          Navigator.pushReplacement(
+            context,
+           MaterialPageRoute(builder: (context) => AwarenessCoordinatorPage()),
           );
         }
       } else if (response.statusCode == 400) {

@@ -38,9 +38,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
         setState(() {
           appointments = data.where((item) {
             return item['donorId'] == userId.toString();
-            // تصفية المواعيد بناءً على معرّف المتبرع فقط
           }).map<Map<String, String>>((item) {
-            // إنشاء متغير appointmentType
             String appointmentType = item['donorId'] == userId.toString()
                 ? 'موعد تبرع'
                 : 'موعد الحصول على الدم';

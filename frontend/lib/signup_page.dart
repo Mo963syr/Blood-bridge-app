@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'home_page.dart'; // استيراد الصفحة الرئيسية
-import 'signin_page.dart'; // تأكد من أنك قد أضفت صفحة SigninPage
+import 'home_page.dart';
+import 'signin_page.dart';
 
 class SignupPage extends StatefulWidget {
   @override
@@ -12,9 +12,9 @@ class SignupPage extends StatefulWidget {
 class _SignupPageState extends State<SignupPage> {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
-  // final TextEditingController _locationController = TextEditingController();
+
   final TextEditingController _phoneNumberController = TextEditingController();
-  // final TextEditingController _bloodTypeController = TextEditingController();
+
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
@@ -29,13 +29,12 @@ class _SignupPageState extends State<SignupPage> {
     }
 
     final response = await http.post(
-      Uri.parse(
-          'http://10.0.2.2:8080/api/auth/signup'), // تأكد من ضبط عنوان الخادم
+      Uri.parse('http://10.0.2.2:8080/api/auth/signup'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'firstName': _firstNameController.text,
         'lastName': _lastNameController.text,
-        'Number': _phoneNumberController.text,
+        'number': _phoneNumberController.text,
         'email': _emailController.text,
         'password': _passwordController.text,
       }),
