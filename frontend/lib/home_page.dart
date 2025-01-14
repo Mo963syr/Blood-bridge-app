@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:frontend/donationrequestpage.dart';
 import 'appointmentsUser.dart';
 import 'setting_page.dart';
+import './Awareness Coordinato/mainCoordinator.dart';
 
 void main() {
   runApp(
@@ -30,6 +31,8 @@ class ThemeProvider extends ChangeNotifier {
     _themeData = ThemeData.light();
     notifyListeners();
   }
+
+  void addPost(Map<String, Object?> map) {}
 }
 
 class MyApp extends StatelessWidget {
@@ -79,7 +82,7 @@ class _HomePageState extends State<HomePage> {
     } else if (index == 5) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => SettingsPage()),
+        MaterialPageRoute(builder: (context) => AwarenessCoordinatorPage()),
       );
     } else {
       setState(() {
@@ -95,11 +98,12 @@ class _HomePageState extends State<HomePage> {
         title: Text('الصفحة الرئيسية'),
         actions: [
           IconButton(
-            icon: Icon(Icons.settings),
+            icon: Icon(Icons.post_add),
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => SettingsPage()),
+                MaterialPageRoute(
+                    builder: (context) => AwarenessCoordinatorPage()),
               );
             },
           ),

@@ -14,9 +14,9 @@ class AwarenessCoordinatorPage extends StatefulWidget {
 class _AwarenessCoordinatorPageState extends State<AwarenessCoordinatorPage> {
   TextEditingController _controller = TextEditingController();
   File? _image;
-  File? _video; // لتخزين الفيديو المحمل
+  File? _video;
   final picker = ImagePicker();
-  VideoPlayerController? _videoController; // للتحكم في الفيديو
+  VideoPlayerController? _videoController;
 
   // لاختيار صورة
   Future<void> _pickImage() async {
@@ -43,7 +43,6 @@ class _AwarenessCoordinatorPageState extends State<AwarenessCoordinatorPage> {
     }
   }
 
-  // إضافة المنشور
   void _addPost() {
     if (_controller.text.isNotEmpty || _image != null || _video != null) {
       Provider.of<ThemeProvider>(context, listen: false).addPost(
