@@ -1,6 +1,76 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'services/user_preferences.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  int donations = 0;
+  int points = 0;
+  bool certificate = false;
+  String firstname = 'لا توجد بيانات';
+  String lastname = 'لا توجد بيانات';
+  String num = '000';
+
+  @override
+  void initState() {
+    super.initState();
+    fetchProfileData();
+  }
+
+  Future<void> fetchProfileData() async {
+    try {
+      String? userId = await UserPreferences.getUserId();
+      if (userId == null) {
+        _showError('لم يتم العثور على معرف المستخدم.');
+        return;
+      }
+
+      final response = await http.post(
+        Uri.parse('http://10.0.2.2:8080/api/donation-count'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'userId': userId}),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+
+        setState(() {
+          firstname = responseData['user']['firstName'] ?? 'لا توجد بيانات';
+          lastname = responseData['user']['lastName'] ?? 'لا توجد بيانات';
+          donations = responseData['donations'] ?? 0;
+          points = responseData['points'] ?? 0;
+          certificate = responseData['certificate'] ?? false;
+          num = responseData['user']['number']?.toString() ?? '000';
+        });
+      } else {
+        _showError('حدث خطأ أثناء جلب البيانات: ${response.body}');
+      }
+    } catch (e) {
+      _showError('حدث خطأ: $e');
+    }
+  }
+
+  void _showError(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('خطأ'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('حسنًا'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,9 +98,9 @@ class ProfilePage extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _buildStatItem('التبرعات', '10'),
-                  _buildStatItem('النقاط', '250'),
-                  _buildStatItem('الشهادات', '3'),
+                  _buildStatItem('التبرعات', '$donations'),
+                  _buildStatItem('النقاط', '$points'),
+                  _buildStatItem('الشهادة', certificate ? 'نعم' : 'لا'),
                 ],
               ),
               SizedBox(height: 20),
@@ -40,14 +110,13 @@ class ProfilePage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildInfoRow('الاسم:', 'أحمد محمد'),
+                    _buildInfoRow('الاسم:', '$firstname $lastname'),
                     SizedBox(height: 15),
                     _buildEditableInfoRow(
                       label: 'رقم الهاتف:',
-                      value: '+970-599-123456',
+                      value: num,
                       onEdit: () {
-                        _showEditDialog(
-                            context, 'رقم الهاتف', '+970-599-123456');
+                        _showEditDialog(context, 'رقم الهاتف', num);
                       },
                     ),
                     SizedBox(height: 15),
@@ -139,15 +208,11 @@ class ProfilePage extends StatelessWidget {
         title: Text('تعديل $field'),
         content: TextField(
           controller: controller,
-          decoration: InputDecoration(
-            hintText: 'أدخل $field الجديد',
-          ),
+          decoration: InputDecoration(hintText: 'أدخل $field الجديد'),
         ),
         actions: [
           TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
+            onPressed: () => Navigator.pop(context),
             child: Text('إلغاء'),
           ),
           TextButton(

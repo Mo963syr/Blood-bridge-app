@@ -1,5 +1,6 @@
 const express = require('express');
 const Appointment = require('../models/appointments');
+const User = require('../models/user.model');
 const router = express.Router();
 const mongoose = require('mongoose');
 router.post('/appointments', async (req, res) => {
@@ -13,7 +14,6 @@ router.post('/appointments', async (req, res) => {
       status,
     } = req.body;
 
-    // التحقق من وجود البيانات المطلوبة
     if (
       !donorname ||
       !needyname ||
@@ -35,7 +35,6 @@ router.post('/appointments', async (req, res) => {
       });
     }
 
-    // إنشاء وحفظ الموعد في قاعدة البيانات
     const newAppointment = new Appointment({
       donorId,
       donorname,
@@ -122,7 +121,7 @@ router.put('/appointments-status/:id', async (req, res) => {
     const updatedAppointment = await Appointment.findByIdAndUpdate(
       id,
       { status },
-      { new: true } // Return the updated document
+      { new: true }
     );
 
     if (!updatedAppointment) {
@@ -137,11 +136,11 @@ router.put('/appointments-status/:id', async (req, res) => {
     res.status(500).json({ message: 'Error updating status', error });
   }
 });
-
 router.post('/donation-count', async (req, res) => {
   try {
     const { userId } = req.body;
 
+    // التحقق من وجود userId
     if (!userId) {
       return res.status(400).json({ error: 'User ID is required' });
     }
@@ -150,22 +149,28 @@ router.post('/donation-count', async (req, res) => {
       return res.status(400).json({ error: 'Invalid User ID' });
     }
 
-    // const objectId = new mongoose.Types.ObjectId(userId);
+    const [requestCount, userInfo] = await Promise.all([
+      Appointment.countDocuments({ donorId: userId, status: 'completed' }),
+      User.findById(userId).select('firstName lastName email number'),
+    ]);
 
-    const requestCount = await Appointment.countDocuments({
-      donorId: userId,
-      status: 'completed',
-    });
-    let certificate = false;
-
-    if (requestCount >= 3) {
-      certificate = true;
+    if (!userInfo) {
+      return res.status(404).json({ error: 'User not found' });
     }
-    points = requestCount * 10;
-    res.status(200).json({ userId, requestCount, points, certificate });
+
+    const points = requestCount * 10;
+    const certificate = requestCount >= 3;
+
+    res.status(200).json({
+      user: userInfo,
+      donations: requestCount,
+      points,
+      certificate,
+    });
   } catch (error) {
-    console.error('Error fetching request count:', error);
+    console.error('Error fetching donation count:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 module.exports = router;
