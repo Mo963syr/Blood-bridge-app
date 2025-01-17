@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/signin_page.dart';
 import 'createrequest.dart';
 import 'profilepage.dart';
 import 'package:provider/provider.dart';
 import 'package:frontend/donationrequestpage.dart';
 import 'appointmentsUser.dart';
-import 'package:intl/intl.dart';
-import './Awareness Coordinato/mainCoordinator.dart';
+import 'setting_page.dart';
 
 void main() {
   runApp(
@@ -18,10 +18,8 @@ void main() {
 
 class ThemeProvider extends ChangeNotifier {
   ThemeData _themeData = ThemeData.light();
-  List<Map<String, Object?>> _posts = [];
 
   ThemeData get themeData => _themeData;
-  List<Map<String, Object?>> get posts => _posts;
 
   void setDarkMode() {
     _themeData = ThemeData.dark();
@@ -31,24 +29,6 @@ class ThemeProvider extends ChangeNotifier {
   void setLightMode() {
     _themeData = ThemeData.light();
     notifyListeners();
-  }
-
-  void addPost(Map<String, Object?> post) {
-    _posts.add(post);
-    notifyListeners();
-  }
-
-  String timeAgo(DateTime time) {
-    final difference = DateTime.now().difference(time);
-    if (difference.inSeconds < 60) {
-      return 'منذ ${difference.inSeconds} ثانية';
-    } else if (difference.inMinutes < 60) {
-      return 'منذ ${difference.inMinutes} دقيقة';
-    } else if (difference.inHours < 24) {
-      return 'منذ ${difference.inHours} ساعة';
-    } else {
-      return 'تم النشر في ${DateFormat('yyyy-MM-dd HH:mm').format(time)}';
-    }
   }
 }
 
@@ -96,11 +76,6 @@ class _HomePageState extends State<HomePage> {
         context,
         MaterialPageRoute(builder: (context) => AppointmentsPage()),
       );
-    } else if (index == 5) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => AwarenessCoordinatorPage()),
-      );
     } else {
       setState(() {
         _selectedIndex = index;
@@ -113,83 +88,12 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('الصفحة الرئيسية'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.post_add),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => AwarenessCoordinatorPage()),
-              );
-            },
-          ),
-        ],
       ),
-      body: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, child) {
-          final posts = themeProvider.posts;
-          if (posts.isEmpty) {
-            return Center(
-              child: Text(
-                'لاتوجد منشورات حالياً',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            );
-          }
-          return ListView.builder(
-            itemCount: posts.length,
-            itemBuilder: (context, index) {
-              final post = posts[index];
-              final title = post['title'] as String?;
-              final text = post['text'] as String?;
-              final timestamp = post['timestamp'] as DateTime?;
-
-              return Card(
-                margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                elevation: 5,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      title != null
-                          ? Text(
-                              title,
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.red[400],
-                              ),
-                            )
-                          : Container(),
-                      SizedBox(height: 8),
-                      text != null
-                          ? Text(
-                              text,
-                              style: TextStyle(fontSize: 16),
-                            )
-                          : Container(),
-                      SizedBox(height: 8),
-                      timestamp != null
-                          ? Text(
-                              themeProvider.timeAgo(timestamp),
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey[600],
-                              ),
-                            )
-                          : Container(),
-                    ],
-                  ),
-                ),
-              );
-            },
-          );
-        },
+      body: Center(
+        child: Text(
+          ' لاتوجد منشورات حالياً',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
       ),
       bottomNavigationBar: BottomAppBar(
         color: Color(0xFFC62828),
