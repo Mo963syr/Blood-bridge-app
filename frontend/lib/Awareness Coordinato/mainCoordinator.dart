@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 import '../services/user_preferences.dart';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class AwarenessCoordinatorPage extends StatefulWidget {
   @override
@@ -15,55 +17,36 @@ class AwarenessCoordinatorPage extends StatefulWidget {
 class _AwarenessCoordinatorPageState extends State<AwarenessCoordinatorPage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contectController = TextEditingController();
-  final _formkey = GlobalKey<FormState>();
-  TextEditingController _controller = TextEditingController();
   Future<void> createpost(BuildContext context) async {
     String? userId = await UserPreferences.getUserId();
     if (userId == null) {
       print('User ID not found');
       return;
     }
-    if (_titleController == null || _contectController == null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("يرجى ملئ جميع الحقول")));
-      return;
-    }
-    if (!_formkey.currentState!.validate()) {
-      return;
-    }
-    try {
-      final dio = Dio();
-      final formData = FormData.fromMap({
+
+    final response = await http.post(
+      Uri.parse('http://10.0.2.2:8080/api/create-post'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
         'title': _titleController.text,
         'content': _contectController.text,
-        'userId': userId,
-      });
+        'userId': userId
+      }),
+    );
 
-      final response = await dio.post(
-        'http://10.0.2.2:8080/api/create-post',
-        data: formData,
+    final responseData = jsonDecode(response.body);
+
+    if (response.statusCode == 201 ||
+        responseData['message'] == 'Blood request created') {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Request created successfully')));
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => AwarenessCoordinatorPage()),
       );
-      print(response.statusCode);
-      print(response.data);
-      if (response.statusCode == 201) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(' successfully')),
-        );
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => AwarenessCoordinatorPage()),
-        );
-      } else {
-        print('Error: ${response.statusCode}');
-        print('Response: ${response.data}');
-      }
-    } catch (e) {
-      if (e is DioException) {
-        print('DioError: ${e.response?.statusCode}');
-        print('Error data: ${e.response?.data}');
-      } else {
-        print('Unexpected error: $e');
-      }
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Failed to create request')));
     }
   }
 
