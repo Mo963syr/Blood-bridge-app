@@ -209,3 +209,4 @@ dist
 .history
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,flutter,node,macos
+.codegpt
