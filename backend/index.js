@@ -21,6 +21,7 @@ const userRoutes = require('./routes/user.routes');
 const bloodRequestRoutes = require('./routes/bloodRequest.routes');
 const uploadRoutes = require('./routes/upload.routes');
 const appointmentRoutes = require('./routes/appointment.routes');
+const PostRoutes = require('./routes/post.routes');
 
 
 app.use('/api/auth', authRoutes);
@@ -28,6 +29,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/requests', bloodRequestRoutes);
 app.use('/api/uploads', uploadRoutes);
 app.use('/api', appointmentRoutes);
+app.use('/api', PostRoutes);
 
 
 app.listen(port,'0.0.0.0', () => {

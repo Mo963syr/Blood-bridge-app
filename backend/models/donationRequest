@@ -1,4 +1,7 @@
+const dayjs = require('dayjs');
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+
 const donationRequestSchema = new mongoose.Schema({
   medecalreport: {
     type: String,
@@ -24,9 +27,18 @@ const donationRequestSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
+    get: (timestamp) => dayjs(timestamp).format('YYYY-MM-DD'),
+  },
+  time: {
+    type: Date,
+    default: Date.now,
+    get: (timestamp) => dayjs(timestamp).format('HH:mm:ss'),
   },
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 });
+
+donationRequestSchema.set('toJSON', { getters: true });
+donationRequestSchema.set('toObject', { getters: true });
 const donationRequest = mongoose.model(
   'DonationRequest',
   donationRequestSchema
