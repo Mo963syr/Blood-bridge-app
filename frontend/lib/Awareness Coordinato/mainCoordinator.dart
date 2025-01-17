@@ -13,9 +13,9 @@ class AwarenessCoordinatorPage extends StatefulWidget {
 }
 
 class _AwarenessCoordinatorPageState extends State<AwarenessCoordinatorPage> {
-  TextEditingController _titleController = TextEditingController();
-  TextEditingController _contectController = TextEditingController();
-
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _contectController = TextEditingController();
+  final _formkey = GlobalKey<FormState>();
   TextEditingController _controller = TextEditingController();
   Future<void> createpost(BuildContext context) async {
     String? userId = await UserPreferences.getUserId();
@@ -28,11 +28,14 @@ class _AwarenessCoordinatorPageState extends State<AwarenessCoordinatorPage> {
           .showSnackBar(SnackBar(content: Text("يرجى ملئ جميع الحقول")));
       return;
     }
+    if (!_formkey.currentState!.validate()) {
+      return;
+    }
     try {
       final dio = Dio();
       final formData = FormData.fromMap({
-        'title': _titleController,
-        'content': _contectController,
+        'title': _titleController.text,
+        'content': _contectController.text,
         'userId': userId,
       });
 
