@@ -418,28 +418,6 @@ router.put('/update-status-donation', async (req, res) => {
     res.status(500).json({ error: 'حدث خطأ أثناء تحديث الحالة' });
   }
 });
-router.post('/count', async (req, res) => {
-  try {
-    const { userId } = req.body;
-
-    if (!userId) {
-      return res.status(400).json({ error: 'User ID is required' });
-    }
-
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(400).json({ error: 'Invalid User ID' });
-    }
-
-    // const objectId = new mongoose.Types.ObjectId(userId);
-
-    const requestCount = await BloodRequest.countDocuments({ user: userId });
-
-    res.status(200).json({ userId, requestCount });
-  } catch (error) {
-    console.error('Error fetching request count:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
 
 
 module.exports = router;

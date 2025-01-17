@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-
+const dayjs = require('dayjs');
+const Schema = mongoose.Schema;
 const bloodRequestSchema = new mongoose.Schema({
   medecalreport: {
     type: String,
@@ -30,9 +31,18 @@ const bloodRequestSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
+    get: (timestamp) => dayjs(timestamp).format('YYYY-MM-DD'),
+  },
+  time: {
+    type: Date,
+    default: Date.now,
+    get: (timestamp) => dayjs(timestamp).format('HH:mm:ss'),
   },
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 });
+
+bloodRequestSchema.set('toJSON', { getters: true });
+bloodRequestSchema.set('toObject', { getters: true });
 
 const BloodRequest = mongoose.model('BloodRequest', bloodRequestSchema);
 
