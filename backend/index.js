@@ -14,7 +14,7 @@ connectDB();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use('/uploads', express.static('uploads')); 
+app.use('/uploads', express.static('uploads'));
 
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
@@ -23,7 +23,6 @@ const uploadRoutes = require('./routes/upload.routes');
 const appointmentRoutes = require('./routes/appointment.routes');
 const PostRoutes = require('./routes/post.routes');
 
-
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/requests', bloodRequestRoutes);
@@ -31,7 +30,6 @@ app.use('/api/uploads', uploadRoutes);
 app.use('/api', appointmentRoutes);
 app.use('/api', PostRoutes);
 
-
-app.listen(port,'0.0.0.0', () => {
+app.listen(port, '0.0.0.0', () => {
   console.log(`Server running on port ${port}`);
 });

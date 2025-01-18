@@ -132,7 +132,7 @@ class DonationDetailsPage extends StatelessWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('تم تعديل الحالة بنجاح!')),
         );
-        Navigator.pop(context); 
+        Navigator.pop(context);
       } else {
         throw Exception('Failed to update status: ${response.body}');
       }
@@ -293,8 +293,7 @@ class DonationDetailsPage extends StatelessWidget {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    _showDonationOptions(
-                        context, request);
+                    _showDonationOptions(context, request);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
