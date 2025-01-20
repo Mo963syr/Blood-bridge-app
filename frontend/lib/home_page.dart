@@ -137,34 +137,71 @@ class _HomePageState extends State<HomePage> {
                   itemBuilder: (context, index) {
                     final posts = post[index];
                     return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 8.0),
-                      elevation: 3,
-                      child: ListTile(
-                        title: Text(
-                          posts['title'] ?? 'عنوان غير متوفر',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(height: 5),
-                            Text(
-                              posts['content'] ?? 'محتوى غير متوفر',
-                              style: TextStyle(fontSize: 14),
-                            ),
-                            SizedBox(height: 10),
-                            Text(
-                              posts['time'] ?? '',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey[600],
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 10.0, horizontal: 15.0),
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Title in the center
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16.0),
+                            child: Center(
+                              child: Text(
+                                posts['title'] ?? 'عنوان غير متوفر',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                                textAlign: TextAlign.center,
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                          Divider(color: Colors.grey[300]),
+                          // Post Content
+                          Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (posts['postImage'] != null)
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Image.network(
+                                      posts['postImage']!,
+                                      height: 200,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                SizedBox(height: 12),
+                                Text(
+                                  posts['content'] ?? 'محتوى غير متوفر',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black87,
+                                    height: 1.5,
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    posts['time'] ?? '',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     );
                   },
