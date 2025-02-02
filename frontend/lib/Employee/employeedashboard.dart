@@ -112,6 +112,8 @@ class DashboardCard extends StatelessWidget {
 class CreateDoctorPage extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
 
+  CreateDoctorPage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -129,57 +131,67 @@ class CreateDoctorPage extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: Form(
               key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  SizedBox(height: 10),
-                  _buildTextField(
-                    label: 'اسم الطبيب',
-                    icon: Icons.person,
-                  ),
-                  SizedBox(height: 10),
-                  _buildTextField(
-                    label: 'الكنية',
-                    icon: Icons.account_circle,
-                  ),
-                  SizedBox(height: 10),
-                  _buildTextField(
-                    label: 'العنوان',
-                    icon: Icons.location_on,
-                  ),
-                  SizedBox(height: 10),
-                  _buildTextField(
-                    label: 'رقم الهاتف',
-                    icon: Icons.phone,
-                    inputType: TextInputType.phone,
-                  ),
-                  SizedBox(height: 10),
-                  _buildTextField(
-                    label: 'التخصص',
-                    icon: Icons.school,
-                  ),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      padding: EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SizedBox(height: 10),
+                    _buildTextField(
+                      label: 'الاسم',
+                      icon: Icons.person,
+                    ),
+                    SizedBox(height: 10),
+                    _buildTextField(
+                      label: 'الكنية',
+                      icon: Icons.account_circle,
+                    ),
+                    SizedBox(height: 10),
+                    _buildTextField(
+                      label: 'رقم الهاتف',
+                      icon: Icons.phone,
+                      inputType: TextInputType.phone,
+                    ),
+                    SizedBox(height: 10),
+                    _buildTextField(
+                      label: 'البريد الإلكتروني',
+                      icon: Icons.email,
+                      inputType: TextInputType.emailAddress,
+                    ),
+                    SizedBox(height: 10),
+                    _buildTextField(
+                      label: 'كلمة المرور',
+                      icon: Icons.lock,
+                      obscureText: true,
+                    ),
+                    SizedBox(height: 10),
+                    _buildTextField(
+                      label: 'تأكيد كلمة المرور',
+                      icon: Icons.lock_outline,
+                      obscureText: true,
+                    ),
+                    SizedBox(height: 20),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        padding: EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('تم إنشاء الحساب بنجاح')),
+                          );
+                        }
+                      },
+                      child: Text(
+                        'إنشاء حساب',
+                        style: TextStyle(fontSize: 16),
                       ),
                     ),
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('تم إنشاء الحساب بنجاح')),
-                        );
-                      }
-                    },
-                    child: Text(
-                      'إنشاء حساب',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -192,9 +204,11 @@ class CreateDoctorPage extends StatelessWidget {
     required String label,
     required IconData icon,
     TextInputType inputType = TextInputType.text,
+    bool obscureText = false,
   }) {
     return TextFormField(
       keyboardType: inputType,
+      obscureText: obscureText,
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon),
@@ -217,6 +231,8 @@ class CreateDoctorPage extends StatelessWidget {
 class CreateCoordinatorPage extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
 
+  CreateCoordinatorPage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -234,52 +250,67 @@ class CreateCoordinatorPage extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: Form(
               key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  SizedBox(height: 10),
-                  _buildTextField(
-                    label: 'اسم المنسق',
-                    icon: Icons.person,
-                  ),
-                  SizedBox(height: 10),
-                  _buildTextField(
-                    label: 'الكنية',
-                    icon: Icons.account_circle,
-                  ),
-                  SizedBox(height: 10),
-                  _buildTextField(
-                    label: 'العنوان',
-                    icon: Icons.location_on,
-                  ),
-                  SizedBox(height: 10),
-                  _buildTextField(
-                    label: 'رقم الهاتف',
-                    icon: Icons.phone,
-                    inputType: TextInputType.phone,
-                  ),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      padding: EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SizedBox(height: 10),
+                    _buildTextField(
+                      label: 'الاسم',
+                      icon: Icons.person,
+                    ),
+                    SizedBox(height: 10),
+                    _buildTextField(
+                      label: 'الكنية',
+                      icon: Icons.account_circle,
+                    ),
+                    SizedBox(height: 10),
+                    _buildTextField(
+                      label: 'رقم الهاتف',
+                      icon: Icons.phone,
+                      inputType: TextInputType.phone,
+                    ),
+                    SizedBox(height: 10),
+                    _buildTextField(
+                      label: 'البريد الإلكتروني',
+                      icon: Icons.email,
+                      inputType: TextInputType.emailAddress,
+                    ),
+                    SizedBox(height: 10),
+                    _buildTextField(
+                      label: 'كلمة المرور',
+                      icon: Icons.lock,
+                      obscureText: true,
+                    ),
+                    SizedBox(height: 10),
+                    _buildTextField(
+                      label: 'تأكيد كلمة المرور',
+                      icon: Icons.lock_outline,
+                      obscureText: true,
+                    ),
+                    SizedBox(height: 20),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        padding: EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('تم إنشاء الحساب بنجاح')),
+                          );
+                        }
+                      },
+                      child: Text(
+                        'إنشاء حساب',
+                        style: TextStyle(fontSize: 16),
                       ),
                     ),
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('تم إنشاء الحساب بنجاح')),
-                        );
-                      }
-                    },
-                    child: Text(
-                      'إنشاء حساب',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -292,9 +323,11 @@ class CreateCoordinatorPage extends StatelessWidget {
     required String label,
     required IconData icon,
     TextInputType inputType = TextInputType.text,
+    bool obscureText = false,
   }) {
     return TextFormField(
       keyboardType: inputType,
+      obscureText: obscureText,
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon),
