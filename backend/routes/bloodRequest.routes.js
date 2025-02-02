@@ -8,7 +8,7 @@ const Image = require('../models/Image');
 const { Console } = require('console');
 const router = express.Router();
 const mongoose = require('mongoose');
-
+const Compatibility = require('../models/blood_compatibility.model');
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, '../frontend/assets/externalreport');
@@ -33,7 +33,14 @@ router.post(
   upload.single('image'),
   async (req, res) => {
     try {
-      const { location, bloodType, urgencyLevel, userId } = req.body;
+      const {
+        location,
+        bloodType,
+        urgencyLevel,
+        userId,
+        fullName,
+        requestneedytype,
+      } = req.body;
 
       if (!location || !bloodType || !urgencyLevel || !userId) {
         return res.status(400).json({ message: 'All fields are required' });
@@ -49,12 +56,13 @@ router.post(
         return res.status(400).json({ message: 'Image is required for users' });
       }
 
-      const requestType =
-        user.role === 'doctor'
-          ? 'internal'
-          : user.role === 'user'
-          ? 'external'
-          : 'unknown';
+      const requestType = requestneedytype
+        ? requestneedytype
+        : user.role === 'doctor'
+        ? 'internal'
+        : user.role === 'user'
+        ? 'external'
+        : 'unknown';
 
       const bloodRequest = new BloodRequest({
         medecalreport: req.file
@@ -62,6 +70,7 @@ router.post(
           : null,
         location,
         bloodType,
+        fullName,
         urgencyLevel,
         requestneedytype: requestType,
         createdAt: Date.now(),
@@ -88,6 +97,7 @@ router.post(
         createdAt: bloodRequest.createdAt,
         user_id: bloodRequest.user,
         status: bloodRequest.requestStatus,
+        fullName: bloodRequest.fullName,
       };
 
       return res.status(201).json({
@@ -184,7 +194,7 @@ router.get('/blood-requests', async (req, res) => {
 router.get('/blood-requests/external', async (req, res) => {
   try {
     const bloodRequests = await BloodRequest.find({
-      requestneedytype: 'external',
+      requestneedytype: { $in: ['external', 'externalForOther'] },
       requestStatus: 'active',
     }).populate('user', 'firstName');
     res.json(bloodRequests);
@@ -199,7 +209,7 @@ router.get('/blood-requests/external', async (req, res) => {
 router.get('/blood-requests/approve', async (req, res) => {
   try {
     const bloodRequests = await BloodRequest.find({
-      requestneedytype: 'external',
+      requestneedytype: { $in: ['external', 'externalForOther'] },
       requestStatus: 'approved',
     }).populate('user', 'firstName');
     res.json(bloodRequests);
@@ -251,6 +261,49 @@ router.get('/donation-request-approved', async (req, res) => {
     res
       .status(500)
       .json({ error: 'An error occurred while fetching blood requests' });
+  }
+});
+router.get('/donation-requests/count', async (req, res) => {
+  try {
+    // الحصول على userId من المعاملات (Query Parameters)
+    const { userId } = req.query;
+
+    // التحقق من وجود userId في الطلب
+    if (!userId) {
+      return res.status(400).json({ error: 'User ID is required' });
+    }
+
+    // البحث عن الطلبات التي حالتها "approved" أو "reserved" ومطابقة userId
+    const requestcount = await BloodRequest.countDocuments({
+      requestStatus: { $in: ['approved', 'active', 'assigned'] },
+      user: userId, // البحث باستخدام userId
+    });
+    const donrequestcount = await donationRequest.countDocuments({
+      requestStatus: { $in: ['approved', 'active', 'assigned'] },
+      user: userId, // البحث باستخدام userId
+    });
+    const requestForOtercount = await BloodRequest.countDocuments({
+      requestStatus: { $in: ['approved', 'active', 'assigned'] },
+      requestneedytype: { $in: ['externalForOther'] },
+      user: userId, // البحث باستخدام userId
+    });
+
+    // إرسال الطلبات كاستجابة
+    res.status(200).json({
+      requestcount: requestcount,
+      donrequestcount: donrequestcount,
+      requestForOtercount: requestForOtercount,
+    });
+    console.log({
+      requestcount: requestcount,
+      donrequestcount: donrequestcount,
+      requestForOtercount: requestForOtercount,
+    });
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .json({ error: 'An error occurred while fetching donation requests' });
   }
 });
 
@@ -344,45 +397,53 @@ router.put('/update-status-requests', async (req, res) => {
     res.status(500).json({ error: 'حدث خطأ أثناء تحديث الحالة' });
   }
 });
-// تحديد زمر الدم المتوافقة
-const getCompatibleBloodTypes = (bloodType) => {
-  const compatibility = {
-    'O-': ['O-'],
-    'O+': ['O-', 'O+'],
-    'A-': ['O-', 'A-'],
-    'A+': ['O-', 'O+', 'A-', 'A+'],
-    'B-': ['O-', 'B-'],
-    'B+': ['O-', 'O+', 'B-', 'B+'],
-    'AB-': ['O-', 'A-', 'B-', 'AB-'],
-    'AB+': ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'],
-  };
+// // تحديد زمر الدم المتوافقة
+// const getCompatibleBloodTypes = (bloodType) => {
+//   const compatibility = {
+//     'O-': ['O-'],
+//     'O+': ['O-', 'O+'],
+//     'A-': ['O-', 'A-'],
+//     'A+': ['O-', 'O+', 'A-', 'A+'],
+//     'B-': ['O-', 'B-'],
+//     'B+': ['O-', 'O+', 'B-', 'B+'],
+//     'AB-': ['O-', 'A-', 'B-', 'AB-'],
+//     'AB+': ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'],
+//   };
 
-  return compatibility[bloodType] || [];
-};
+//   return compatibility[bloodType] || [];
+// };
 
 // API لعرض طلبات التبرع بزمر الدم المتوافقة
-router.get('/donation-requests-with-user', async (req, res) => {
+router.post('/donation-requests-with-user', async (req, res) => {
   try {
-    const { bloodType } = req.query; // استلام زمرة الدم من الواجهة
+    const { bloodType, location } = req.body; // استلام زمرة الدم من الواجهة
     if (!bloodType) {
       return res.status(400).json({ error: 'Blood type is required' });
     }
+    const compatibilityEntry = await Compatibility.findById(bloodType);
 
-    // جلب الزمر المتوافقة مع الزمرة المطلوبة
-    const compatibleBloodTypes = getCompatibleBloodTypes(bloodType);
-    console.log(compatibleBloodTypes);
-    console.log(bloodType);
+    if (!compatibilityEntry) {
+      return res
+        .status(404)
+        .json({ error: 'Blood type not found in database' });
+    }
+
+    const compatibleBloodTypes = compatibilityEntry.compatibleWith; // الزمر المتوافقة مع المطلوبة
+
+    console.log(` Blood Type Requested: ${bloodType}`);
+    console.log(` Compatible Blood Types: ${compatibleBloodTypes}`);
     // البحث عن الطلبات المتوافقة
-    const bloodRequests = await donationRequest
+    const donationreq = await donationRequest
       .find({
         bloodType: { $in: compatibleBloodTypes },
         requestStatus: 'approved',
+        location: location,
       })
-      .select('AvailabilityPeriod user bloodType')
+      .select('AvailabilityPeriod user bloodType location')
       .populate('user', 'firstName')
       .exec();
 
-    res.status(200).json(bloodRequests);
+    res.status(200).json(donationreq);
   } catch (err) {
     console.error(err);
     res
@@ -418,6 +479,5 @@ router.put('/update-status-donation', async (req, res) => {
     res.status(500).json({ error: 'حدث خطأ أثناء تحديث الحالة' });
   }
 });
-
 
 module.exports = router;

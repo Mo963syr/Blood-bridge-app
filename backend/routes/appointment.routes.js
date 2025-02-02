@@ -3,11 +3,15 @@ const Appointment = require('../models/appointments');
 const User = require('../models/user.model');
 const router = express.Router();
 const mongoose = require('mongoose');
+const BloodRequest = require('../models/bloodRequest.model');
+const DonationRequest = require('../models/donationRequest');
 router.post('/appointments', async (req, res) => {
   try {
     const {
+      donorReqId,
       donorname,
       needyname,
+      needyReqId,
       donorId,
       needyId,
       appointmentDateTime,
@@ -15,8 +19,10 @@ router.post('/appointments', async (req, res) => {
     } = req.body;
 
     if (
+      !donorReqId ||
       !donorname ||
       !needyname ||
+      !needyReqId ||
       !donorId ||
       !needyId ||
       !appointmentDateTime ||
@@ -36,6 +42,8 @@ router.post('/appointments', async (req, res) => {
     }
 
     const newAppointment = new Appointment({
+      needyReqId,
+      donorReqId,
       donorId,
       donorname,
       needyId,
@@ -114,28 +122,55 @@ router.get('/View-appointments', async (req, res) => {
   }
 });
 router.put('/appointments-status/:id', async (req, res) => {
-  const { id } = req.params;
-  const { status } = req.body;
+  const { id } = req.params; // معرف الموعد
+  const { status, donorReqId, needyReqId } = req.body; // البيانات المرسلة مع الطلب
 
   try {
+    // تحديث حالة طلب التبرع
+    const updatedDonationRequest = await DonationRequest.findByIdAndUpdate(
+      donorReqId,
+      { requestStatus: status },
+      { new: true }
+    );
+
+    // تحديث حالة طلب الدم
+    const updatedBloodRequest = await BloodRequest.findByIdAndUpdate(
+      needyReqId,
+      { requestStatus: status },
+      { new: true }
+    );
+
+    // تحديث حالة الموعد
     const updatedAppointment = await Appointment.findByIdAndUpdate(
       id,
       { status },
       { new: true }
     );
 
+    // التحقق من وجود السجلات
     if (!updatedAppointment) {
       return res.status(404).json({ message: 'Appointment not found' });
     }
+    if (!updatedDonationRequest) {
+      return res.status(404).json({ message: 'Donation request not found' });
+    }
+    if (!updatedBloodRequest) {
+      return res.status(404).json({ message: 'Blood request not found' });
+    }
 
+    // إرسال استجابة النجاح
     res.json({
       message: 'Status updated successfully',
       appointment: updatedAppointment,
+      donationRequest: updatedDonationRequest,
+      bloodRequest: updatedBloodRequest,
     });
   } catch (error) {
+    // التعامل مع الأخطاء
     res.status(500).json({ message: 'Error updating status', error });
   }
 });
+
 router.post('/donation-count', async (req, res) => {
   try {
     const { userId } = req.body;

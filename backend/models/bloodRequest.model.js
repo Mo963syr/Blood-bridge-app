@@ -24,6 +24,9 @@ const bloodRequestSchema = new mongoose.Schema({
     type: String,
     default: 'external',
   },
+  fullName: {
+    type: String,
+  },
   requestStatus: {
     type: String,
     default: 'active',

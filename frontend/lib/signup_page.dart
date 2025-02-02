@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'home_page.dart';
 import 'signin_page.dart';
+import 'services/user_preferences.dart';
 
 class SignupPage extends StatefulWidget {
   @override
@@ -43,6 +44,10 @@ class _SignupPageState extends State<SignupPage> {
     print(response.statusCode);
     if (response.statusCode == 201) {
       final responseData = jsonDecode(response.body);
+       
+      final userId = responseData['user']['_id'].toString();
+      print(userId);
+      UserPreferences.saveUserId(userId);
       if (responseData['message'] == 'Email is not available') {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Email is not available')));

@@ -8,6 +8,8 @@ import 'profilepage.dart';
 import 'donationrequestpage.dart';
 import 'appointmentsUser.dart';
 import 'setting_page.dart';
+import 'services/user_preferences.dart';
+import 'package:frontend/requestForOther.dart';
 
 void main() {
   runApp(
@@ -58,12 +60,22 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 2;
   bool isLoading = true;
   List<Map<String, dynamic>> post = [];
-
+  List<Map<String, dynamic>> count = [];
+  int req = 0;
+  int donrequestcount = 0;
+  int requestForOtercount = 0;
   @override
   void initState() {
     super.initState();
     fetchPosts();
+    reqCount();
   }
+
+  // @override
+  // void initStatem() {
+  //   super.initState();
+  //   reqCount();
+  // }
 
   Future<void> fetchPosts() async {
     try {
@@ -88,6 +100,36 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> reqCount() async {
+    try {
+      String? userId = await UserPreferences.getUserId();
+      if (userId == null) {
+        print('User ID not found');
+        return;
+      }
+      final response = await http.get(Uri.parse(
+          'http://10.0.2.2:8080/api/requests/donation-requests/count?userId=$userId'));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          req = data['requestcount'] ?? 'لا توجد بيانات';
+          donrequestcount = data['donrequestcount'] ?? 'لا توجد بيانات';
+          requestForOtercount = data['requestForOtercount'] ?? 'لا توجد بيانات';
+          print('reqcount :${req}');
+          print('userid :${userId}');
+          print(response.statusCode);
+        });
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (error) {
+      setState(() {
+        isLoading = false;
+      });
+      print('Error fetching data: $error');
+    }
+  }
+
   void _onItemTapped(int index) {
     if (index == 0) {
       Navigator.push(
@@ -95,20 +137,70 @@ class _HomePageState extends State<HomePage> {
         MaterialPageRoute(builder: (context) => ProfilePage()),
       );
     } else if (index == 1) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => RequestPage()),
-      );
+      reqCount();
+      // print(req);
+      if (req >= 1) {
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => HomePage()),
+        // );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('لا يمكنك انشاء طلب جديد لديك طلب سابق')),
+        );
+      } else if (req == 0) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => RequestPage()),
+        );
+      }
     } else if (index == 3) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => DonationRequestPage()),
-      );
+      reqCount();
+      if (donrequestcount.toInt() >= 1) {
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => HomePage()),
+        // );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('لا يمكنك انشاء طلب جديد لديك طلب سابق')),
+        );
+      } else if (donrequestcount == 0 && req == 0) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => DonationRequestPage()),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('لا ')),
+        );
+      }
+      if (req >= 1) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('لا يمكنك انشاء طلب تبرع لديك طلب حاجة ')),
+        );
+      }
     } else if (index == 4) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => AppointmentsPage()),
       );
+    } else if (index == 5) {
+      reqCount();
+      if (requestForOtercount.toInt() >= 3) {
+        print(requestForOtercount);
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => HomePage()),
+        // );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  'لا يمكنك انشاء طلب للغير جديد لديك ${requestForOtercount} طلبات سابقة')),
+        );
+      } else if (requestForOtercount < 3) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => RequestOtherPage()),
+        );
+      }
     } else {
       setState(() {
         _selectedIndex = index;
@@ -218,6 +310,7 @@ class _HomePageState extends State<HomePage> {
               _buildNavItem(Icons.home, 'الرئيسية', 2),
               _buildNavItem(Icons.search, "طلب تبرع", 3),
               _buildNavItem(Icons.history, 'مواعيد', 4),
+              _buildNavItem(Icons.favorite, "طلب لغيري", 5),
             ],
           ),
         ),

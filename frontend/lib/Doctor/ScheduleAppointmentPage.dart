@@ -54,11 +54,15 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
 
   Future<void> _fetchNeedyList() async {
     try {
-      final blood = widget.needy['bloodType'];
-      final response = await http.get(
+      final blood = widget.needy['bloodType'].toString();
+      final location = widget.needy['location'].toString();
+      print(blood);
+      print(location);
+      final response = await http.post(
         Uri.parse(
-            'http://10.0.2.2:8080/api/requests/donation-requests-with-user?bloodType=$blood'),
+            'http://10.0.2.2:8080/api/requests/donation-requests-with-user'),
         headers: {'Content-Type': 'application/json'},
+        body: json.encode({"bloodType": blood, "location": location}),
       );
 
       if (response.statusCode == 200) {
@@ -108,8 +112,10 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
 
     final Map<String, dynamic> requestBody = {
       'donorId': _selectedDonor!['user']['_id']?.toString() ?? '',
+      'donorReqId': _selectedDonor!['_id']?.toString() ?? '',
       'donorname': _selectedDonor!['user']['firstName']?.toString() ?? '',
       'needyId': widget.needy['user']['_id']?.toString() ?? '',
+      'needyReqId': widget.needy['_id']?.toString() ?? '',
       'needyname': widget.needy['user']['firstName']?.toString() ?? '',
       'appointmentDateTime': appointmentDateTime.toIso8601String(),
       'status': 'assigned', // الحالة الجديدة
@@ -162,6 +168,11 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
             Text(
               'تفاصيل الحالة:',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10),
+            Text(
+              'الاسم: ${widget.needy['user']['firstName'] ?? 'غير متاح'}',
+              style: TextStyle(fontSize: 18),
             ),
             SizedBox(height: 10),
             Text(
@@ -229,6 +240,15 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
                                     ),
                                     SizedBox(height: 5),
                                     Text(
+                                      ' الموقع : ${donor['location'] ?? 'غير معروف'}',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: _getUrgencyTextColor(
+                                            donor['urgencyLevel']),
+                                      ),
+                                    ),
+                                    SizedBox(height: 5),
+                                    Text(
                                       ' وقت التفرغ: ${donor['AvailabilityPeriod'] ?? 'غير معروف'}',
                                       style: TextStyle(
                                         fontSize: 16,
@@ -238,7 +258,7 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
                                     ),
                                     SizedBox(height: 5),
                                     Text(
-                                      ' bloodtype : ${donor['bloodType'] ?? 'غير معروف'}',
+                                      ' زمرة الدم : ${donor['bloodType'] ?? 'غير معروف'}',
                                       style: TextStyle(
                                         fontSize: 16,
                                         color: _getUrgencyTextColor(

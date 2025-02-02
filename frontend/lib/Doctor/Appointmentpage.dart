@@ -5,13 +5,17 @@ import 'dart:convert';
 class AppointmentsPage extends StatelessWidget {
   Future<List<Map<String, String>>> fetchAppointments() async {
     try {
-      final response = await http
-          .get(Uri.parse('http://10.0.2.2:8080/api/View-appointments-assigned'));
+      final response = await http.get(
+          Uri.parse('http://10.0.2.2:8080/api/View-appointments-assigned'));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         return data.map<Map<String, String>>((item) {
           return {
-            'id': item["_id"] ?? '', // تأكد من أن حقل 'id' موجود
+            'donorId': item["donorId"] ?? '',
+            'donorReqId': item["donorReqId"] ?? '',
+            'needyReqId': item["needyReqId"] ?? '',
+            'needyId': item["needyId"] ?? '',
+            '_id': item["_id"] ?? '', // تأكد من أن حقل 'id' موجود
             "donorname": item["donorname"] ?? '',
             "needyname": item["needyname"] ?? '',
             "appointmentDateTime": item["appointmentDateTime"] ?? '',
@@ -158,8 +162,8 @@ class AppointmentDetailsPage extends StatelessWidget {
         appointment['notes'] ?? ''; // تحميل الملاحظات الحالية إن وجدت
   }
 
-  Future<void> markAppointmentAsCompleted(
-      BuildContext context, String appointmentId) async {
+  Future<void> markAppointmentAsCompleted(BuildContext context,
+      String appointmentId, String donorReqId, String needyReqId) async {
     final String apiUrl =
         'http://10.0.2.2:8080/api/appointments-status/$appointmentId';
 
@@ -167,9 +171,14 @@ class AppointmentDetailsPage extends StatelessWidget {
       final response = await http.put(
         Uri.parse(apiUrl),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'status': 'completed'}),
+        body: jsonEncode({
+          'status': 'completed',
+          'donorReqId': donorReqId,
+          'needyReqId': needyReqId,
+        }),
       );
-
+      print('معرف المحتاج  ${appointment['needyReqId']}');
+      print('معرف المتبرع  ${appointment['donorReqId']}');
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('تم تحديث حالة الموعد إلى منتهي بنجاح')),
@@ -245,7 +254,7 @@ class AppointmentDetailsPage extends StatelessWidget {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    final appointmentId = appointment['id'];
+                    final appointmentId = appointment['_id'];
                     if (appointmentId != null && appointmentId.isNotEmpty) {
                       updateAppointmentNotes(
                         context,
@@ -266,12 +275,15 @@ class AppointmentDetailsPage extends StatelessWidget {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    final appointmentId = appointment['id'];
+                    final appointmentId = appointment['_id'];
+                    final donorReqId = appointment['donorReqId'].toString();
+                    final needyReqId = appointment['needyReqId'].toString();
                     print(appointmentId);
-                    print(appointment);
+                    // print(appointment);
 
                     if (appointmentId != null && appointmentId.isNotEmpty) {
-                      markAppointmentAsCompleted(context, appointmentId);
+                      markAppointmentAsCompleted(
+                          context, appointmentId, donorReqId, needyReqId);
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('معرّف الموعد غير صالح')),
