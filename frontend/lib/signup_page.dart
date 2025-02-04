@@ -27,12 +27,13 @@ class _SignupPageState extends State<SignupPage> {
         SnackBar(content: Text('Passwords do not match')),
       );
       return;
-    }
+    } 
 
     final response = await http.post(
       Uri.parse('http://10.0.2.2:8080/api/auth/signup'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
+        'role': 'user',
         'firstName': _firstNameController.text,
         'lastName': _lastNameController.text,
         'number': _phoneNumberController.text,
@@ -44,7 +45,7 @@ class _SignupPageState extends State<SignupPage> {
     print(response.statusCode);
     if (response.statusCode == 201) {
       final responseData = jsonDecode(response.body);
-       
+
       final userId = responseData['user']['_id'].toString();
       print(userId);
       UserPreferences.saveUserId(userId);

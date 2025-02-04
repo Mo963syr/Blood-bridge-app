@@ -249,6 +249,65 @@ router.get('/donation-request', async (req, res) => {
       .json({ error: 'An error occurred while fetching blood requests' });
   }
 });
+router.get('/donation-request-completed', async (req, res) => {
+  try {
+    const donationrequest = await donationRequest
+      .find({
+        requestStatus: 'completed',
+      })
+      .populate('user', 'firstName');
+    res.json(donationrequest);
+    console.log(donationrequest);
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .json({ error: 'An error occurred while fetching blood requests' });
+  }
+});
+router.get('/donation-request-completed', async (req, res) => {
+  try {
+    const{id}=req.body;
+    const donationrequest = await donationRequest
+    .find({_id:id,
+        requestStatus: 'completed'
+      })
+      .populate('user', 'firstName');
+    res.json(donationrequest);
+    console.log(donationrequest);
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .json({ error: 'An error occurred while fetching blood requests' });
+  }
+});
+router.delete('/delete-donation-request', async (req, res) => {
+  try {
+    const { requestId } = req.body;
+
+    if (!requestId) {
+      return res.status(400).json({ error: 'Request ID is required' });
+    }
+
+    const deletedRequest = await donationRequest.findByIdAndDelete(requestId);
+
+    if (!deletedRequest) {
+      return res.status(404).json({ error: 'Request not found' });
+    }
+
+    res.json({
+      message: 'Request deleted successfully',
+      deletedRequest,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: 'An error occurred while deleting the request',
+      details: err.message,
+    });
+  }
+});
 router.get('/donation-request-approved', async (req, res) => {
   try {
     const donationrequest = await donationRequest.find({
