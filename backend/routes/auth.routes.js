@@ -35,9 +35,10 @@ router.post('/signin', async (req, res) => {
       response.status = 'doctor dashboard';
     } else if (user.role === 'user') {
       response.status = 'user dashboard';
-    }
-    else if (user.role === 'coordinator') {
+    } else if (user.role === 'coordinator') {
       response.status = 'coordinator dashboard';
+    } else if (user.role === 'employee') {
+      response.status = 'employee dashboard';
     }
 
     return res.status(200).json(response);
@@ -48,19 +49,20 @@ router.post('/signin', async (req, res) => {
 });
 
 router.post('/signup', async (req, res) => {
-  const { firstName, lastName, number, email, password } = req.body;
+  const { firstName, lastName, number, email, password,role } = req.body;
 
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'Email is already in use' });
-    }else if (email==null) {
+    } else if (email == null) {
       return res.status(400).json({ message: 'email not vaild' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = new User({
+      role,
       firstName,
       lastName,
       number,
@@ -71,6 +73,7 @@ router.post('/signup', async (req, res) => {
     await user.save();
 
     const userResponse = {
+      role:role,
       _id: user._id,
       firstName: user.firstName,
       lastName: user.lastName,
