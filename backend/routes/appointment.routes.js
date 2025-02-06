@@ -121,6 +121,21 @@ router.get('/View-appointments', async (req, res) => {
       .json({ error: 'An error occurred while fetching blood requests' });
   }
 });
+router.delete('/delete-appointments/:id', async (req, res) => {
+  try {
+
+    const { id } = req.params;
+    const Appointments = await Appointment.findByIdAndDelete(
+      {_id: id}
+    );
+    res.status(200).json(Appointments);
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .json({ error: 'An error occurred while delet appointment' });
+  }
+});
 router.put('/appointments-status/:id', async (req, res) => {
   const { id } = req.params; // معرف الموعد
   const { status, donorReqId, needyReqId } = req.body; // البيانات المرسلة مع الطلب
@@ -167,6 +182,34 @@ router.put('/appointments-status/:id', async (req, res) => {
     });
   } catch (error) {
     // التعامل مع الأخطاء
+    res.status(500).json({ message: 'Error updating status', error });
+  }
+});
+router.put('/update-appointments-status/:id', async (req, res) => {
+  const { id } = req.params; // معرف الموعد
+  const { status } = req.body; // البيانات المرسلة مع الطلب
+
+  try {
+    
+
+
+    const updatedAppointment = await Appointment.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    );
+
+ 
+    if (!updatedAppointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+  
+    res.json({
+      message: 'Status updated successfully',
+      appointment: updatedAppointment,
+    });
+  } catch (error) {
+
     res.status(500).json({ message: 'Error updating status', error });
   }
 });

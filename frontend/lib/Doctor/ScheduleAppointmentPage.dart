@@ -27,7 +27,7 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
         Uri.parse(apiUrl),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
-          "donationRequestId": _selectedDonor!['user']['_id']?.toString() ?? '',
+          "donationRequestId": _selectedDonor! ['_id']?.toString() ?? '',
           "needRequestId": widget.needy['_id']?.toString() ?? '', // معرّف الطلب
           'requestStatus': status,
 
@@ -118,7 +118,7 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
       'needyReqId': widget.needy['_id']?.toString() ?? '',
       'needyname': widget.needy['user']['firstName']?.toString() ?? '',
       'appointmentDateTime': appointmentDateTime.toIso8601String(),
-      'status': 'assigned', // الحالة الجديدة
+      'status': 'pending',
     };
 
     try {

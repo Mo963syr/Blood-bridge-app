@@ -10,7 +10,11 @@ const appointmentSchema = new Schema({
   needyId: String,
   appointmentDateTime: String,
   notes: String,
-  status: String,
+  status: {
+    required: true,
+    type: String,
+    enum: ['pending', 'assigned', 'completed'],
+  },
   createdAt: {
     type: Date,
     default: Date.now,

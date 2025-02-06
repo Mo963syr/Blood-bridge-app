@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
       title: 'User Auth App',
       theme: ThemeData(primarySwatch: Colors.blue),
       initialRoute: '/',
-      routes: {
+      routes: { 
         '/signup': (context) => SignupPage(),
         '/': (context) => SigninPage(),
       },
