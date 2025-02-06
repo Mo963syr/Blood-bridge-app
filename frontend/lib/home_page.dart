@@ -193,9 +193,11 @@ class _HomePageState extends State<HomePage> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         appBar: AppBar(
-          // وضع أيقونة الإعدادات في أعلى الصفحة من اليسار
           leading: IconButton(
-            icon: Icon(Icons.settings),
+            icon: Icon(
+              Icons.settings,
+              color: Colors.white,
+            ),
             onPressed: () {
               Navigator.push(
                 context,
@@ -203,7 +205,10 @@ class _HomePageState extends State<HomePage> {
               );
             },
           ),
-          title: Text('الصفحة الرئيسية'),
+          title: Text(
+            'الصفحة الرئيسية',
+            style: TextStyle(color: Colors.white),
+          ),
           backgroundColor: Colors.red,
         ),
         body: isLoading
