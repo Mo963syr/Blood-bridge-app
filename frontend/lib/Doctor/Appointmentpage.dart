@@ -2,16 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class AppointmentsPage extends StatefulWidget {
-  @override
-  _AppointmentsPageState createState() => _AppointmentsPageState();
-}
-
-class _AppointmentsPageState extends State<AppointmentsPage> {
+class AppointmentsPage extends StatelessWidget {
   Future<List<Map<String, String>>> fetchAppointments() async {
     try {
-      final response = await http
-          .get(Uri.parse('http://10.0.2.2:8080/api/View-appointments'));
+      final response = await http.get(
+          Uri.parse('http://10.0.2.2:8080/api/View-appointments-assigned'));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         return data.map<Map<String, String>>((item) {
@@ -20,12 +15,11 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
             'donorReqId': item["donorReqId"] ?? '',
             'needyReqId': item["needyReqId"] ?? '',
             'needyId': item["needyId"] ?? '',
-            '_id': item["_id"] ?? '',
+            '_id': item["_id"] ?? '', // تأكد من أن حقل 'id' موجود
             "donorname": item["donorname"] ?? '',
             "needyname": item["needyname"] ?? '',
             "appointmentDateTime": item["appointmentDateTime"] ?? '',
             "note": item["notes"] ?? '',
-            "status": item["status"] ?? '',
           };
         }).toList();
       } else {
@@ -52,8 +46,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('تم تحديث الملاحظات بنجاح')),
         );
-        Navigator.pop(context);
-        setState(() {}); // إعادة تحميل البيانات
+        Navigator.pop(context); // الرجوع إلى الشاشة السابقة
       } else {
         throw Exception('Failed to update notes: ${response.body}');
       }
@@ -66,19 +59,6 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('المواعيد'),
-        backgroundColor: Colors.red[400],
-        centerTitle: true,
-      ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          setState(() {}); // إعادة تحميل البيانات
-        },
-        child: FutureBuilder<List<Map<String, String>>>(
-=======
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
@@ -88,7 +68,6 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
           centerTitle: true,
         ),
         body: FutureBuilder<List<Map<String, String>>>(
->>>>>>> 6344e736af1f14b9fdc7380a723e0e72befa5ed0
           future: fetchAppointments(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -158,41 +137,6 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                               "تاريخ الموعد: ${appointment['appointmentDateTime']}",
                               style: TextStyle(fontSize: 14),
                             ),
-<<<<<<< HEAD
-                            Row(
-                              children: [
-                                Text(
-                                  "حالة الموعد: ",
-                                  style: TextStyle(fontSize: 14),
-                                ),
-                                if (appointment['status'] == 'completed')
-                                  Icon(Icons.assignment_turned_in_outlined,
-                                      color: Colors.green),
-                                if (appointment['status'] == 'pending')
-                                  Icon(Icons.access_time, color: Colors.orange),
-                                if (appointment['status'] == 'assigned')
-                                  Icon(Icons.assignment_rounded,
-                                      color: const Color.fromARGB(
-                                          255, 2, 175, 202)),
-                                SizedBox(width: 5),
-                                Text(
-                                  appointment['status'] == 'completed'
-                                      ? 'الطلب منجز'
-                                      : appointment['status'] == 'pending'
-                                          ? 'بانتظار التأكيد من المستخدم '
-                                          : 'المتبرع جاهز للتبرع ',
-                                  style: TextStyle(
-                                    color: appointment['status'] == 'completed'
-                                        ? Colors.green
-                                        : appointment['status'] == 'pending'
-                                            ? Colors.orange
-                                            : const Color.fromARGB(
-                                                255, 2, 175, 202),
-                                  ),
-                                ),
-                              ],
-                            ),
-
                           ],
                         ),
                       ),
@@ -289,129 +233,84 @@ class AppointmentDetailsPage extends StatelessWidget {
               "الملاحظات : ${appointment['note']}",
               style: TextStyle(fontSize: 16),
             ),
+            SizedBox(height: 20),
+            Text(
+              "ملاحظات: ",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
             SizedBox(height: 10),
-            appointment['status'] == 'completed'
-                ? SizedBox(height: 10)
-                : TextField(
-                    controller: _notesController,
-                    maxLines: 3,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'أضف ملاحظاتك هنا...',
-                    ),
-                  ),
+            TextField(
+              controller: _notesController,
+              maxLines: 3,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'أضف ملاحظاتك هنا...',
+              ),
+            ),
             Spacer(),
-            appointment['status'] == 'completed'
-                ? SizedBox(height: 10)
-                : appointment['status'] == 'assigned'
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              final appointmentId = appointment['_id'];
-                              if (appointmentId != null &&
-                                  appointmentId.isNotEmpty) {
-                                updateAppointmentNotes(
-                                  context,
-                                  appointmentId,
-                                  _notesController.text,
-                                );
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: Text('معرّف الموعد غير صالح')),
-                                );
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 30, vertical: 15),
-                            ),
-                            child: Text('تأكيد'),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              final appointmentId = appointment['_id'];
-                              final donorReqId =
-                                  appointment['donorReqId'].toString();
-                              final needyReqId =
-                                  appointment['needyReqId'].toString();
-                              print(appointmentId);
-                              // print(appointment);
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    final appointmentId = appointment['_id'];
+                    if (appointmentId != null && appointmentId.isNotEmpty) {
+                      updateAppointmentNotes(
+                        context,
+                        appointmentId,
+                        _notesController.text,
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('معرّف الموعد غير صالح')),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                  ),
+                  child: Text('تأكيد'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    final appointmentId = appointment['_id'];
+                    final donorReqId = appointment['donorReqId'].toString();
+                    final needyReqId = appointment['needyReqId'].toString();
+                    print(appointmentId);
+                    // print(appointment);
 
-                              if (appointmentId != null &&
-                                  appointmentId.isNotEmpty) {
-                                markAppointmentAsCompleted(context,
-                                    appointmentId, donorReqId, needyReqId);
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: Text('معرّف الموعد غير صالح')),
-                                );
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 30, vertical: 15),
-                            ),
-                            child: Text('إنهاء الموعد'),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 30, vertical: 15),
-                            ),
-                            child: Text('إلغاءالموعد'),
-                          ),
-                        ],
-                      )
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              final appointmentId = appointment['_id'];
-                              if (appointmentId != null &&
-                                  appointmentId.isNotEmpty) {
-                                updateAppointmentNotes(
-                                  context,
-                                  appointmentId,
-                                  _notesController.text,
-                                );
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: Text('معرّف الموعد غير صالح')),
-                                );
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 30, vertical: 15),
-                            ),
-                            child: Text('ارسال ملاحظة'),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 30, vertical: 15),
-                            ),
-                            child: Text(' إلغاء الموعد'),
-                          ),
-                        ],
-                      )
+                    if (appointmentId != null && appointmentId.isNotEmpty) {
+                      markAppointmentAsCompleted(
+                          context, appointmentId, donorReqId, needyReqId);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('معرّف الموعد غير صالح')),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                  ),
+                  child: Text('إنهاء الموعد'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                  ),
+                  child: Text('إلغاء'),
+                ),
+              ],
+            ),
           ],
         ),
       ),
