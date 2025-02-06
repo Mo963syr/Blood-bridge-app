@@ -192,8 +192,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                                 ),
                               ],
                             ),
-=======
->>>>>>> 6344e736af1f14b9fdc7380a723e0e72befa5ed0
+
                           ],
                         ),
                       ),
