@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-
 class Searshexternalneedy extends StatefulWidget {
   @override
   _SearshexternalneedyState createState() => _SearshexternalneedyState();
@@ -66,95 +65,100 @@ class _SearshexternalneedyState extends State<Searshexternalneedy> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('طلبات الحاجة الخارجية'),
-        backgroundColor: Colors.red[400],
-        centerTitle: true,
-      ),
-      body: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : externalRequests.isEmpty
-              ? Center(child: Text('لا توجد طلبات حالياً'))
-              : Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: ListView.builder(
-                    itemCount: externalRequests.length,
-                    itemBuilder: (context, index) {
-                      final request = externalRequests[index];
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  RequestDetailsPage(request: request),
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('طلبات الحاجة الخارجية'),
+          backgroundColor: Colors.red[400],
+          centerTitle: true,
+        ),
+        body: isLoading
+            ? Center(child: CircularProgressIndicator())
+            : externalRequests.isEmpty
+                ? Center(child: Text('لا توجد طلبات حالياً'))
+                : Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: ListView.builder(
+                      itemCount: externalRequests.length,
+                      itemBuilder: (context, index) {
+                        final request = externalRequests[index];
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    RequestDetailsPage(request: request),
+                              ),
+                            );
+                          },
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
                             ),
-                          );
-                        },
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          elevation: 5,
-                          margin: EdgeInsets.only(bottom: 16),
-                          color: _getUrgencyColor(request['urgencyLevel']),
-                          child: Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'الموقع: ${request['location']}',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
+                            elevation: 5,
+                            margin: EdgeInsets.only(bottom: 16),
+                            color: _getUrgencyColor(request['urgencyLevel']),
+                            child: Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'الموقع: ${request['location']}',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'فصيلة الدم: ${request['bloodType']}',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.black87,
+                                      SizedBox(height: 8),
+                                      Text(
+                                        'فصيلة الدم: ${request['bloodType']}',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.black87,
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'الوقت: ${_timeAgo(DateTime.parse(request['createdAt']))}',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.black54,
+                                      SizedBox(height: 8),
+                                      Text(
+                                        'الوقت: ${_timeAgo(DateTime.parse(request['createdAt']))}',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.black54,
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'مستوى الخطورة: ${request['urgencyLevel']}',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.black54,
+                                      SizedBox(height: 8),
+                                      Text(
+                                        'مستوى الخطورة: ${request['urgencyLevel']}',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.black54,
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                Icon(
-                                  Icons.warning_rounded,
-                                  color: Colors.black,
-                                  size: 40,
-                                ),
-                              ],
+                                    ],
+                                  ),
+                                  Icon(
+                                    Icons.warning_rounded,
+                                    color: Colors.black,
+                                    size: 40,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
-                ),
-      backgroundColor: Colors.grey[100],
+        backgroundColor: Colors.grey[100],
+      ),
     );
   }
 }

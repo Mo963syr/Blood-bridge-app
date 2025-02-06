@@ -59,91 +59,94 @@ class AppointmentsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('المواعيد'),
-        backgroundColor: Colors.red[400],
-        centerTitle: true,
-      ),
-      body: FutureBuilder<List<Map<String, String>>>(
-        future: fetchAppointments(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                'حدث خطأ أثناء تحميل البيانات.',
-                style: TextStyle(fontSize: 18, color: Colors.red),
-              ),
-            );
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(
-              child: Text(
-                'لا توجد مواعيد حالياً.',
-                style: TextStyle(fontSize: 18, color: Colors.grey),
-              ),
-            );
-          }
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('المواعيد'),
+          backgroundColor: Colors.red[400],
+          centerTitle: true,
+        ),
+        body: FutureBuilder<List<Map<String, String>>>(
+          future: fetchAppointments(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text(
+                  'حدث خطأ أثناء تحميل البيانات.',
+                  style: TextStyle(fontSize: 18, color: Colors.red),
+                ),
+              );
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Center(
+                child: Text(
+                  'لا توجد مواعيد حالياً.',
+                  style: TextStyle(fontSize: 18, color: Colors.grey),
+                ),
+              );
+            }
 
-          final appointments = snapshot.data!;
-          return Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: ListView.builder(
-              itemCount: appointments.length,
-              itemBuilder: (context, index) {
-                final appointment = appointments[index];
+            final appointments = snapshot.data!;
+            return Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: ListView.builder(
+                itemCount: appointments.length,
+                itemBuilder: (context, index) {
+                  final appointment = appointments[index];
 
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AppointmentDetailsPage(
-                          appointment: appointment,
-                          updateAppointmentNotes: updateAppointmentNotes,
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AppointmentDetailsPage(
+                            appointment: appointment,
+                            updateAppointmentNotes: updateAppointmentNotes,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Card(
+                      elevation: 5,
+                      margin: EdgeInsets.symmetric(vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "اسم المتبرع: ${appointment['donorname']}",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.red[400],
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              "اسم المحتاج: ${appointment['needyname']}",
+                              style: TextStyle(fontSize: 14),
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              "تاريخ الموعد: ${appointment['appointmentDateTime']}",
+                              style: TextStyle(fontSize: 14),
+                            ),
+                          ],
                         ),
                       ),
-                    );
-                  },
-                  child: Card(
-                    elevation: 5,
-                    margin: EdgeInsets.symmetric(vertical: 10),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(15.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "اسم المتبرع: ${appointment['donorname']}",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.red[400],
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            "اسم المحتاج: ${appointment['needyname']}",
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            "تاريخ الموعد: ${appointment['appointmentDateTime']}",
-                            style: TextStyle(fontSize: 14),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          );
-        },
+                  );
+                },
+              ),
+            );
+          },
+        ),
       ),
     );
   }

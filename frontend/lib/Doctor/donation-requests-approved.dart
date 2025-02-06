@@ -58,23 +58,26 @@ class _DonationRequestsPageApprovedState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('طلبات التبرع'),
-        backgroundColor: Colors.red[400],
-        centerTitle: true,
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('طلبات التبرع'),
+          backgroundColor: Colors.red[400],
+          centerTitle: true,
+        ),
+        body: isLoading
+            ? Center(child: CircularProgressIndicator())
+            : donationrequest.isEmpty
+                ? Center(child: Text('لا توجد طلبات متوفرة حاليًا'))
+                : ListView.builder(
+                    itemCount: donationrequest.length,
+                    itemBuilder: (context, index) {
+                      final request = donationrequest[index];
+                      return _buildDonationRequestItem(request);
+                    },
+                  ),
       ),
-      body: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : donationrequest.isEmpty
-              ? Center(child: Text('لا توجد طلبات متوفرة حاليًا'))
-              : ListView.builder(
-                  itemCount: donationrequest.length,
-                  itemBuilder: (context, index) {
-                    final request = donationrequest[index];
-                    return _buildDonationRequestItem(request);
-                  },
-                ),
     );
   }
 

@@ -153,225 +153,231 @@ class _ScheduleAppointmentPageState extends State<ScheduleAppointmentPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('تحديد موعد'),
-        backgroundColor: Colors.red[400],
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 20),
-            Text(
-              'تفاصيل الحالة:',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'الاسم: ${widget.needy['user']['firstName'] ?? 'غير متاح'}',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'الموقع: ${widget.needy['location'] ?? 'غير متاح'}',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'فصيلة الدم: ${widget.needy['bloodType'] ?? 'غير متاح'}',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'مستوى الخطورة: ${widget.needy['urgencyLevel'] ?? 'غير متاح'}',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 30),
-            Text(
-              'اختر متبرعا:',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 20),
-            _isLoading
-                ? Center(child: CircularProgressIndicator())
-                : DropdownButtonFormField<Map<String, dynamic>>(
-                    decoration: InputDecoration(
-                      labelText: 'اختر متبرعا',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: _donorsList.map((donor) {
-                      return DropdownMenuItem<Map<String, dynamic>>(
-                        value: donor,
-                        child: Card(
-                          elevation: 4,
-                          margin:
-                              EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          color: _getUrgencyColor(donor['urgencyLevel']),
-                          child: Padding(
-                            padding: const EdgeInsets.all(15.0),
-                            child: Row(
-                              children: [
-                                CircleAvatar(
-                                  backgroundColor: Colors.white,
-                                  child: Icon(
-                                    Icons.person,
-                                    color: _getUrgencyTextColor(
-                                        donor['urgencyLevel']),
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('تحديد موعد'),
+          backgroundColor: Colors.red[400],
+          centerTitle: true,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 20),
+              Text(
+                'تفاصيل الحالة:',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+              Text(
+                'الاسم: ${widget.needy['user']['firstName'] ?? 'غير متاح'}',
+                style: TextStyle(fontSize: 18),
+              ),
+              SizedBox(height: 10),
+              Text(
+                'الموقع: ${widget.needy['location'] ?? 'غير متاح'}',
+                style: TextStyle(fontSize: 18),
+              ),
+              SizedBox(height: 10),
+              Text(
+                'فصيلة الدم: ${widget.needy['bloodType'] ?? 'غير متاح'}',
+                style: TextStyle(fontSize: 18),
+              ),
+              SizedBox(height: 10),
+              Text(
+                'مستوى الخطورة: ${widget.needy['urgencyLevel'] ?? 'غير متاح'}',
+                style: TextStyle(fontSize: 18),
+              ),
+              SizedBox(height: 30),
+              Text(
+                'اختر متبرعا:',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 20),
+              _isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : DropdownButtonFormField<Map<String, dynamic>>(
+                      decoration: InputDecoration(
+                        labelText: 'اختر متبرعا',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: _donorsList.map((donor) {
+                        return DropdownMenuItem<Map<String, dynamic>>(
+                          value: donor,
+                          child: Card(
+                            elevation: 4,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            color: _getUrgencyColor(donor['urgencyLevel']),
+                            child: Padding(
+                              padding: const EdgeInsets.all(15.0),
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+                                    backgroundColor: Colors.white,
+                                    child: Icon(
+                                      Icons.person,
+                                      color: _getUrgencyTextColor(
+                                          donor['urgencyLevel']),
+                                    ),
                                   ),
-                                ),
-                                SizedBox(width: 15),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      donor['user']['firstName'] ?? 'غير معروف',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: _getUrgencyTextColor(
-                                            donor['urgencyLevel']),
+                                  SizedBox(width: 15),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        donor['user']['firstName'] ??
+                                            'غير معروف',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: _getUrgencyTextColor(
+                                              donor['urgencyLevel']),
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(height: 5),
-                                    Text(
-                                      ' الموقع : ${donor['location'] ?? 'غير معروف'}',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: _getUrgencyTextColor(
-                                            donor['urgencyLevel']),
+                                      SizedBox(height: 5),
+                                      Text(
+                                        ' الموقع : ${donor['location'] ?? 'غير معروف'}',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: _getUrgencyTextColor(
+                                              donor['urgencyLevel']),
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(height: 5),
-                                    Text(
-                                      ' وقت التفرغ: ${donor['AvailabilityPeriod'] ?? 'غير معروف'}',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: _getUrgencyTextColor(
-                                            donor['urgencyLevel']),
+                                      SizedBox(height: 5),
+                                      Text(
+                                        ' وقت التفرغ: ${donor['AvailabilityPeriod'] ?? 'غير معروف'}',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: _getUrgencyTextColor(
+                                              donor['urgencyLevel']),
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(height: 5),
-                                    Text(
-                                      ' زمرة الدم : ${donor['bloodType'] ?? 'غير معروف'}',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: _getUrgencyTextColor(
-                                            donor['urgencyLevel']),
+                                      SizedBox(height: 5),
+                                      Text(
+                                        ' زمرة الدم : ${donor['bloodType'] ?? 'غير معروف'}',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: _getUrgencyTextColor(
+                                              donor['urgencyLevel']),
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedDonor = value;
-                      });
-                      print(
-                          'selectedDonor ID: ${_selectedDonor!['user']['_id']}');
-                    },
-                    value: _selectedDonor,
-                  ),
-            SizedBox(height: 30),
-            Text(
-              'حدد تاريخ ووقت الموعد:',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 20),
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'التاريخ',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.calendar_today),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedDonor = value;
+                        });
+                        print(
+                            'selectedDonor ID: ${_selectedDonor!['user']['_id']}');
+                      },
+                      value: _selectedDonor,
+                    ),
+              SizedBox(height: 30),
+              Text(
+                'حدد تاريخ ووقت الموعد:',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              readOnly: true,
-              onTap: () async {
-                final DateTime? pickedDate = await showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime.now(),
-                  lastDate: DateTime(2100),
-                );
-                if (pickedDate != null) {
-                  setState(() {
-                    _selectedDate = pickedDate;
-                  });
-                }
-              },
-              controller: TextEditingController(
-                text: _selectedDate == null
-                    ? ''
-                    : '${_selectedDate!.year}-${_selectedDate!.month}-${_selectedDate!.day}',
-              ),
-            ),
-            SizedBox(height: 20),
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'الوقت',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.access_time),
-              ),
-              readOnly: true,
-              onTap: () async {
-                final TimeOfDay? pickedTime = await showTimePicker(
-                  context: context,
-                  initialTime: TimeOfDay.now(),
-                );
-                if (pickedTime != null) {
-                  setState(() {
-                    _selectedTime = pickedTime;
-                  });
-                }
-              },
-              controller: TextEditingController(
-                text: _selectedTime == null
-                    ? ''
-                    : '${_selectedTime!.hour}:${_selectedTime!.minute}',
-              ),
-            ),
-            SizedBox(height: 40),
-            Center(
-                child: ElevatedButton(
-              onPressed: () {
-                _handleButtonPress();
-                // print('Request ID: ${widget.needy['_id']}');
-                print('selectedDonor ID: ${_selectedDonor!['user']['_id']}');
-                print(
-                    'selectedneedy ID: ${widget.needy['user']['_id']?.toString() ?? ''}');
-
-                // Replace 'new_status' with the actual status you want to set
-              },
-              child: Text('تحديث الحالة'),
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                backgroundColor: Colors.blue,
-              ),
-            )
-
-                // child: ElevatedButton.icon(
-                //   onPressed: _sendAppointmentToServer,
-                //   icon: Icon(Icons.check),
-                //   label: Text('تأكيد الموعد'),
-                //   style: ElevatedButton.styleFrom(
-                //     padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                //     textStyle:
-                //         TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                //     backgroundColor: Colors.green,
-                //   ),
-                // ),
+              SizedBox(height: 20),
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'التاريخ',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.calendar_today),
                 ),
-          ],
+                readOnly: true,
+                onTap: () async {
+                  final DateTime? pickedDate = await showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime(2100),
+                  );
+                  if (pickedDate != null) {
+                    setState(() {
+                      _selectedDate = pickedDate;
+                    });
+                  }
+                },
+                controller: TextEditingController(
+                  text: _selectedDate == null
+                      ? ''
+                      : '${_selectedDate!.year}-${_selectedDate!.month}-${_selectedDate!.day}',
+                ),
+              ),
+              SizedBox(height: 20),
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'الوقت',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.access_time),
+                ),
+                readOnly: true,
+                onTap: () async {
+                  final TimeOfDay? pickedTime = await showTimePicker(
+                    context: context,
+                    initialTime: TimeOfDay.now(),
+                  );
+                  if (pickedTime != null) {
+                    setState(() {
+                      _selectedTime = pickedTime;
+                    });
+                  }
+                },
+                controller: TextEditingController(
+                  text: _selectedTime == null
+                      ? ''
+                      : '${_selectedTime!.hour}:${_selectedTime!.minute}',
+                ),
+              ),
+              SizedBox(height: 40),
+              Center(
+                  child: ElevatedButton(
+                onPressed: () {
+                  _handleButtonPress();
+                  // print('Request ID: ${widget.needy['_id']}');
+                  print('selectedDonor ID: ${_selectedDonor!['user']['_id']}');
+                  print(
+                      'selectedneedy ID: ${widget.needy['user']['_id']?.toString() ?? ''}');
+
+                  // Replace 'new_status' with the actual status you want to set
+                },
+                child: Text('تحديث الحالة'),
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                  textStyle:
+                      TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  backgroundColor: Colors.blue,
+                ),
+              )
+
+                  // child: ElevatedButton.icon(
+                  //   onPressed: _sendAppointmentToServer,
+                  //   icon: Icon(Icons.check),
+                  //   label: Text('تأكيد الموعد'),
+                  //   style: ElevatedButton.styleFrom(
+                  //     padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                  //     textStyle:
+                  //         TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  //     backgroundColor: Colors.green,
+                  //   ),
+                  // ),
+                  ),
+            ],
+          ),
         ),
       ),
     );

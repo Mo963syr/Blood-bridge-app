@@ -11,11 +11,25 @@ class DonationRequestPage extends StatefulWidget {
 }
 
 class _DonationRequestPageState extends State<DonationRequestPage> {
-  final TextEditingController locationController = TextEditingController();
+  // تمت إزالة متحكم النص الخاص بالموقع لأنه لن يكون حقل نصي بعد الآن
+  // final TextEditingController locationController = TextEditingController();
   final TextEditingController weightController = TextEditingController();
   String? selectedBloodType;
   DateTime? selectedDateTime;
   File? selectedImage;
+
+  // المتغير الخاص بالموقع (المحافظة) والقائمة المنسدلة للمحافظات
+  String? selectedLocation;
+  final List<String> governorates = [
+    'دمشق',
+    'ريف دمشق',
+    'حمص',
+    'اللاذقية',
+    'حماة',
+    'درعا',
+    'السويداء',
+    'حلب'
+  ];
 
   Future<String?> getUserId() async {
     final prefs = await SharedPreferences.getInstance();
@@ -68,9 +82,10 @@ class _DonationRequestPageState extends State<DonationRequestPage> {
       return;
     }
 
-    if (locationController.text.isEmpty) {
+    // التحقق من اختيار المحافظة
+    if (selectedLocation == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('يرجى إدخال مكان التواجد الحالي')),
+        SnackBar(content: Text('يرجى اختيار مكان التواجد الحالي')),
       );
       return;
     }
@@ -107,7 +122,8 @@ class _DonationRequestPageState extends State<DonationRequestPage> {
     try {
       final dio = Dio();
       final formData = FormData.fromMap({
-        'location': locationController.text,
+        // استخدام selectedLocation بدلاً من locationController.text
+        'location': selectedLocation,
         'bloodType': selectedBloodType,
         'AvailabilityPeriod': selectedDateTime?.toIso8601String(),
         'Weight': weightController.text,
@@ -163,60 +179,74 @@ class _DonationRequestPageState extends State<DonationRequestPage> {
         textDirection: TextDirection.rtl,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              TextField(
-                controller: locationController,
-                decoration: InputDecoration(
-                  labelText: 'مكان التواجد الحالي',
-                  border: OutlineInputBorder(),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                // قائمة منسدلة لاختيار مكان التواجد (المحافظة)
+                DropdownButtonFormField<String>(
+                  decoration: InputDecoration(
+                    labelText: 'مكان التواجد الحالي',
+                    border: OutlineInputBorder(),
+                  ),
+                  value: selectedLocation,
+                  items: governorates.map((String governorate) {
+                    return DropdownMenuItem<String>(
+                      value: governorate,
+                      child: Text(governorate),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedLocation = value;
+                    });
+                  },
                 ),
-              ),
-              SizedBox(height: 16.0),
-              DropdownButtonFormField<String>(
-                decoration: InputDecoration(
-                  labelText: "فصيلة الدم",
-                  border: OutlineInputBorder(),
+                SizedBox(height: 16.0),
+                DropdownButtonFormField<String>(
+                  decoration: InputDecoration(
+                    labelText: "فصيلة الدم",
+                    border: OutlineInputBorder(),
+                  ),
+                  value: selectedBloodType,
+                  items: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
+                      .map((bloodType) => DropdownMenuItem(
+                            value: bloodType,
+                            child: Text(bloodType),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedBloodType = value;
+                    });
+                  },
                 ),
-                value: selectedBloodType,
-                items: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
-                    .map((bloodType) => DropdownMenuItem(
-                          value: bloodType,
-                          child: Text(bloodType),
-                        ))
-                    .toList(),
-                onChanged: (value) {
-                  setState(() {
-                    selectedBloodType = value;
-                  });
-                },
-              ),
-              SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () => pickDateTime(context),
-                child: Text(selectedDateTime == null
-                    ? "اختيار تاريخ ووقت التفرغ"
-                    : "${selectedDateTime!.year}-${selectedDateTime!.month}-${selectedDateTime!.day} ${selectedDateTime!.hour}:${selectedDateTime!.minute}"),
-              ),
-              SizedBox(height: 16.0),
-              TextField(
-                controller: weightController,
-                decoration: InputDecoration(
-                  labelText: "الوزن",
-                  border: OutlineInputBorder(),
+                SizedBox(height: 16.0),
+                ElevatedButton(
+                  onPressed: () => pickDateTime(context),
+                  child: Text(selectedDateTime == null
+                      ? "اختيار تاريخ ووقت التفرغ"
+                      : "${selectedDateTime!.year}-${selectedDateTime!.month}-${selectedDateTime!.day} ${selectedDateTime!.hour}:${selectedDateTime!.minute}"),
                 ),
-              ),
-              SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: pickImage,
-                child: Text("اختر التحليل الطبي"),
-              ),
-              SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () => bloodRequest(context),
-                child: Text("إرسال الطلب"),
-              ),
-            ],
+                SizedBox(height: 16.0),
+                TextField(
+                  controller: weightController,
+                  decoration: InputDecoration(
+                    labelText: "الوزن",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                SizedBox(height: 16.0),
+                ElevatedButton(
+                  onPressed: pickImage,
+                  child: Text("اختر التحليل الطبي"),
+                ),
+                SizedBox(height: 16.0),
+                ElevatedButton(
+                  onPressed: () => bloodRequest(context),
+                  child: Text("إرسال الطلب"),
+                ),
+              ],
+            ),
           ),
         ),
       ),
