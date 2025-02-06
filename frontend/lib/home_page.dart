@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:frontend/signup_page.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'signin_page.dart';
@@ -7,7 +8,6 @@ import 'createrequest.dart';
 import 'profilepage.dart';
 import 'donationrequestpage.dart';
 import 'appointmentsUser.dart';
-import 'setting_page.dart';
 import 'services/user_preferences.dart';
 import 'package:frontend/requestForOther.dart';
 import 'package:frontend/historyPage.dart';
@@ -45,6 +45,7 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           theme: themeProvider.themeData,
+          // يمكنك تعديل الصفحة الرئيسية إذا لزم الأمر (مثلاً صفحة تسجيل الدخول)
           home: HomePage(),
         );
       },
@@ -61,22 +62,16 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 2;
   bool isLoading = true;
   List<Map<String, dynamic>> post = [];
-  List<Map<String, dynamic>> count = [];
   int req = 0;
   int donrequestcount = 0;
   int requestForOtercount = 0;
+
   @override
   void initState() {
     super.initState();
     fetchPosts();
     reqCount();
   }
-
-  // @override
-  // void initStatem() {
-  //   super.initState();
-  //   reqCount();
-  // }
 
   Future<void> fetchPosts() async {
     try {
@@ -113,11 +108,11 @@ class _HomePageState extends State<HomePage> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {
-          req = data['requestcount'] ?? 'لا توجد بيانات';
-          donrequestcount = data['donrequestcount'] ?? 'لا توجد بيانات';
-          requestForOtercount = data['requestForOtercount'] ?? 'لا توجد بيانات';
-          print('reqcount :${req}');
-          print('userid :${userId}');
+          req = data['requestcount'] ?? 0;
+          donrequestcount = data['donrequestcount'] ?? 0;
+          requestForOtercount = data['requestForOtercount'] ?? 0;
+          print('reqcount :$req');
+          print('userid :$userId');
           print(response.statusCode);
         });
       } else {
@@ -139,12 +134,7 @@ class _HomePageState extends State<HomePage> {
       );
     } else if (index == 1) {
       reqCount();
-      // print(req);
       if (req >= 1) {
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => HomePage()),
-        // );
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('لا يمكنك انشاء طلب جديد لديك طلب سابق')),
         );
@@ -161,11 +151,7 @@ class _HomePageState extends State<HomePage> {
       }
     } else if (index == 3) {
       reqCount();
-      if (donrequestcount.toInt() >= 1) {
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => HomePage()),
-        // );
+      if (donrequestcount >= 1) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('لا يمكنك انشاء طلب جديد لديك طلب سابق')),
         );
@@ -173,9 +159,6 @@ class _HomePageState extends State<HomePage> {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => DonationRequestPage()),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('لا ')),
         );
       }
       if (req >= 1) {
@@ -190,16 +173,12 @@ class _HomePageState extends State<HomePage> {
       );
     } else if (index == 5) {
       reqCount();
-      if (requestForOtercount.toInt() >= 3) {
+      if (requestForOtercount >= 3) {
         print(requestForOtercount);
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => HomePage()),
-        // );
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content: Text(
-                  'لا يمكنك انشاء طلب للغير جديد لديك ${requestForOtercount} طلبات سابقة')),
+                  'لا يمكنك انشاء طلب للغير جديد لديك $requestForOtercount طلبات سابقة')),
         );
       } else if (requestForOtercount < 3) {
         Navigator.push(
@@ -326,7 +305,7 @@ class _HomePageState extends State<HomePage> {
               _buildNavItem(Icons.add_circle, "طلب حاجة", 1),
               _buildNavItem(Icons.home, 'الرئيسية', 2),
               _buildNavItem(Icons.search, "طلب تبرع", 3),
-              _buildNavItem(Icons.history, 'سجلاتي', 4),
+              _buildNavItem(Icons.history, 'مواعيد', 4),
               _buildNavItem(Icons.favorite, "طلب لغيري", 5),
             ],
           ),
@@ -356,6 +335,74 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class SettingsPage extends StatefulWidget {
+  @override
+  _SettingsPageState createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  bool notificationsEnabled = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('الإعدادات'),
+          backgroundColor: Colors.red,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              SwitchListTile(
+                title: Text('تفعيل الإشعارات'),
+                value: notificationsEnabled,
+                onChanged: (value) {
+                  setState(() {
+                    notificationsEnabled = value;
+                  });
+                },
+              ),
+              Divider(),
+              ListTile(
+                title: Text(
+                  'المطورين:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(
+                  'سامر باكير\nمحمد الحسين\nموفّق عقيد\n\nبإشراف مركز التبرع بالدم',
+                  style: TextStyle(height: 1.5),
+                ),
+              ),
+              Spacer(),
+              ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => SigninPage()),
+                    (route) => false,
+                  );
+                },
+                icon: Icon(Icons.logout),
+                label: Text(
+                  'تسجيل الخروج',
+                  style: TextStyle(color: Colors.white),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  minimumSize: Size(double.infinity, 50),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

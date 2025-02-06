@@ -66,6 +66,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     return Scaffold(
       appBar: AppBar(
         title: Text('المواعيد'),
@@ -77,6 +78,17 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
           setState(() {}); // إعادة تحميل البيانات
         },
         child: FutureBuilder<List<Map<String, String>>>(
+=======
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('المواعيد'),
+          backgroundColor: Colors.red[400],
+          centerTitle: true,
+        ),
+        body: FutureBuilder<List<Map<String, String>>>(
+>>>>>>> 6344e736af1f14b9fdc7380a723e0e72befa5ed0
           future: fetchAppointments(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -146,6 +158,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                               "تاريخ الموعد: ${appointment['appointmentDateTime']}",
                               style: TextStyle(fontSize: 14),
                             ),
+<<<<<<< HEAD
                             Row(
                               children: [
                                 Text(
@@ -179,6 +192,8 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                                 ),
                               ],
                             ),
+=======
+>>>>>>> 6344e736af1f14b9fdc7380a723e0e72befa5ed0
                           ],
                         ),
                       ),

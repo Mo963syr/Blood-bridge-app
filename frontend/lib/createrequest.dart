@@ -6,8 +6,9 @@ import 'home_page.dart';
 import 'services/user_preferences.dart';
 
 class RequestPage extends StatelessWidget {
-  final TextEditingController locationController = TextEditingController();
-  // final TextEditingController phoneController = TextEditingController();
+  // تمت إزالة TextEditingController لمدخل الموقع واستبداله بمتغير لتخزين المحافظة المحددة.
+  // final TextEditingController locationController = TextEditingController();
+  String? selectedLocation;
   String? selectedBloodType;
   String? selecteddanger;
   File? selectedImage;
@@ -24,6 +25,18 @@ class RequestPage extends StatelessWidget {
   ];
 
   final List<String> danger = ['low', 'medium', 'high'];
+
+  // قائمة المحافظات المطلوبة
+  final List<String> governorates = [
+    'دمشق',
+    'ريف دمشق',
+    'حمص',
+    'اللاذقية',
+    'حماة',
+    'درعا',
+    'السويداء',
+    'حلب',
+  ];
 
   Future<void> pickImage() async {
     final picker = ImagePicker();
@@ -45,11 +58,9 @@ class RequestPage extends StatelessWidget {
           .showSnackBar(SnackBar(content: Text('Please select an image')));
       return;
     }
-    if (locationController.text.isEmpty ||
+    if (selectedLocation == null ||
         selectedBloodType == null ||
-        // phoneController.text.isEmpty
-        selecteddanger == null ||
-        selectedImage == null) {
+        selecteddanger == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('يرجى ملء جميع الحقول واختيار صورة')),
       );
@@ -58,9 +69,8 @@ class RequestPage extends StatelessWidget {
     try {
       final dio = Dio();
       final formData = FormData.fromMap({
-        'location': locationController.text,
+        'location': selectedLocation,
         'bloodType': selectedBloodType,
-        // 'phoneNumber': phoneController.text,
         'urgencyLevel': selecteddanger,
         'image': await MultipartFile.fromFile(
           selectedImage!.path,
@@ -111,8 +121,8 @@ class RequestPage extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
-                  TextField(
-                    controller: locationController,
+                  // استبدال حقل الموقع بقائمة منسدلة لاختيار المحافظة
+                  DropdownButtonFormField<String>(
                     decoration: InputDecoration(
                       labelText: 'مكان التواجد الحالي',
                       labelStyle: TextStyle(color: Colors.red[700]),
@@ -120,6 +130,16 @@ class RequestPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
+                    value: selectedLocation,
+                    items: governorates.map((String governorate) {
+                      return DropdownMenuItem<String>(
+                        value: governorate,
+                        child: Text(governorate),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      selectedLocation = value;
+                    },
                   ),
                   SizedBox(height: 16.0),
                   DropdownButtonFormField<String>(
@@ -132,7 +152,7 @@ class RequestPage extends StatelessWidget {
                     ),
                     value: selectedBloodType,
                     items: bloodTypes.map((bloodType) {
-                      return DropdownMenuItem(
+                      return DropdownMenuItem<String>(
                         value: bloodType,
                         child: Text(bloodType),
                       );
@@ -141,17 +161,6 @@ class RequestPage extends StatelessWidget {
                       selectedBloodType = value;
                     },
                   ),
-                  // SizedBox(height: 16.0),
-                  // TextField(
-                  //   controller: phoneController,
-                  //   decoration: InputDecoration(
-                  //     labelText: "رقم الهاتف",
-                  //     labelStyle: TextStyle(color: Colors.red[700]),
-                  //     border: OutlineInputBorder(
-                  //       borderRadius: BorderRadius.circular(12),
-                  //     ),
-                  //   ),
-                  // ),
                   SizedBox(height: 16.0),
                   DropdownButtonFormField<String>(
                     decoration: InputDecoration(
@@ -162,10 +171,10 @@ class RequestPage extends StatelessWidget {
                       ),
                     ),
                     value: selecteddanger,
-                    items: danger.map((danger) {
-                      return DropdownMenuItem(
-                        value: danger,
-                        child: Text(danger),
+                    items: danger.map((level) {
+                      return DropdownMenuItem<String>(
+                        value: level,
+                        child: Text(level),
                       );
                     }).toList(),
                     onChanged: (value) {
