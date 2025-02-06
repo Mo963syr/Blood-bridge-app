@@ -10,6 +10,7 @@ import 'appointmentsUser.dart';
 import 'setting_page.dart';
 import 'services/user_preferences.dart';
 import 'package:frontend/requestForOther.dart';
+import 'package:frontend/historyPage.dart';
 
 void main() {
   runApp(
@@ -147,6 +148,11 @@ class _HomePageState extends State<HomePage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('لا يمكنك انشاء طلب جديد لديك طلب سابق')),
         );
+      } else if (donrequestcount >= 1) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text('لا يمكنك انشاء طلب جديد لديك طلب  تبرع سابق')),
+        );
       } else if (req == 0) {
         Navigator.push(
           context,
@@ -180,7 +186,7 @@ class _HomePageState extends State<HomePage> {
     } else if (index == 4) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => AppointmentsPage()),
+        MaterialPageRoute(builder: (context) => Historypage()),
       );
     } else if (index == 5) {
       reqCount();
@@ -320,7 +326,7 @@ class _HomePageState extends State<HomePage> {
               _buildNavItem(Icons.add_circle, "طلب حاجة", 1),
               _buildNavItem(Icons.home, 'الرئيسية', 2),
               _buildNavItem(Icons.search, "طلب تبرع", 3),
-              _buildNavItem(Icons.history, 'مواعيد', 4),
+              _buildNavItem(Icons.history, 'سجلاتي', 4),
               _buildNavItem(Icons.favorite, "طلب لغيري", 5),
             ],
           ),

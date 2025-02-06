@@ -267,11 +267,9 @@ router.get('/donation-request-completed', async (req, res) => {
 });
 router.get('/donation-request-completed', async (req, res) => {
   try {
-    const{id}=req.body;
+    const { id } = req.body;
     const donationrequest = await donationRequest
-    .find({_id:id,
-        requestStatus: 'completed'
-      })
+      .find({ _id: id, requestStatus: 'completed' })
       .populate('user', 'firstName');
     res.json(donationrequest);
     console.log(donationrequest);
@@ -322,6 +320,26 @@ router.get('/donation-request-approved', async (req, res) => {
       .json({ error: 'An error occurred while fetching blood requests' });
   }
 });
+router.get('/donation-request-user', async (req, res) => {
+  try {
+    const { id } = req.query;
+    const donationrequest = await donationRequest.find({
+      user: id,
+      // requestStatus: 'approved',
+    });
+    const bloodrequest = await BloodRequest.find({
+      user: id,
+      // requestStatus: 'approved',
+    });
+    res.json({ donationrequest, bloodrequest });
+    console.log(donationrequest, bloodrequest);
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .json({ error: 'An error occurred while fetching blood requests' });
+  }
+});
 router.get('/donation-requests/count', async (req, res) => {
   try {
     // الحصول على userId من المعاملات (Query Parameters)
@@ -335,6 +353,7 @@ router.get('/donation-requests/count', async (req, res) => {
     // البحث عن الطلبات التي حالتها "approved" أو "reserved" ومطابقة userId
     const requestcount = await BloodRequest.countDocuments({
       requestStatus: { $in: ['approved', 'active', 'assigned'] },
+      requestneedytype: { $in: ['external'] },
       user: userId, // البحث باستخدام userId
     });
     const donrequestcount = await donationRequest.countDocuments({
